@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navbar_events"
+        android:icon="@drawable/outline_attractions_100"
+        android:title="@string/events" />
+    <item
+        android:id="@+id/navbar_my_events"
+        android:icon="@drawable/outline_beach_access_100"
+        android:title="@string/my_events" />
+    <item
+        android:id="@+id/navbar_profile"
+        android:icon="@drawable/outline_attribution_100"
+        android:title="@string/profile" />
+</menu>
