@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/HomeFragment">
+
+    <!-- Destination for the Home Fragment -->
+    <fragment
+        android:id="@+id/HomeFragment"
+        android:name="com.kraken.krakenhax.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home">
+
+        <!-- Action to navigate from Home Fragment to Events Fragment -->
+        <action
+            android:id="@+id/action_HomeFragment_to_EventsFragment"
+            app:destination="@+id/EventsFragment" />
+
+        <!-- Action to navigate from Home Fragment to My Events Fragment -->
+        <action
+            android:id="@+id/action_HomeFragment_to_MyEventsFragment"
+            app:destination="@+id/MyEventsFragment" />
+
+        <!-- Action to navigate from Home Fragment to Profile Fragment -->
+        <action
+            android:id="@+id/action_HomeFragment_to_ProfileFragment"
+            app:destination="@+id/ProfileFragment" />
+    </fragment>
+
+    <!-- Destination for the Events Fragment -->
+    <fragment
+        android:id="@+id/EventsFragment"
+        android:name="com.kraken.krakenhax.EventsFragment"
+        android:label="fragment_events"
+        tools:layout="@layout/fragment_events">
+
+        <!-- Action to navigate from Events Fragment to Home Fragment -->
+        <!--        <action-->
+        <!--            android:id="@+id/action_EventsFragment_to_HomeFragment"-->
+        <!--            app:destination="@+id/HomeFragment" />-->
+
+        <!-- Action to navigate from the Events Fragment to My Events Fragment -->
+        <action
+            android:id="@+id/action_EventsFragment_to_MyEventsFragment"
+            app:destination="@+id/MyEventsFragment" />
+
+        <!-- Action to navigate from the Events Fragment to Profile Fragment -->
+        <action
+            android:id="@+id/action_EventsFragment_to_ProfileFragment"
+            app:destination="@+id/ProfileFragment" />
+    </fragment>
+
+    <!-- Destination for My Events Fragment -->
+    <fragment
+        android:id="@+id/MyEventsFragment"
+        android:name="com.kraken.krakenhax.MyEventsFragment"
+        android:label="fragment_my_events"
+        tools:layout="@layout/fragment_my_events">
+
+        <!-- Action to navigate from the My Events Fragment to Events Fragment -->
+        <action
+            android:id="@+id/action_MyEventsFragment_to_EventsFragment"
+            app:destination="@+id/EventsFragment" />
+
+        <!-- Action to navigate from the Events Fragment to Profile Fragment -->
+        <action
+            android:id="@+id/action_MyEventsFragment_to_ProfileFragment"
+            app:destination="@+id/ProfileFragment" />
+    </fragment>
+
+    <!-- Destination for Profile Fragment -->
+    <fragment
+        android:id="@+id/ProfileFragment"
+        android:name="com.kraken.krakenhax.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile">
+
+        <!-- Action to navigate from the Profile Fragment to Events Fragment -->
+        <action
+            android:id="@+id/action_ProfileFragment_to_EventsFragment"
+            app:destination="@+id/EventsFragment" />
+
+        <!-- Action to navigate from the Profile Fragment to My Events Fragment -->
+        <action
+            android:id="@+id/action_ProfileFragment_to_MyEventsFragment"
+            app:destination="@+id/MyEventsFragment" />
+    </fragment>
+
+</navigation>
