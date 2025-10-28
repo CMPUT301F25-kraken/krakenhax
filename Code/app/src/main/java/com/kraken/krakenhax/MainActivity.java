@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up the navigation bar
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);
+        assert navHostFragment != null;
         NavController navController = navHostFragment.getNavController();
         BottomNavigationView bottom_navigation_bar = findViewById(R.id.bottom_navigation_bar);
         NavigationUI.setupWithNavController(bottom_navigation_bar, navController);
