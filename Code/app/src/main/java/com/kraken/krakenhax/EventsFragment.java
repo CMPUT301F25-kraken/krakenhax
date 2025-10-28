@@ -5,7 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,10 +61,32 @@ public class EventsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_events, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Set up recycler view
+        RecyclerView recycler_view_event_list = view.findViewById(R.id.recycler_view_events_list);
+        MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(new ArrayList<>());
+        recycler_view_event_list.setAdapter(adapter);
+        recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        ArrayList<String> demo_list = new ArrayList<>();
+        demo_list.add("Event 1");
+        demo_list.add("Event 2");
+        demo_list.add("Event 3");
+        demo_list.add("Event 4");
+        demo_list.add("Event 5");
+        demo_list.add("Event 6");
+        demo_list.add("Event 7");
+        demo_list.add("Event 8");
+
+        adapter.updateData(demo_list);
     }
 
 }
