@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "213425086281",
+    "project_id": "krakenhax-fc687",
+    "storage_bucket": "krakenhax-fc687.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:213425086281:android:4ba7ab5945bff0a8720498",
+        "android_client_info": {
+          "package_name": "com.kraken.krakenhax"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDV9sqcMN1nwri3guRIPkWxC00VpCB7xsA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
