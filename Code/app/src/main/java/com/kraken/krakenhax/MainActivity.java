@@ -18,13 +18,18 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 
 public class MainActivity extends AppCompatActivity {
-
+    private FirebaseFirestore db;
+    private CollectionReference ProfileRef;
     public NavController navController;
     public BottomNavigationView bottom_navigation_bar;
     public Profile currentUser;
     public boolean loggedIn;
+    public ProfileViewModel profileModel;
 
 
     @Override
@@ -34,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         loggedIn = false;
         // Set up the navigation bar
+        db = FirebaseFirestore.getInstance();
+        ProfileRef = db.collection("Users");
+
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);
         assert navHostFragment != null;
@@ -43,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destinationId = destination.getId();
-            if (destinationId == R.id.LoginFragment) {
+            if (destinationId == R.id.LoginFragment || destinationId == R.id.signup || destinationId == R.id.selection_type) {
                 bottom_navigation_bar.setVisibility(View.GONE);
             } else {
                 bottom_navigation_bar.setVisibility(View.VISIBLE);
@@ -56,7 +64,5 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void navigateToMainContent(){
-        navController.navigate(R.id.action_login_to_events);
-    }
+
 }

@@ -36,16 +36,15 @@ public class TypeChooserFragment extends Fragment{
             public void onClick(View v) {
                 TypeChooserFragmentDirections.ActionTypeSelectorToSignUp action = TypeChooserFragmentDirections.actionTypeSelectorToSignUp("Entrant");
                 navController.navigate(action);
-                navController.navigate(R.id.action_TypeSelector_to_SignUp);
+                //navController.navigate(R.id.action_TypeSelector_to_SignUp);
             }
         });
         organizer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity mainActivity = (MainActivity) getActivity();
                 TypeChooserFragmentDirections.ActionTypeSelectorToSignUp action = TypeChooserFragmentDirections.actionTypeSelectorToSignUp("Organizer");
                 navController.navigate(action);
-                navController.navigate(R.id.action_TypeSelector_to_SignUp);
+                //navController.navigate(R.id.action_TypeSelector_to_SignUp);
             }
         });
         return view;

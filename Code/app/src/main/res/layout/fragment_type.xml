@@ -27,20 +27,24 @@
         android:id="@+id/Entrant_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:background="@drawable/custom_type_button"
         android:backgroundTint="#DB5454"
         android:text="Entrant"
-        tools:layout_editor_absoluteX="151dp"
-        tools:layout_editor_absoluteY="236dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/type_selector_textView" />
 
     <Button
         android:id="@+id/Organizer_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:background="@drawable/rounded_edittext_background"
-        android:text="Organizer"
 
-        tools:layout_editor_absoluteX="156dp"
-        tools:layout_editor_absoluteY="327dp" />
+        android:text="Organizer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Entrant_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,6 +53,7 @@ dependencies {
     // For navigating between fragments
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-
-    implementation(platform(libs.firebase.bom))
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
+    
+    implementation("com.google.firebase:firebase-firestore")
 }
