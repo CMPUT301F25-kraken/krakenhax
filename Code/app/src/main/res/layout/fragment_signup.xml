@@ -10,7 +10,7 @@
 
 
     <EditText
-        android:id="@+id/UsernameEditText"
+        android:id="@+id/UsernameSetText"
         android:layout_width="317dp"
         android:layout_height="47dp"
         android:layout_marginTop="10dp"
@@ -22,7 +22,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <EditText
-        android:id="@+id/PasswordEditText"
+        android:id="@+id/PasswordSetText"
         android:layout_width="317dp"
         android:layout_height="47dp"
         android:layout_marginTop="10dp"
@@ -31,10 +31,10 @@
         android:textColor="@color/loginTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UsernameEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/UsernameSetText" />
 
     <EditText
-        android:id="@+id/EmailEditText"
+        android:id="@+id/EmailSetText"
         android:layout_width="317dp"
         android:layout_height="47dp"
         android:layout_marginTop="10dp"
@@ -43,7 +43,7 @@
         android:textColor="@color/loginTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PasswordEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/PasswordSetText" />
 
     <TextView
         android:id="@+id/textView3"
@@ -68,5 +68,5 @@
         app:layout_constraintEnd_toEndOf="parent"
 
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EmailEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/EmailSetText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

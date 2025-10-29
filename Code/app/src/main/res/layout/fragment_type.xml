@@ -1,6 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/selection_type"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/loginBackground"
+    tools:context=".MainActivity"
+    >
+
+    <TextView
+        android:id="@+id/type_selector_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150dp"
+        android:text="What Type of Account Would You Like To Make?"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/Entrant_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/custom_type_button"
+        android:backgroundTint="#DB5454"
+        android:text="Entrant"
+        tools:layout_editor_absoluteX="151dp"
+        tools:layout_editor_absoluteY="236dp" />
+
+    <Button
+        android:id="@+id/Organizer_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_edittext_background"
+        android:text="Organizer"
+
+        tools:layout_editor_absoluteX="156dp"
+        tools:layout_editor_absoluteY="327dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
