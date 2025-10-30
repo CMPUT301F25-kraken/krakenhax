@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/HomeFragment">
+    app:startDestination="@id/LoginFragment">
 
     <!-- Destination for the Home Fragment -->
     <fragment
@@ -26,6 +26,11 @@
         <action
             android:id="@+id/action_HomeFragment_to_ProfileFragment"
             app:destination="@+id/ProfileFragment" />
+
+        <action
+            android:id="@+id/action_HomeFragment_to_LoginFragment"
+            app:destination="@+id/LoginFragment"
+            />
     </fragment>
 
     <!-- Destination for the Events Fragment -->
@@ -85,6 +90,48 @@
         <action
             android:id="@+id/action_ProfileFragment_to_MyEventsFragment"
             app:destination="@+id/MyEventsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/LoginFragment"
+        android:name="com.kraken.krakenhax.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_login_to_typeSelector"
+            app:destination="@+id/selection_type"/>
+
+        <action
+            android:id="@+id/action_login_to_events"
+            app:destination="@+id/EventsFragment"
+            app:popUpTo="@id/LoginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/selection_type"
+        android:name="com.kraken.krakenhax.TypeChooserFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_type">
+
+        <action
+            android:id="@+id/action_TypeSelector_to_SignUp"
+            app:destination="@+id/signup"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/signup"
+        android:name="com.kraken.krakenhax.SignUpFragment"
+        android:label="fragment_signUp"
+        tools:layout="@layout/fragment_signup">
+        <argument
+            android:name="UserType"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_SignUp_to_Events"
+            app:destination="@+id/EventsFragment"/>
     </fragment>
 
 </navigation>
