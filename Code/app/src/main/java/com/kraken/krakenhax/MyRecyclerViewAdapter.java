@@ -15,9 +15,10 @@ import java.util.ArrayList;
  */
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder> {
 
-    private final ArrayList<String> data;
+    private final ArrayList<Event> data;
+    private ItemClickListener clickListener;
 
-    public MyRecyclerViewAdapter(ArrayList<String> data) {
+    public MyRecyclerViewAdapter(ArrayList<Event> data) {
         this.data = data;
     }
 
@@ -30,7 +31,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     @Override
     public void onBindViewHolder(@NonNull MyRecyclerViewAdapter.MyViewHolder holder, int position) {
-        holder.tvLogEntry.setText(data.get(position));
+        holder.tvLogEntry.setText(data.get(position).getTitle());
     }
 
     @Override
@@ -38,22 +39,42 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         return data.size();
     }
 
-    public void updateData(ArrayList<String> newData) {
+    public void updateData(ArrayList<Event> newData) {
         this.data.clear();
         this.data.addAll(newData);
         notifyDataSetChanged();
     }
 
+    public void setClickListener(ItemClickListener itemClickListener) {
+        this.clickListener = itemClickListener;
+    }
+
+    public Event getItem(int id) {
+        return data.get(id);
+    }
+
+    public interface ItemClickListener {
+        void onItemClick(View view, int position);
+    }
+
     /**
      * Holds an TextView item for an individual row of the RecyclerView.
      */
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final TextView tvLogEntry;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             tvLogEntry = itemView.findViewById(R.id.tv_event_title);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (clickListener != null) {
+                clickListener.onItemClick(view, getAdapterPosition());
+            }
         }
     }
 }
