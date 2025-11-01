@@ -2,6 +2,11 @@ package com.kraken.krakenhax;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.graphics.Bitmap;
 
 /**
@@ -15,10 +20,10 @@ public class Event {
     private String location; //Done
     private Integer Radius; //Done
     private Bitmap poster; //*
-    //private CancelList cancelList;
-    //private WaitList waitList;
-    //private LostList lostList;
-    //private WonList wonList;
+    private ArrayList<Profile> cancelList;
+    private ArrayList<Profile> waitList;
+    private ArrayList<Profile> lostList;
+    private ArrayList<Profile> wonList;
 
     /**
      * Constructor for Event class.
@@ -229,7 +234,55 @@ public class Event {
         this.poster = poster;
     }
 
+    public ArrayList<Profile> getCancelList() {
+        return waitList;
+    }
+
+    public ArrayList<Profile> getLostList() {
+        return waitList;
+    }
+
+    public ArrayList<Profile> getWonList() {
+        return waitList;
+    }
+
+    public ArrayList<Profile> getWaitList() {
+        return waitList;
+    }
+
+    public void setCancelList(ArrayList<Profile> list) {
+        this.cancelList = list;
+    }
+
+    public void setLostList(ArrayList<Profile> list) {
+        this.lostList = list;
+    }
+
+    public void setWonList(ArrayList<Profile> list) {
+        this.wonList = list;
+    }
+
+    public void setWaitList(ArrayList<Profile> list) {
+        this.waitList = list;
+    }
+
     /*
     TODO: Implement WaitList, CanceList, WonList, LostList classes and add to Event class.
      */
+
+    public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
+        ArrayList<Profile> winners = getWonList();
+        ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
+
+        ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
+        Collections.shuffle(shuffled);
+
+        for (int i = 0; i < numberOfWinners && i < shuffled.size(); i++) {
+            Profile winner = shuffled.get(i);
+            winners.add(winner);
+            losers.remove(winner);
+        }
+
+        setLostList(losers);
+    }
 }
