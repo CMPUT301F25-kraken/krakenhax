@@ -13,13 +13,15 @@ import java.util.ArrayList;
  * This class represents the data for an event.
  */
 public class Event implements Parcelable {
+    private String id;
     private String title; //Done
     private ArrayList<String> categories; //Done
     private ArrayList<ZonedDateTime> timeframe; //Done
     private String eventDetails; //Done
     private String location; //Done
     private Integer Radius; //Done
-    private Bitmap poster; //*
+    private String poster;
+    //private Bitmap poster; //*
     //private CancelList cancelList;
     //private WaitList waitList;
     //private LostList lostList;
@@ -29,6 +31,7 @@ public class Event implements Parcelable {
      * Constructor for Event class.
      */
     public Event() {
+        this.id = "";
         this.title = "";
         this.categories = new ArrayList<String>();
         this.timeframe = new ArrayList<ZonedDateTime>();
@@ -40,6 +43,23 @@ public class Event implements Parcelable {
         //this.waitList = new WaitList();
         //this.lostList = new LostList();
         //this.wonList = new WonList();
+    }
+
+
+    /**
+     * Returns the id of the event.
+     * @return
+     *        a String representing the event id
+     */
+    public String getId() {return id;}
+
+    /**
+     * Sets the id of the event.
+     * @param id
+     *        a String representing the event id
+     */
+    public void setId(String id) {
+        this.id = id;
     }
 
     /**
@@ -64,9 +84,7 @@ public class Event implements Parcelable {
      * @return
      *        a String representing the event title
      */
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() {return title;}
 
     /**
      * Sets the title of the event.
@@ -237,7 +255,7 @@ public class Event implements Parcelable {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public Bitmap getPoster() {
+    public String getPoster() {
         return poster;
     }
 
@@ -247,7 +265,7 @@ public class Event implements Parcelable {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public void setPoster(Bitmap poster) {
+    public void setPoster(String poster) {
         this.poster = poster;
     }
 
