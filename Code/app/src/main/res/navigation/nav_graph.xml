@@ -29,8 +29,7 @@
 
         <action
             android:id="@+id/action_HomeFragment_to_LoginFragment"
-            app:destination="@+id/LoginFragment"
-            />
+            app:destination="@+id/LoginFragment" />
     </fragment>
 
     <!-- Destination for the Events Fragment -->
@@ -54,6 +53,11 @@
         <action
             android:id="@+id/action_EventsFragment_to_ProfileFragment"
             app:destination="@+id/ProfileFragment" />
+
+        <!-- Action to navigate from the Events fragment to the Event fragment -->
+        <action
+            android:id="@+id/action_EventsFragment_to_EventFragment"
+            app:destination="@+id/EventFragment" />
     </fragment>
 
     <!-- Destination for My Events Fragment -->
@@ -72,8 +76,20 @@
         <action
             android:id="@+id/action_MyEventsFragment_to_ProfileFragment"
             app:destination="@+id/ProfileFragment" />
+        <!-- Action to navigate from the Events Fragment to MyEventsDetailFragment -->
+        <action
+            android:id="@+id/action_myEvents_to_MyEventDetailsFragment"
+            app:destination="@id/MyEventDetailsFragment" />
     </fragment>
 
+
+    <!-- Destination for MyEventDetailsFragment -->
+    <fragment
+        android:id="@+id/MyEventDetailsFragment"
+        android:name="com.kraken.krakenhax.MyEventDetailsFragment"
+        android:label="fragment_my_event_details"
+        tools:layout="@layout/fragment_my_event_details">
+    </fragment>
     <!-- Destination for Profile Fragment -->
     <fragment
         android:id="@+id/ProfileFragment"
@@ -100,7 +116,7 @@
 
         <action
             android:id="@+id/action_login_to_typeSelector"
-            app:destination="@+id/selection_type"/>
+            app:destination="@+id/selection_type" />
 
         <action
             android:id="@+id/action_login_to_events"
@@ -117,7 +133,7 @@
 
         <action
             android:id="@+id/action_TypeSelector_to_SignUp"
-            app:destination="@+id/signup"/>
+            app:destination="@+id/signup" />
     </fragment>
 
     <fragment
@@ -131,7 +147,20 @@
 
         <action
             android:id="@+id/action_SignUp_to_Events"
-            app:destination="@+id/EventsFragment"/>
+            app:destination="@+id/EventsFragment" />
+    </fragment>
+
+    <!-- Destination for Event Fragment -->
+    <fragment
+        android:id="@+id/EventFragment"
+        android:name="com.kraken.krakenhax.EventFragment"
+        android:label="fragment_event"
+        tools:layout="@layout/fragment_event">
+
+        <!-- Action to navigate from the Event Fragment to Events Fragment -->
+        <action
+            android:id="@+id/action_EventFragment_to_EventsFragment"
+            app:destination="@+id/EventsFragment" />
     </fragment>
 
 </navigation>

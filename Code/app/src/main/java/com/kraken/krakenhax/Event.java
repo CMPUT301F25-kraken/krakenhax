@@ -1,5 +1,11 @@
 package com.kraken.krakenhax;
 
+import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +18,8 @@ import android.graphics.Bitmap;
 /**
  * This class represents the data for an event.
  */
-public class Event {
+public class Event implements Parcelable {
+    private String id;
     private String title; //Done
     private ArrayList<String> categories; //Done
     private ArrayList<ZonedDateTime> timeframe; //Done
@@ -24,11 +31,18 @@ public class Event {
     private ArrayList<Profile> waitList;
     private ArrayList<Profile> lostList;
     private ArrayList<Profile> wonList;
+    private String poster;
+    //private Bitmap poster; //*
+    //private CancelList cancelList;
+    //private WaitList waitList;
+    //private LostList lostList;
+    //private WonList wonList;
 
     /**
      * Constructor for Event class.
      */
     public Event() {
+        this.id = "";
         this.title = "";
         this.categories = new ArrayList<String>();
         this.timeframe = new ArrayList<ZonedDateTime>();
@@ -42,14 +56,46 @@ public class Event {
         this.wonList = new ArrayList<Profile>();
     }
 
+
+    /**
+     * Returns the id of the event.
+     * @return
+     *        a String representing the event id
+     */
+    public String getId() {return id;}
+
+    /**
+     * Sets the id of the event.
+     * @param id
+     *        a String representing the event id
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Constructor for Event class with title argument.
+     */
+    public Event(String title) {
+        this.title = title;
+        this.categories = new ArrayList<String>();
+        this.timeframe = new ArrayList<ZonedDateTime>();
+        this.eventDetails = "";
+        this.location = "";
+        this.Radius = 0;
+        this.poster = null;
+        //  this.cancelList = new CancelList();
+        //this.waitList = new WaitList();
+        //this.lostList = new LostList();
+        //this.wonList = new WonList();
+    }
+
     /**
      * Returns the title of the event.
      * @return
      *        a String representing the event title
      */
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() {return title;}
 
     /**
      * Sets the title of the event.
@@ -220,7 +266,7 @@ public class Event {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public Bitmap getPoster() {
+    public String getPoster() {
         return poster;
     }
 
@@ -230,7 +276,7 @@ public class Event {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public void setPoster(Bitmap poster) {
+    public void setPoster(String poster) {
         this.poster = poster;
     }
 
@@ -330,6 +376,34 @@ public class Event {
      *        List of Profiles who signed up for the lottery.
      * @param numberOfWinners
      *        The number of winners to be selected from the entrant pool.
+     * Describe the kinds of special objects contained in this Parcelable
+     * instance's marshaled representation. For example, if the object will
+     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
+     * the return value of this method must include the
+     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
+     *
+     * @return a bitmask indicating the set of special object types marshaled
+     * by this Parcelable object instance.
+     */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+
+    }
+
+    /*
+    TODO: Implement WaitList, CanceList, WonList, LostList classes and add to Event class.
      */
     public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
         ArrayList<Profile> winners = this.wonList;

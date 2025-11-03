@@ -5,16 +5,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link MyEventsFragment#newInstance} factory method to
+ * Use the {@link EventFragment#newInstance} factory method to
  * create an instance of this fragment.
+ * <p>
+ * The Event Page
  */
-public class MyEventsFragment extends Fragment {
+public class EventFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,9 +31,7 @@ public class MyEventsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private Button btnGotoNew;
-
-    public MyEventsFragment() {
+    public EventFragment() {
         // Required empty public constructor
     }
 
@@ -37,12 +41,11 @@ public class MyEventsFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MyEventsFragment.
+     * @return A new instance of fragment EventFragment.
      */
     // TODO: Rename and change types and number of parameters
-
-    public static MyEventsFragment newInstance(String param1, String param2) {
-        MyEventsFragment fragment = new MyEventsFragment();
+    public static EventFragment newInstance(String param1, String param2) {
+        EventFragment fragment = new EventFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -62,19 +65,27 @@ public class MyEventsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_events, container, false);
-        Button btnGo = view.findViewById(R.id.btnGoToNew);
-        String eventId = "testing";
-        btnGo.setOnClickListener(v -> {
-            Bundle args = new Bundle();
-            args.putString("eventId", eventId);
-            NavHostFragment.findNavController(this)
-                    .navigate(R.id.action_myEvents_to_MyEventDetailsFragment, args); // add this action in nav_graph
-        });
-
-
-
-        return view;
+        return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        assert getArguments() != null;
+        Event event = getArguments().getParcelable("event_name");
+
+        // Set up nav controller
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+
+        // Set the textview to display the correct event name
+        TextView tvEventName = view.findViewById(R.id.tv_event_name);
+        tvEventName.setText(event.getTitle());
+
+        // Set up on click listener for button to go back to events view
+        Button buttonBack = view.findViewById(R.id.button_back);
+        buttonBack.setOnClickListener(v -> {
+            navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+        });
+    }
 }
