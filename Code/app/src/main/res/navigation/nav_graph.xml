@@ -72,8 +72,20 @@
         <action
             android:id="@+id/action_MyEventsFragment_to_ProfileFragment"
             app:destination="@+id/ProfileFragment" />
+        <!-- Action to navigate from the Events Fragment to MyEventsDetailFragment -->
+        <action
+            android:id="@+id/action_myEvents_to_MyEventDetailsFragment"
+            app:destination="@id/MyEventDetailsFragment" />
     </fragment>
 
+
+    <!-- Destination for MyEventDetailsFragment -->
+    <fragment
+        android:id="@+id/MyEventDetailsFragment"
+        android:name="com.kraken.krakenhax.MyEventDetailsFragment"
+        android:label="fragment_my_event_details"
+        tools:layout="@layout/fragment_my_event_details">
+    </fragment>
     <!-- Destination for Profile Fragment -->
     <fragment
         android:id="@+id/ProfileFragment"
