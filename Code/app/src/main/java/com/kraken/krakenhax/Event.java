@@ -371,6 +371,24 @@ public class Event implements Parcelable {
      *        List of Profiles who signed up for the lottery.
      * @param numberOfWinners
      *        The number of winners to be selected from the entrant pool.
+     */
+    public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
+        ArrayList<Profile> winners = this.wonList;
+        ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
+
+        ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
+        Collections.shuffle(shuffled);
+
+        for (int i = 0; i < numberOfWinners && i < shuffled.size(); i++) {
+            Profile winner = shuffled.get(i);
+            winners.add(winner);
+            losers.remove(winner);
+        }
+
+        this.lostList = losers;
+    }
+
+    /**
      * Describe the kinds of special objects contained in this Parcelable
      * instance's marshaled representation. For example, if the object will
      * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
@@ -397,22 +415,4 @@ public class Event implements Parcelable {
 
     }
 
-    /*
-    TODO: Implement WaitList, CanceList, WonList, LostList classes and add to Event class.
-     */
-    public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
-        ArrayList<Profile> winners = this.wonList;
-        ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
-
-        ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
-        Collections.shuffle(shuffled);
-
-        for (int i = 0; i < numberOfWinners && i < shuffled.size(); i++) {
-            Profile winner = shuffled.get(i);
-            winners.add(winner);
-            losers.remove(winner);
-        }
-
-        this.lostList = losers;
-    }
 }
