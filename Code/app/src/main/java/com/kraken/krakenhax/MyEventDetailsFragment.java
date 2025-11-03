@@ -1,26 +1,17 @@
 package com.kraken.krakenhax;
 
 import android.app.AlertDialog;
-import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -31,22 +22,15 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 
-
 // TODO: add the other details for myevents and display
 // TODO: pass in event from MyEventsFragment
 public class MyEventDetailsFragment extends Fragment {
-
-
-
     private FirebaseStorage storage;
     private FirebaseFirestore db;
-
     private StorageReference storageRef;
     private ImageView imgPoster;
     private Button btnUploadPoster;
-
     private Button btnBack;
-
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
 
@@ -57,11 +41,8 @@ public class MyEventDetailsFragment extends Fragment {
         // Required empty public constructor
     }
 
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_event_details, container, false);
 
         storage = FirebaseStorage.getInstance();
@@ -71,6 +52,7 @@ public class MyEventDetailsFragment extends Fragment {
         imgPoster = view.findViewById(R.id.imgPoster);
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
+
         // Hardcoded event
         /*
         selectedEvent = new Event();
@@ -80,48 +62,31 @@ public class MyEventDetailsFragment extends Fragment {
         selectedEvent.setPoster(null);
         */
 
-
-
         // Image picker
+        imagePicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                filePath = uri;
+                try {
+                    Picasso.get().load(uri).fit().centerInside().into(imgPoster);
 
-        imagePicker = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null) {
-                        filePath = uri;
-                        try {
-                            Picasso.get()
-                                    .load(uri)
-                                    .fit()
-                                    .centerInside()
-                                    .into(imgPoster);
-
-                            uploadPosterForEvent();
-                        } catch (Exception e) {
-                            Log.e("ImageLoad", "Error loading image", e);
-                            new AlertDialog.Builder(requireContext())
-                                    .setTitle("Error")
-                                    .setMessage("Failed to load image. Please try again.")
-                                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                                    .show();
-                        }
-                    }
-                });
-
+                    uploadPosterForEvent();
+                } catch (Exception e) {
+                    Log.e("ImageLoad", "Error loading image", e);
+                    new AlertDialog.Builder(requireContext()).setTitle("Error").setMessage("Failed to load image. Please try again.").setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
+                }
+            }
+        });
 
         btnUploadPoster.setOnClickListener(v -> imagePicker.launch("image/*"));
-
 
         btnBack.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigateUp();
         });
 
-
         return view;
     }
-    public void uploadPosterForEvent(){
 
-
+    public void uploadPosterForEvent() {
         if (filePath != null) {
             // TODO: change "test_event2" to selectedEvent.getID() when firestore setup with events
             StorageReference eventPosterRef = storageRef.child("event_posters/" + "test_event2" + ".jpg");
@@ -144,7 +109,6 @@ public class MyEventDetailsFragment extends Fragment {
             }).addOnFailureListener(e -> {
                 Log.e("Firebase", "Upload failed", e);
             });
-
         }
     }
 }

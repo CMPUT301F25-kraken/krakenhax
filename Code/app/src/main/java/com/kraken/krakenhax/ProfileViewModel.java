@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
-public class ProfileViewModel extends ViewModel{
+
+public class ProfileViewModel extends ViewModel {
     private static final MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
 
     public static LiveData<ArrayList<Profile>> getProfileList() {
@@ -29,4 +30,5 @@ public class ProfileViewModel extends ViewModel{
             }
         }
     }
+
 }

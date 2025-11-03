@@ -10,11 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+
 /**
  * Creates an adapter for the RecyclerView, allows us to connect our RecyclerView to an array containing the data we want to display.
  */
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder> {
-
     private final ArrayList<Event> data;
     private ItemClickListener clickListener;
 
