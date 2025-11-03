@@ -36,10 +36,10 @@ public class Event {
         this.location = "";
         this.Radius = 0;
         this.poster = null;
-      //  this.cancelList = new CancelList();
-        //this.waitList = new WaitList();
-        //this.lostList = new LostList();
-        //this.wonList = new WonList();
+        this.cancelList = new ArrayList<Profile>();
+        this.waitList = new ArrayList<Profile>();
+        this.lostList = new ArrayList<Profile>();
+        this.wonList = new ArrayList<Profile>();
     }
 
     /**
@@ -234,44 +234,105 @@ public class Event {
         this.poster = poster;
     }
 
+    /**
+     * Returns the list of profiles who won the lottery but declined their spot.
+     * @return
+     *        an ArrayList of Profiles who cancelled their spot
+     */
     public ArrayList<Profile> getCancelList() {
         return waitList;
     }
 
+    /**
+     * Returns the list of profiles who lost the lottery.
+     * @return
+     *        an ArrayList of Profiles who lost the lottery
+     */
     public ArrayList<Profile> getLostList() {
         return waitList;
     }
 
+    /**
+     * Returns the list of profiles who won the lottery.
+     * @return
+     *        an ArrayList of Profiles who won the lottery
+     */
     public ArrayList<Profile> getWonList() {
         return waitList;
     }
 
+    /**
+     * Returns the list of profiles who signed up for the lottery.
+     * @return
+     *        an ArrayList of Profiles who signed up for the lottery.
+     */
     public ArrayList<Profile> getWaitList() {
         return waitList;
     }
 
-    public void setCancelList(ArrayList<Profile> list) {
-        this.cancelList = list;
-    }
-
-    public void setLostList(ArrayList<Profile> list) {
-        this.lostList = list;
-    }
-
-    public void setWonList(ArrayList<Profile> list) {
-        this.wonList = list;
-    }
-
-    public void setWaitList(ArrayList<Profile> list) {
-        this.waitList = list;
-    }
-
-    /*
-    TODO: Implement WaitList, CanceList, WonList, LostList classes and add to Event class.
+    /**
+     * Adds a new profile to the waitlist for this event.
+     * @param profile
+     *        Profile of the entrant to be added to the waitlist
+     * @throws IllegalArgumentException
+     *        if the profile is already in the waitlist
      */
+    public void addToWaitList(Profile profile) {
+        if (this.waitList.contains(profile)) {
+            throw new IllegalArgumentException("Profile is already in the waitlist");
+        } else {
+            this.waitList.add(profile);
+        }
+    }
 
+    /**
+     * Removes a profile from the waitlist for this event.
+     * @param profile
+     *        Profile of the entrant to be removed to the waitlist
+     * @throws IllegalArgumentException
+     *        if the profile isn't on the waitlist
+     */
+    public void removeFromWaitList(Profile profile) {
+        if (this.waitList.contains(profile)) {
+            this.waitList.remove(profile);
+
+        } else {
+            throw new IllegalArgumentException("Profile is not on the waitlist");
+        }
+    }
+
+    /**
+     * Declines a won spot in the event, adding the profile to the cancel list.
+     * @param profile
+     *        Profile of the entrant who is cancelling their won spot
+     * @throws IllegalArgumentException
+     *        if the profile hasnt won a spot to cancel
+     *        if the profile has already cancelled
+     */
+    public void addToCancelList(Profile profile) {
+        if (this.cancelList.contains(profile)) {
+            throw new IllegalArgumentException("Profile has already cancelled");
+        }
+
+        if (this.wonList.contains(profile)) {
+            this.cancelList.add(profile);
+            this.wonList.remove(profile);
+        } else {
+            throw new IllegalArgumentException("Profile has not won a spot to cancel");
+        }
+
+    }
+
+    /**
+     * Draws the lottery for the event, selecting a number of winners from the entrant pool.
+     * Winners are added to the wonList, and all the losers replace the existing lostList.
+     * @param entrantPool
+     *        List of Profiles who signed up for the lottery.
+     * @param numberOfWinners
+     *        The number of winners to be selected from the entrant pool.
+     */
     public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
-        ArrayList<Profile> winners = getWonList();
+        ArrayList<Profile> winners = this.wonList;
         ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
 
         ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
@@ -283,6 +344,6 @@ public class Event {
             losers.remove(winner);
         }
 
-        setLostList(losers);
+        this.lostList = losers;
     }
 }
