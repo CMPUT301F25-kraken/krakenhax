@@ -1,13 +1,18 @@
 package com.kraken.krakenhax;
 
+import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import android.graphics.Bitmap;
 
 /**
  * This class represents the data for an event.
  */
-public class Event {
+public class Event implements Parcelable {
     private String title; //Done
     private ArrayList<String> categories; //Done
     private ArrayList<ZonedDateTime> timeframe; //Done
@@ -32,6 +37,23 @@ public class Event {
         this.Radius = 0;
         this.poster = null;
       //  this.cancelList = new CancelList();
+        //this.waitList = new WaitList();
+        //this.lostList = new LostList();
+        //this.wonList = new WonList();
+    }
+
+    /**
+     * Constructor for Event class with title argument.
+     */
+    public Event(String title) {
+        this.title = title;
+        this.categories = new ArrayList<String>();
+        this.timeframe = new ArrayList<ZonedDateTime>();
+        this.eventDetails = "";
+        this.location = "";
+        this.Radius = 0;
+        this.poster = null;
+        //  this.cancelList = new CancelList();
         //this.waitList = new WaitList();
         //this.lostList = new LostList();
         //this.wonList = new WonList();
@@ -227,6 +249,33 @@ public class Event {
      */
     public void setPoster(Bitmap poster) {
         this.poster = poster;
+    }
+
+    /**
+     * Describe the kinds of special objects contained in this Parcelable
+     * instance's marshaled representation. For example, if the object will
+     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
+     * the return value of this method must include the
+     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
+     *
+     * @return a bitmask indicating the set of special object types marshaled
+     * by this Parcelable object instance.
+     */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+
     }
 
     /*

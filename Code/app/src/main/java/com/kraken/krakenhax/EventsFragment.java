@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,6 +31,8 @@ public class EventsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private MyRecyclerViewAdapter adapter;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -70,23 +75,41 @@ public class EventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+
         // Set up recycler view
         RecyclerView recycler_view_event_list = view.findViewById(R.id.recycler_view_events_list);
-        MyRecyclerViewAdapter adapter = new MyRecyclerViewAdapter(new ArrayList<>());
-        recycler_view_event_list.setAdapter(adapter);
         recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        ArrayList<String> demo_list = new ArrayList<>();
-        demo_list.add("Event 1");
-        demo_list.add("Event 2");
-        demo_list.add("Event 3");
-        demo_list.add("Event 4");
-        demo_list.add("Event 5");
-        demo_list.add("Event 6");
-        demo_list.add("Event 7");
-        demo_list.add("Event 8");
+        ArrayList<Event> demo_list = new ArrayList<>();
+        demo_list.add(new Event("Event 1"));
+        demo_list.add(new Event("Event 2"));
+        demo_list.add(new Event("Event 3"));
+        demo_list.add(new Event("Event 4"));
+        demo_list.add(new Event("Event 5"));
+        demo_list.add(new Event("Event 6"));
+        demo_list.add(new Event("Event 7"));
+        demo_list.add(new Event("Event 8"));
 
-        adapter.updateData(demo_list);
+        adapter = new MyRecyclerViewAdapter(demo_list);
+
+        // Set an on item click listener for the recycler view
+        adapter.setClickListener(new MyRecyclerViewAdapter.ItemClickListener() {
+            // When an event is clicked on
+            @Override
+            public void onItemClick(View view, int position) {
+                Event clickedEvent = adapter.getItem(position);
+                Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("event_name", clickedEvent);
+                navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
+            }
+        });
+
+        recycler_view_event_list.setAdapter(adapter);
+
+        //adapter.updateData(demo_list);
+
     }
 
 }
