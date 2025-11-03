@@ -1,10 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
-
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
-    id("androidx.navigation.safeargs")
-
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -13,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.kraken.krakenhax"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -46,6 +44,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
     implementation(libs.cardview)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -57,4 +56,5 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("com.squareup.picasso:picasso:2.8")
     implementation("com.google.firebase:firebase-firestore")
+
 }
