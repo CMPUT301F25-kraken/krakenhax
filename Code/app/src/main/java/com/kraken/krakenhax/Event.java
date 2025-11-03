@@ -379,14 +379,34 @@ public class Event implements Parcelable {
     /**
      * Draws the lottery for the event, selecting a number of winners from the entrant pool.
      * Winners are added to the wonList, and all the losers replace the existing lostList.
+     * @param entrantPool
+     *        List of Profiles who signed up for the lottery.
+     * @param numberOfWinners
+     *        The number of winners to be selected from the entrant pool.
+     */
+    public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
+        ArrayList<Profile> winners = this.wonList;
+        ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
+
+        ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
+        Collections.shuffle(shuffled);
+
+        for (int i = 0; i < numberOfWinners && i < shuffled.size(); i++) {
+            Profile winner = shuffled.get(i);
+            winners.add(winner);
+            losers.remove(winner);
+        }
+
+        this.lostList = losers;
+    }
+
+    /**
+     * Describe the kinds of special objects contained in this Parcelable
+     * instance's marshaled representation. For example, if the object will
+     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
+     * the return value of this method must include the
+     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
      *
-     * @param entrantPool     List of Profiles who signed up for the lottery.
-     * @param numberOfWinners The number of winners to be selected from the entrant pool.
-     *                        Describe the kinds of special objects contained in this Parcelable
-     *                        instance's marshaled representation. For example, if the object will
-     *                        include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
-     *                        the return value of this method must include the
-     *                        {@link #CONTENTS_FILE_DESCRIPTOR} bit.
      * @return a bitmask indicating the set of special object types marshaled
      * by this Parcelable object instance.
      */
@@ -418,22 +438,4 @@ public class Event implements Parcelable {
         dest.writeString(poster);
     }
 
-    /*
-    TODO: Implement WaitList, CancelList, WonList, LostList classes and add to Event class.
-     */
-    public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
-        ArrayList<Profile> winners = this.wonList;
-        ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
-
-        ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
-        Collections.shuffle(shuffled);
-
-        for (int i = 0; i < numberOfWinners && i < shuffled.size(); i++) {
-            Profile winner = shuffled.get(i);
-            winners.add(winner);
-            losers.remove(winner);
-        }
-
-        this.lostList = losers;
-    }
 }
