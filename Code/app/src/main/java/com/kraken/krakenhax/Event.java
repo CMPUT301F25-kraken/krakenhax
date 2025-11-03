@@ -26,17 +26,12 @@ public class Event implements Parcelable {
     private String eventDetails; //Done
     private String location; //Done
     private Integer Radius; //Done
-    private Bitmap poster; //*
     private ArrayList<Profile> cancelList;
     private ArrayList<Profile> waitList;
     private ArrayList<Profile> lostList;
     private ArrayList<Profile> wonList;
     private String poster;
     //private Bitmap poster; //*
-    //private CancelList cancelList;
-    //private WaitList waitList;
-    //private LostList lostList;
-    //private WonList wonList;
 
     /**
      * Constructor for Event class.
