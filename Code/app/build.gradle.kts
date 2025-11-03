@@ -44,7 +44,8 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.recyclerview)
     implementation(libs.cardview)
-    implementation(libs.firebase.firestore)
+
+    // For unit testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -52,9 +53,11 @@ dependencies {
     // For navigating between fragments
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
-    implementation("com.google.firebase:firebase-storage")
-    implementation("com.squareup.picasso:picasso:2.8")
-    implementation("com.google.firebase:firebase-firestore")
+
+    // For interacting with Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.picasso)
 
 }

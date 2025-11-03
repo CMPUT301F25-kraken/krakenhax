@@ -14,8 +14,8 @@
         android:layout_height="47dp"
         android:layout_marginTop="5dp"
         android:background="@drawable/rounded_edittext_background"
-        android:text=""
         android:hint="Username"
+        android:text=""
         android:textColor="@color/loginTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,8 +27,8 @@
         android:layout_height="47dp"
         android:layout_marginTop="5dp"
         android:background="@drawable/rounded_edittext_background"
-        android:text=""
         android:hint="Password"
+        android:text=""
         android:textColor="@color/loginTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,9 +76,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:text="Continue as a Guest"
         android:backgroundTint="@color/LoginButtonColor"
+        android:text="Continue as a Guest"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signup_button" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
