@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Represents an event in the KrakenHax application.
