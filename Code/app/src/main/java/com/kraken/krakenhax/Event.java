@@ -311,6 +311,34 @@ public class Event implements Parcelable {
     public LostList getLostList() { return lostList; }
 
 
+    // Lottery System
+
+    /**
+     * Draws a random lottery to select event winners.
+     * Winners are added to the WonList; non-selected entrants go to the LostList.
+     *
+     * @param numberOfWinners Number of winners to be selected.
+     */
+    public void drawLottery(int numberOfWinners) {
+        ArrayList<Profile> entrantPool = new ArrayList<>(waitList.getEntrants());
+        if (entrantPool.isEmpty()) return;
+
+        Collections.shuffle(entrantPool);
+        wonList.clearWinners();
+        lostList.clearLosers();
+
+        for (int i = 0; i < numberOfWinners && i < entrantPool.size(); i++) {
+            Profile winner = entrantPool.get(i);
+            wonList.addWinner(winner);
+        }
+
+        for (Profile entrant: entrantPool) {
+            if (!wonList.getWinners().contains(entrant))
+                lostList.addLoser(entrant);
+        }
+    }
+
+
 
     /**
      * Flatten this object in to a Parcel.
