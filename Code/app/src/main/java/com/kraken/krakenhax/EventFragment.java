@@ -87,5 +87,14 @@ public class EventFragment extends Fragment {
         buttonBack.setOnClickListener(v -> {
             navController.navigate(R.id.action_EventFragment_to_EventsFragment);
         });
+
+        // Demo: simulate organizer notification for this event
+        Button buttonNotify = view.findViewById(R.id.button_notify);
+        buttonNotify.setOnClickListener(v -> {
+            NotifyUser notifyUser = new NotifyUser();
+            notifyUser.sendNotification(new Profile("DemoUser", "pass", "Entrant", "demo@example.com"),
+                    "Notification from organizer for " + event.getTitle());
+        });
+
     }
 }
