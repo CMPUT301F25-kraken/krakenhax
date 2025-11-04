@@ -55,6 +55,39 @@ public class EventsFragment extends Fragment {
         demo_list.add(new Event("Event 7"));
         demo_list.add(new Event("Event 8"));
 
+        // DEMO ORGANIZER LOGIC
+        Event testEvent = demo_list.get(0);
+
+        // Creating demo entrant profiles
+        Profile entrant1 = new Profile("Amaan", "1234", "Entrant", "amaaniqb@ualberta.ca");
+        Profile entrant2 = new Profile("Markus", "abcd", "Entrant", "mhenze@ualberta.ca");
+        Profile entrant3 = new Profile("Logan", "pass", "Entrant", "lapope@ualberta.ca");
+
+        // Add to event waitlist
+        testEvent.getWaitList().addEntrant(entrant1);
+        testEvent.getWaitList().addEntrant(entrant2);
+        testEvent.getWaitList().addEntrant(entrant3);
+
+        // Organizer picks one as winner
+        testEvent.getWonList().addWinner(entrant1);
+
+        // One entrant cancels
+        testEvent.getCancelList().addCancelled(entrant2);
+
+        // Draw replacement (Story 30)
+        if (!testEvent.getWaitList().isEmpty()) {
+            Profile replacement = testEvent.getWaitList().getEntrants().get(0);
+            testEvent.getWonList().addWinner(replacement);
+            testEvent.getWaitList().removeEntrant(replacement);
+        }
+
+        // Notify users
+        NotifyUser notifyUser = new NotifyUser();
+        notifyUser.sendNotification(entrant1, "You’ve been accepted into " + testEvent.getTitle() + "!");
+        notifyUser.sendNotification(entrant2, "You’ve been cancelled from " + testEvent.getTitle() + ".");
+        notifyUser.sendNotification(entrant3, "You’ve been moved from waitlist to accepted!");
+
+
         adapter = new MyRecyclerViewAdapter(demo_list);
 
         // Set an on item click listener for the recycler view
