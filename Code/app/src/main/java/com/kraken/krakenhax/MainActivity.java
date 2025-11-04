@@ -18,14 +18,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class MainActivity extends AppCompatActivity {
-    private FirebaseFirestore db;
-    private CollectionReference ProfileRef;
     public NavController navController;
     public BottomNavigationView bottom_navigation_bar;
     public Profile currentUser;
     public boolean loggedIn;
     public ProfileViewModel profileModel;
-
+    private FirebaseFirestore db;
+    private CollectionReference ProfileRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

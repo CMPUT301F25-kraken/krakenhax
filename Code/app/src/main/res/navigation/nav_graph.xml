@@ -27,6 +27,7 @@
             android:id="@+id/action_HomeFragment_to_ProfileFragment"
             app:destination="@+id/ProfileFragment" />
 
+        <!-- Action to navigate from Home Fragment to Login Fragment -->
         <action
             android:id="@+id/action_HomeFragment_to_LoginFragment"
             app:destination="@+id/LoginFragment" />
@@ -76,6 +77,19 @@
         <action
             android:id="@+id/action_MyEventsFragment_to_ProfileFragment"
             app:destination="@+id/ProfileFragment" />
+
+        <!-- Action to navigate from the Events Fragment to MyEventsDetailFragment -->
+        <action
+            android:id="@+id/action_myEvents_to_MyEventDetailsFragment"
+            app:destination="@id/MyEventDetailsFragment" />
+    </fragment>
+
+    <!-- Destination for MyEventDetailsFragment -->
+    <fragment
+        android:id="@+id/MyEventDetailsFragment"
+        android:name="com.kraken.krakenhax.MyEventDetailsFragment"
+        android:label="fragment_my_event_details"
+        tools:layout="@layout/fragment_my_event_details">
     </fragment>
 
     <!-- Destination for Profile Fragment -->
@@ -96,16 +110,19 @@
             app:destination="@+id/MyEventsFragment" />
     </fragment>
 
+    <!-- Destination for Login Fragment -->
     <fragment
         android:id="@+id/LoginFragment"
         android:name="com.kraken.krakenhax.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login">
 
+        <!-- Action to navigate from the Login Fragment to Type Chooser Fragment -->
         <action
             android:id="@+id/action_login_to_typeSelector"
             app:destination="@+id/selection_type" />
 
+        <!-- Action to navigate from the Login Chooser Fragment to Events Fragment -->
         <action
             android:id="@+id/action_login_to_events"
             app:destination="@+id/EventsFragment"
@@ -113,17 +130,20 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <!-- Destination for Type Chooser Fragment -->
     <fragment
         android:id="@+id/selection_type"
         android:name="com.kraken.krakenhax.TypeChooserFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_type">
 
+        <!-- Action to navigate from the Type Chooser Fragment to Sign Up Fragment -->
         <action
             android:id="@+id/action_TypeSelector_to_SignUp"
             app:destination="@+id/signup" />
     </fragment>
 
+    <!-- Destination for Sign Up Fragment -->
     <fragment
         android:id="@+id/signup"
         android:name="com.kraken.krakenhax.SignUpFragment"
@@ -133,6 +153,7 @@
             android:name="UserType"
             app:argType="string" />
 
+        <!-- Action to navigate from the Sign Up Fragment to Events Fragment -->
         <action
             android:id="@+id/action_SignUp_to_Events"
             app:destination="@+id/EventsFragment" />

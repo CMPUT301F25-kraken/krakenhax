@@ -19,20 +19,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+
 public class SignUpFragment extends Fragment {
-
     public Button signup;
-    private FirebaseFirestore db;
-
-    private CollectionReference ProfileRef;
     public EditText username;
     public EditText password;
     public EditText email;
     public ProfileViewModel profileModel;
+    private FirebaseFirestore db;
+    private CollectionReference ProfileRef;
     private String userType;
 
     public SignUpFragment() {
-
+        // Required empty public constructor
     }
 
     @Override
@@ -43,9 +42,9 @@ public class SignUpFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = getLayoutInflater().inflate(R.layout.fragment_signup, container, false);
+
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         SignUpFragmentArgs args = SignUpFragmentArgs.fromBundle(getArguments());
 
@@ -54,27 +53,33 @@ public class SignUpFragment extends Fragment {
         username = view.findViewById(R.id.UsernameSetText);
         password = view.findViewById(R.id.PasswordSetText);
         email = view.findViewById(R.id.EmailSetText);
-        LiveData<ArrayList<Profile>> profileList = profileModel.getProfileList();
+
+        LiveData<ArrayList<Profile>> profileList = ProfileViewModel.getProfileList();
+
         final NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
-        signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (Profile profile : profileList.getValue()) {
-                    if (profile.getUsername().equals(username.getText().toString())) {
-                        System.out.println("Username already exists");
-                    }
+
+        signup.setOnClickListener(v -> {
+            for (Profile profile : profileList.getValue()) {
+                if (profile.getUsername().equals(username.getText().toString())) {
+                    System.out.println("Username already exists");
                 }
-                Profile profile = new Profile(username.getText().toString(), password.getText().toString(), email.getText().toString(), userType);
-                profileModel.addProfile(profile);
-                DocumentReference docRef = ProfileRef.document(profile.getUsername());
-                docRef.set(profile);
-                MainActivity mainActivity = (MainActivity) getActivity();
-                assert mainActivity != null;
-                mainActivity.currentUser = profile;
-                mainActivity.loggedIn = true;
-                navController.navigate(R.id.action_SignUp_to_Events);
             }
+
+            Profile profile = new Profile(username.getText().toString(), password.getText().toString(), email.getText().toString(), userType);
+            profileModel.addProfile(profile);
+
+            DocumentReference docRef = ProfileRef.document(profile.getUsername());
+            docRef.set(profile);
+
+            MainActivity mainActivity = (MainActivity) getActivity();
+            assert mainActivity != null;
+            mainActivity.currentUser = profile;
+            mainActivity.loggedIn = true;
+
+            navController.navigate(R.id.action_SignUp_to_Events);
         });
+
         return view;
     }
+
 }
