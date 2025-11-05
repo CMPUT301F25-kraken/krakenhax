@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray">#808080</color>
     <color name="loginBackground">#70C7B2</color>
     <color name="LoginButtonColor">#579E80</color>
     <color name="loginEditTextColor">#454444</color>
