@@ -26,11 +26,12 @@ public class Event implements Parcelable {
     private String eventDetails; //Done
     private String location; //Done
     private Integer Radius; //Done
-    private Bitmap poster; //*
+    private String poster;
     private WaitList waitList;
     private CancelList cancelList;
     private WonList wonList;
     private LostList lostList;
+    private String id;
 
 
     /**
@@ -86,10 +87,10 @@ public class Event implements Parcelable {
         // initialize collection fields so the object is always safe to use
         this.categories = new ArrayList<>();
         this.timeframe = new ArrayList<>();
-        this.cancelList = new ArrayList<>();
-        this.waitList = new ArrayList<>();
-        this.lostList = new ArrayList<>();
-        this.wonList = new ArrayList<>();
+        this.cancelList = new CancelList();
+        this.waitList = new WaitList();
+        this.lostList = new LostList();
+        this.wonList = new WonList();
     }
     /**
      * Returns the title of the event.
@@ -269,7 +270,7 @@ public class Event implements Parcelable {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public Bitmap getPoster() {
+    public String getPoster() {
         return poster;
     }
 
@@ -279,7 +280,7 @@ public class Event implements Parcelable {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public void setPoster(Bitmap poster) {
+    public void setPoster(String poster) {
         this.poster = poster;
     }
 
@@ -402,6 +403,8 @@ public class Event implements Parcelable {
         }
     };
 
+
+
     /**
      * Writes the {@link Event} object's data into a {@link Parcel}, allowing it to be
      * serialized and passed between Android components.
@@ -424,5 +427,13 @@ public class Event implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeInt(Radius);
         }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
