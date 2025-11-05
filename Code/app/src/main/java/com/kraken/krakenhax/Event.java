@@ -1,24 +1,38 @@
 package com.kraken.krakenhax;
 
+import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import android.graphics.Bitmap;
+import java.util.Collections;
 
 /**
- * This class represents the data for an event.
+ * Represents an event in the KrakenHax application.
+ * Stores event metadata such as title, categories, timeframe, description, location,
+ * and registration radius. Each event may also have associated participant lists
+ * (WaitList, WonList, LostList, CancelList) and a poster image.
+ *
+ * <p>Used by organizers to create and manage events, and by entrants to view and join them.</p>
  */
-public class Event {
+
+public class Event implements Parcelable {
     private String title; //Done
     private ArrayList<String> categories; //Done
     private ArrayList<ZonedDateTime> timeframe; //Done
     private String eventDetails; //Done
     private String location; //Done
     private Integer Radius; //Done
-    private Bitmap poster; //*
-    //private CancelList cancelList;
-    //private WaitList waitList;
-    //private LostList lostList;
-    //private WonList wonList;
+    private String poster;
+    private WaitList waitList;
+    private CancelList cancelList;
+    private WonList wonList;
+    private LostList lostList;
+    private String id;
+
 
     /**
      * Constructor for Event class.
@@ -31,12 +45,53 @@ public class Event {
         this.location = "";
         this.Radius = 0;
         this.poster = null;
-      //  this.cancelList = new CancelList();
-        //this.waitList = new WaitList();
-        //this.lostList = new LostList();
-        //this.wonList = new WonList();
+        this.cancelList = new CancelList();
+        this.waitList = new WaitList();
+        this.lostList = new LostList();
+        this.wonList = new WonList();
     }
 
+    /**
+     * Constructor for Event class with title argument.
+     */
+    public Event(String title) {
+        this.title = title;
+        this.categories = new ArrayList<String>();
+        this.timeframe = new ArrayList<ZonedDateTime>();
+        this.eventDetails = "";
+        this.location = "";
+        this.Radius = 0;
+        this.poster = null;
+        this.waitList = new WaitList();
+        this.cancelList = new CancelList();
+        this.wonList = new WonList();
+        this.lostList = new LostList();
+
+    }
+    /** Lightweight constructor for fake/local events */
+    public Event(String id,
+                 String title,
+                 String eventDetails,
+                 String location,
+                 Integer radius,
+                 String poster
+                 ) {
+
+        this.id = id;
+        this.title = title;
+        this.eventDetails = eventDetails != null ? eventDetails : "";
+        this.location = location != null ? location : "";
+        this.Radius = radius != null ? radius : 0;
+        this.poster = poster;
+
+        // initialize collection fields so the object is always safe to use
+        this.categories = new ArrayList<>();
+        this.timeframe = new ArrayList<>();
+        this.cancelList = new CancelList();
+        this.waitList = new WaitList();
+        this.lostList = new LostList();
+        this.wonList = new WonList();
+    }
     /**
      * Returns the title of the event.
      * @return
@@ -184,10 +239,10 @@ public class Event {
      *        if the location does not contain a number in the address
      */
     public void setLocation(String location) {
-        if (location.matches("\\d+")) {
-            this.location = location;
+        if (location == null || location.trim().isEmpty()) {
+            throw new IllegalArgumentException("Location cannot be empty");
         } else {
-            throw new IllegalArgumentException("Location must contain a numerical address");
+            this.location = location;
         }
     }
 
@@ -215,7 +270,7 @@ public class Event {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public Bitmap getPoster() {
+    public String getPoster() {
         return poster;
     }
 
@@ -225,11 +280,160 @@ public class Event {
      *        a Bitmap representing the event's poster
      * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
      */
-    public void setPoster(Bitmap poster) {
+    public void setPoster(String poster) {
         this.poster = poster;
     }
 
-    /*
-    TODO: Implement WaitList, CanceList, WonList, LostList classes and add to Event class.
+    /**
+     * Describe the kinds of special objects contained in this Parcelable
+     * instance's marshaled representation. For example, if the object will
+     * include a file descriptor in the output of {@link #writeToParcel(Parcel, int)},
+     * the return value of this method must include the
+     * {@link #CONTENTS_FILE_DESCRIPTOR} bit.
+     *
+     * @return a bitmask indicating the set of special object types marshaled
+     * by this Parcelable object instance.
      */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+
+    /**
+     * Retrieves the {@link WaitList} associated with this event.
+     * The waitlist contains entrants who have registered but are not yet confirmed.
+     *
+     * @return the WaitList instance for this event
+     */
+    public WaitList getWaitList() { return waitList; }
+
+    /**
+     * Retrieves the {@link CancelList} associated with this event.
+     * This list tracks entrants who have cancelled their registration.
+     *
+     * @return the CancelList instance for this event
+     */
+
+    public CancelList getCancelList() { return cancelList; }
+
+    /**
+     * Retrieves the {@link WonList} associated with this event.
+     * This list contains entrants who have been selected to participate.
+     *
+     * @return the WonList instance for this event
+     */
+
+    public WonList getWonList() { return wonList; }
+
+    /**
+     * Retrieves the {@link LostList} associated with this event.
+     * This list stores entrants who were not selected after the lottery draw.
+     *
+     * @return the LostList instance for this event
+     */
+
+    public LostList getLostList() { return lostList; }
+
+
+    // Lottery System
+
+    /**
+     * Draws a random lottery to select event winners.
+     * Winners are added to the WonList; non-selected entrants go to the LostList.
+     *
+     * @param numberOfWinners Number of winners to be selected.
+     */
+    public void drawLottery(int numberOfWinners) {
+        ArrayList<Profile> entrantPool = new ArrayList<>(waitList.getEntrants());
+        if (entrantPool.isEmpty()) return;
+
+        Collections.shuffle(entrantPool);
+        wonList.clearWinners();
+        lostList.clearLosers();
+
+        for (int i = 0; i < numberOfWinners && i < entrantPool.size(); i++) {
+            Profile winner = entrantPool.get(i);
+            wonList.addWinner(winner);
+        }
+
+        for (Profile entrant: entrantPool) {
+            if (!wonList.getWinners().contains(entrant))
+                lostList.addLoser(entrant);
+        }
+    }
+
+
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+
+    protected Event(Parcel in) {
+        title = in.readString();
+        categories = in.createStringArrayList();
+        eventDetails = in.readString();
+        location = in.readString();
+        if (in.readByte() == 0) {
+            Radius = null;
+        } else {
+            Radius = in.readInt();
+        }
+    }
+
+    /**
+     * A {@link Parcelable.Creator} that generates instances of {@link Event} from a {@link Parcel}.
+     * <p>This is required for passing {@code Event} objects between Android components,
+     * such as when navigating between fragments or activities.</p>
+     */
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
+
+
+
+    /**
+     * Writes the {@link Event} object's data into a {@link Parcel}, allowing it to be
+     * serialized and passed between Android components.
+     *
+     * <p>Note: The {@link Bitmap} poster is excluded from parceling for efficiency.</p>
+     *
+     * @param dest  The Parcel object in which the Event data should be written.
+     * @param flags Additional flags about how the object should be written.
+     */
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeStringList(categories);
+        dest.writeString(eventDetails);
+        dest.writeString(location);
+        if (Radius == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(Radius);
+        }
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

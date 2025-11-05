@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/my_events_root"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/loginBackground"
+tools:context=".EventFragment">
+
+    <TextView
+        android:id="@+id/tv_event_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="Event Name"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/tv_date_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.067"
+        app:layout_constraintStart_toEndOf="@+id/imgPoster" />
+
+    <Button
+        android:id="@+id/btnUploadPoster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update poster"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button2" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgPoster"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="100dp"
+        android:background="@color/white"
+        android:src="@drawable/outline_attractions_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_date_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="112dp"
+        android:text="Data and Time"
+        app:layout_constraintBottom_toTopOf="@+id/tv_registration_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.077"
+        app:layout_constraintStart_toEndOf="@+id/imgPoster" />
+
+    <TextView
+        android:id="@+id/tv_registration_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="268dp"
+        android:layout_marginEnd="28dp"
+        android:text="Time until registration closes"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_event_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="Event Description"
+        app:layout_constraintEnd_toEndOf="@+id/tv_registration_info"
+        app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
+        app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
+
+    <CheckBox
+        android:id="@+id/cb_bookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:outlineAmbientShadowColor="@color/LoginButtonColor"
+        android:outlineSpotShadowColor="@color/LoginButtonColor"
+        android:shadowColor="@color/LoginButtonColor"
+        android:text="Bookmark"
+        android:textColorHighlight="@color/LoginButtonColor"
+        android:textColorHint="@color/LoginButtonColor"
+        android:textColorLink="@color/LoginButtonColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="132dp"
+        android:backgroundTint="@color/LoginButtonColor"
+        android:text="Entrant Information"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
