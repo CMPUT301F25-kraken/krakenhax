@@ -32,6 +32,8 @@ public class MyEventDetailsFragment extends Fragment {
     private ImageView imgPoster;
     private Button btnUploadPoster;
     private Button btnBack;
+
+    private Button btnentrantInfo;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
@@ -57,7 +59,7 @@ public class MyEventDetailsFragment extends Fragment {
         imgPoster = view.findViewById(R.id.imgPoster);
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
-
+        btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
         // Hardcoded event
         /*
         selectedEvent = new Event();
@@ -107,7 +109,13 @@ public class MyEventDetailsFragment extends Fragment {
         btnBack.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigateUp();
         });
+        btnentrantInfo.setOnClickListener(v -> {
 
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("event", event);
+            NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_EntrantInfoFragment, bundle);
+
+        });
         return view;
     }
 
