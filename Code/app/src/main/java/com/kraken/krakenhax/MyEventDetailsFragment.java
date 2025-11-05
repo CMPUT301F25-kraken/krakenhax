@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -33,6 +34,7 @@ public class MyEventDetailsFragment extends Fragment {
     private Button btnBack;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
+    private Event event;
 
     //hardcoded event for now
     //private Event selectedEvent;
@@ -44,6 +46,9 @@ public class MyEventDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_event_details, container, false);
+
+        assert getArguments() != null;
+        event = getArguments().getParcelable("event_id");
 
         storage = FirebaseStorage.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -61,13 +66,33 @@ public class MyEventDetailsFragment extends Fragment {
         selectedEvent.setEventDetails("Test upload event");
         selectedEvent.setPoster(null);
         */
+        String poster = event.getPoster();
+        if (poster == null || poster.isEmpty()) {
+            imgPoster.setImageResource(R.drawable.outline_attractions_100);
+        } else {
+            Picasso.get()
+                    .load(poster)
+                    .placeholder(R.drawable.outline_attractions_100)
+                    .error(R.drawable.outline_attractions_100)
+                    .fit().centerCrop()
+                    .into(imgPoster);
+        }
+        TextView tvEventName = view.findViewById(R.id.tv_event_name);
+        assert event != null;
+        tvEventName.setText(event.getTitle());
+
+        TextView tvDescription = view.findViewById(R.id.tv_event_description);
+        tvDescription.setText(event.getEventDetails());
+
+
+
 
         // Image picker
         imagePicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
                 filePath = uri;
                 try {
-                    Picasso.get().load(uri).fit().centerInside().into(imgPoster);
+                    Picasso.get().load(uri).fit().centerCrop().into(imgPoster);
 
                     uploadPosterForEvent();
                 } catch (Exception e) {
@@ -89,7 +114,7 @@ public class MyEventDetailsFragment extends Fragment {
     public void uploadPosterForEvent() {
         if (filePath != null) {
             // TODO: change "test_event2" to selectedEvent.getID() when firestore setup with events
-            StorageReference eventPosterRef = storageRef.child("event_posters/" + "test_event2" + ".jpg");
+            StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
 
             UploadTask uploadTask = eventPosterRef.putFile(filePath);
 
@@ -98,12 +123,12 @@ public class MyEventDetailsFragment extends Fragment {
                 eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String downloadUrl = uri.toString();
                     Log.d("Firebase", "Download URL: " + downloadUrl);
-
+                    event.setPoster(downloadUrl);
                     // TODO: uncomment when firestore setup with events
-                    //selectedEvent.setPoster(downloadUrl);
-                    //db.collection("events")
-                    //        .document(selectedEvent.getId()) // or event ID
-                    //        .set(selectedEvent); // overwrites or creates the document
+
+                    db.collection("events")
+                            .document(event.getId()) // or event ID
+                            .set(event); // overwrites or creates the document
 
                 });
             }).addOnFailureListener(e -> {

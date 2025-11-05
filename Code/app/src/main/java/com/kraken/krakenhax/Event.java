@@ -107,7 +107,30 @@ public class Event implements Parcelable {
         //this.lostList = new LostList();
         //this.wonList = new WonList();
     }
+    /** Lightweight constructor for fake/local events */
+    public Event(String id,
+                 String title,
+                 String eventDetails,
+                 String location,
+                 Integer radius,
+                 String poster
+                 ) {
 
+        this.id = id;
+        this.title = title;
+        this.eventDetails = eventDetails != null ? eventDetails : "";
+        this.location = location != null ? location : "";
+        this.Radius = radius != null ? radius : 0;
+        this.poster = poster;
+
+        // initialize collection fields so the object is always safe to use
+        this.categories = new ArrayList<>();
+        this.timeframe = new ArrayList<>();
+        this.cancelList = new ArrayList<>();
+        this.waitList = new ArrayList<>();
+        this.lostList = new ArrayList<>();
+        this.wonList = new ArrayList<>();
+    }
     /**
      * Returns the title of the event.
      *

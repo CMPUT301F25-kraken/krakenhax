@@ -7,6 +7,23 @@
     android:layout_height="match_parent"
     tools:context=".MyEventsFragment">
 
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="408dp"
+        android:layout_height="561dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.333"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnGoToNew" >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_events_list2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_my_events"
         android:layout_width="wrap_content"
@@ -16,15 +33,18 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.022" />
 
     <Button
         android:id="@+id/btnGoToNew"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Open New Screen"
+        android:text="add fake events"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_my_events" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
