@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -14,19 +16,23 @@ import androidx.navigation.Navigation;
 public class TypeChooserFragment extends Fragment {
     private Button entrant;
     private Button organizer;
-
+    private NavController navController;
     public TypeChooserFragment() {
         // Required empty public constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_type, container, false);
+        return inflater.inflate(R.layout.fragment_type, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         entrant = view.findViewById(R.id.Entrant_button);
         organizer = view.findViewById(R.id.Organizer_button);
 
-        final NavController navController = Navigation.findNavController(view);
+        navController = Navigation.findNavController(view);
 
         entrant.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
@@ -39,8 +45,6 @@ public class TypeChooserFragment extends Fragment {
             bundle.putString("UserType", "Organizer");
             navController.navigate(R.id.action_TypeSelector_to_SignUp, bundle);
         });
-
-        return view;
     }
 
 }

@@ -20,8 +20,8 @@ public class WaitListTest {
     @Before
     public void setUp() {
         waitList = new WaitList();
-        entrant1 = new Profile("User1", "pass123", "entrant", "user1@example.com");
-        entrant2 = new Profile("User2", "pass456", "entrant", "user2@example.com");
+        entrant1 = new Profile("1","User1", "pass123", "entrant", "user1@example.com","1");
+        entrant2 = new Profile("2","User2", "pass456", "entrant", "user2@example.com","2");
     }
 
     @Test

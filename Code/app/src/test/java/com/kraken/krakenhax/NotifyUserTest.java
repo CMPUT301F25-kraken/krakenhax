@@ -18,7 +18,7 @@ public class NotifyUserTest {
     @Before
     public void setUp() {
         notifier = new NotifyUser();
-        recipient = new Profile("TestUser", "password123", "entrant", "test@example.com");
+        recipient = new Profile("6","TestUser", "password123", "entrant", "test@example.com","0");
 
     }
 
@@ -31,7 +31,7 @@ public class NotifyUserTest {
     public void testSendBroadcastDoesNotCrash() {
         ArrayList<Profile> list = new ArrayList<>();
         list.add(recipient);
-        list.add(new Profile("User2", "pass", "entrant", "user2@example.com"));
+        list.add(new Profile("7","User2", "pass", "entrant", "user2@example.com","0"));
 
         notifier.sendBroadcast(list, "Broadcast test");
     }

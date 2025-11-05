@@ -55,7 +55,7 @@ public class EventFragment extends Fragment {
         Button buttonNotify = view.findViewById(R.id.button_notify);
         buttonNotify.setOnClickListener(v -> {
             NotifyUser notifyUser = new NotifyUser();
-            notifyUser.sendNotification(new Profile("DemoUser", "pass", "Entrant", "demo@example.com"),
+            notifyUser.sendNotification(new Profile("1","DemoUser", "pass", "Entrant", "demo@example.com", "0"),
                     "Notification from organizer for " + event.getTitle());
         });
 

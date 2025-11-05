@@ -59,9 +59,9 @@ public class EventsFragment extends Fragment {
         Event testEvent = demo_list.get(0);
 
         // Creating demo entrant profiles
-        Profile entrant1 = new Profile("Amaan", "1234", "Entrant", "amaaniqb@ualberta.ca");
-        Profile entrant2 = new Profile("Markus", "abcd", "Entrant", "mhenze@ualberta.ca");
-        Profile entrant3 = new Profile("Logan", "pass", "Entrant", "lapope@ualberta.ca");
+        Profile entrant1 = new Profile("2","Amaan", "1234", "Entrant", "amaaniqb@ualberta.ca","0");
+        Profile entrant2 = new Profile("3","Markus", "abcd", "Entrant", "mhenze@ualberta.ca","0");
+        Profile entrant3 = new Profile("4","Logan", "pass", "Entrant", "lapope@ualberta.ca","0");
 
         // Add to event waitlist
         testEvent.getWaitList().addEntrant(entrant1);

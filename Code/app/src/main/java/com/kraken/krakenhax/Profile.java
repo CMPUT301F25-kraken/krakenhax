@@ -1,5 +1,7 @@
 package com.kraken.krakenhax;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -10,16 +12,17 @@ import java.util.Objects;
  *
  * <p>Collaborators: Event, WaitList, Organizer, Administrator</p>
  *
- * @author Amaan
- * @version 1.1
+ * @author Amaan, Jacob
+ * @version 1.2
  */
-public class Profile implements Serializable {
+public class Profile {
 
     private String username;
     private String password;
     private String email;
     private String type; // e.g., "entrant", "organizer", "admin"
-
+    private String phoneNumber;
+    private String ID;
     /**
      * Constructs a new user profile with the given details.
      * @param username the user's username
@@ -28,7 +31,10 @@ public class Profile implements Serializable {
      * @param email the user's email address
      * @throws IllegalArgumentException if any parameter is null or empty
      */
-    public Profile(String username, String password, String type, String email) {
+
+    public Profile(String ID, String username, String password, String type, String email, String phoneNumber) {
+        if (ID == null || ID.trim().isEmpty())
+            throw new IllegalArgumentException("ID cannot be null or empty.");
         if (username == null || username.trim().isEmpty())
             throw new IllegalArgumentException("Username cannot be null or empty.");
         if (password == null || password.trim().isEmpty())
@@ -42,53 +48,137 @@ public class Profile implements Serializable {
         this.password = password;
         this.type = type;
         this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.ID = ID;
+    }
+    /**
+     * Constructs a no-argument user profile.
+     */
+    public Profile(){
+
     }
 
+    /**
+     * Returns the user's username.
+     * @return the user's username
+     */
     // Getters
     public String getUsername() { return username; }
-    public String getPassword() { return password; }
-    public String getEmail() { return email; }
-    public String getType() { return type; }
 
+    /**
+     * Returns the user's password.
+     * @return the user's password
+     */
+    public String getPassword() { return password; }
+    /**
+     * Returns the user's email address.
+     * @return the user's email address
+     */
+    public String getEmail() { return email; }
+    /**
+     * Returns the user's role type.
+     * @return the user's role type
+     */
+    public String getType() { return type; }
+    /**
+     * Returns the user's phone number.
+     * @return the user's phone number
+     */
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+    /**
+     * Returns the user's ID.
+     * @return the user's ID
+     */
+    public String getID() {
+        return this.ID;
+    }
     // Setters
+    /**
+     * Sets the user's username.
+     * @param username the new username
+     * @throws IllegalArgumentException if the username is null or empty
+     */
     public void setUsername(String username) {
         if (username == null || username.trim().isEmpty())
             throw new IllegalArgumentException("Username cannot be empty.");
         this.username = username;
     }
-
+    /**
+     * Sets the user's password.
+     * @param password the new password
+     * @throws IllegalArgumentException if the password is null or empty
+     */
     public void setPassword(String password) {
         if (password == null || password.trim().isEmpty())
             throw new IllegalArgumentException("Password cannot be empty.");
         this.password = password;
     }
-
+    /**
+     * Sets the user's email address.
+     * @param email the new email address
+     * @throws IllegalArgumentException if the email is null or empty
+     */
     public void setEmail(String email) {
         if (email == null || email.trim().isEmpty())
             throw new IllegalArgumentException("Email cannot be empty.");
         this.email = email;
     }
-
+    /**
+     * Sets the user's role type.
+     * @param type the new role type
+     * @throws IllegalArgumentException if the type is null or empty
+     */
     public void setType(String type) {
         if (type == null || type.trim().isEmpty())
             throw new IllegalArgumentException("Type cannot be empty.");
         this.type = type;
     }
+    /**
+     * Sets the user's phone number.
+     * @param phoneNumber the new phone number
+     */
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+    /**
+     * Sets the user's ID.
+     * @param ID the new ID
+     */
+    public void setID(String ID) {
+        this.ID = ID;
+    }
 
+
+    /**
+     * Checks if the given object is equal to this profile.
+     * @param o
+     * @return true if the objects are equal, false otherwise
+     */
     // Utility Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Profile)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Profile profile = (Profile) o;
-        return username.equals(profile.username);
+        // Objects.equals handles nulls correctly for both objects
+        return Objects.equals(ID, profile.ID) &&
+                Objects.equals(username, profile.username);
     }
-
+    /**
+     * Generates a hash code for this profile.
+     * @return the hash code
+     */
     @Override
     public int hashCode() {
         return Objects.hash(username);
     }
-
+    /**
+     * Returns a string representation of this profile.
+     * @return the string representation
+     */
+    @NonNull
     @Override
     public String toString() {
         return "Profile{" +

@@ -4,4 +4,5 @@
     <string name="my_events">My Events</string>
     <string name="profile">Profile</string>
     <string name="events_page_title">Events</string>
+    <string name="usernameProfile">TextView</string>
 </resources>
