@@ -1,85 +1,139 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-
+import java.util.Objects;
 
 public class SignUpFragment extends Fragment {
-    public Button signup;
-    public EditText username;
-    public EditText password;
-    public EditText email;
-    public ProfileViewModel profileModel;
-    private FirebaseFirestore db;
-    private CollectionReference ProfileRef;
+    private Button signupButton;
+    private EditText usernameEditText;
+    private EditText passwordEditText;
+    private EditText emailEditText;
+    private ProfileViewModel profileViewModel;
+    private CollectionReference profileCollection;
     private String userType;
+    private NavController navController;
 
     public SignUpFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        db = FirebaseFirestore.getInstance();
-        ProfileRef = db.collection("Users");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_signup, container, false);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = getLayoutInflater().inflate(R.layout.fragment_signup, container, false);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
-        SignUpFragmentArgs args = SignUpFragmentArgs.fromBundle(getArguments());
+        // Initialize Firebase and Navigation
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        profileCollection = db.collection("Profiles");
+        navController = Navigation.findNavController(view);
 
-        userType = args.getUserType();
-        signup = view.findViewById(R.id.signup_button);
-        username = view.findViewById(R.id.UsernameSetText);
-        password = view.findViewById(R.id.PasswordSetText);
-        email = view.findViewById(R.id.EmailSetText);
+        // Initialize ViewModel
+        profileViewModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
-        LiveData<ArrayList<Profile>> profileList = ProfileViewModel.getProfileList();
+        // Get arguments
+        if (getArguments() != null) {
+            userType = SignUpFragmentArgs.fromBundle(getArguments()).getUserType();
+        }
 
-        final NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        // Find views
+        signupButton = view.findViewById(R.id.signup_button);
+        usernameEditText = view.findViewById(R.id.UsernameSetText);
+        passwordEditText = view.findViewById(R.id.PasswordSetText);
+        emailEditText = view.findViewById(R.id.EmailSetText);
 
-        signup.setOnClickListener(v -> {
-            for (Profile profile : profileList.getValue()) {
-                if (profile.getUsername().equals(username.getText().toString())) {
-                    System.out.println("Username already exists");
-                }
+        signupButton.setOnClickListener(v -> {
+            // Get user input from EditTexts
+            String username = usernameEditText.getText().toString().trim();
+            String password = passwordEditText.getText().toString();
+            String email = emailEditText.getText().toString().trim();
+
+            // Validate user input
+            if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(email)) {
+                Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                return; // Stop the process
             }
 
-            Profile profile = new Profile(username.getText().toString(), password.getText().toString(), email.getText().toString(), userType);
-            profileModel.addProfile(profile);
+            // Observe the LiveData to safely check for existing usernames
+            profileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+                // This block runs only when `profiles` is not null.
+                boolean usernameExists = false;
+                for (Profile p : profiles) {
+                    if (p.getUsername().equalsIgnoreCase(username)) {
+                        usernameExists = true;
+                        break;
+                    }
+                }
 
-            DocumentReference docRef = ProfileRef.document(profile.getUsername());
-            docRef.set(profile);
+                if (usernameExists) {
+                    Toast.makeText(getContext(), "Username already exists. Please choose another.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Username is unique, proceed with creating the profile
+                    createNewProfile(username, password, email);
+                }
 
-            MainActivity mainActivity = (MainActivity) getActivity();
-            assert mainActivity != null;
-            mainActivity.currentUser = profile;
-            mainActivity.loggedIn = true;
-
-            navController.navigate(R.id.action_SignUp_to_Events);
+                // Important: Remove the observer after use to prevent it from firing again
+                // if the user stays on the screen and the data changes for another reason.
+                profileViewModel.getProfileList().removeObservers(getViewLifecycleOwner());
+            });
         });
-
-        return view;
     }
 
+    private void createNewProfile(String username, String password, String email) {
+        // Let Firestore generate the ID. The 'id' field in the constructor can be null or empty for now.
+        Profile newProfile = new Profile("0", username, password, userType, email,"0");
+
+        profileCollection.add(newProfile)
+                .addOnSuccessListener(documentReference -> {
+                    // Get the unique ID generated by Firestore
+                    String firestoreId = documentReference.getId();
+
+                    // Update the profile object with this new ID
+                    newProfile.setID(firestoreId);
+
+                    // Now, update the document in Firestore to include its own ID
+                    profileCollection.document(firestoreId).update("id", firestoreId);
+
+                    // Add the complete profile to the local ViewModel
+                    profileViewModel.addProfile(newProfile);
+
+                    // Set the current user in MainActivity
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    if (mainActivity != null) {
+                        mainActivity.currentUser = newProfile;
+                        mainActivity.loggedIn = true;
+                    }
+
+                    Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
+
+                    // Navigate to the next screen
+                    navController.navigate(R.id.action_SignUp_to_Events);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(getContext(), "Sign up failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
 }

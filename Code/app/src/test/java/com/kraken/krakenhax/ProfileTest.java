@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import java.util.Optional;
+
 /**
  * Unit tests for the Profile class.
  * Ensures correct creation, validation, and equality behavior.
@@ -16,25 +18,27 @@ public class ProfileTest {
 
     @Before
     public void setUp() {
-        profile = new Profile("Amaan", "password123", "entrant", "amaan@example.com");
+        profile = new Profile("1","Amaan", "password123", "entrant", "amaan@example.com","0");
     }
 
     @Test
     public void testProfileInitialization() {
+        assertEquals("1", profile.getID());
         assertEquals("Amaan", profile.getUsername());
         assertEquals("password123", profile.getPassword());
         assertEquals("entrant", profile.getType());
         assertEquals("amaan@example.com", profile.getEmail());
+        assertEquals("0", profile.getPhoneNumber());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNullUsernameThrowsException() {
-        new Profile(null, "123", "entrant", "test@example.com");
+        new Profile("2",null, "123", "entrant", "test@example.com","0");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyPasswordThrowsException() {
-        new Profile("User", "", "entrant", "test@example.com");
+        new Profile("2","User", "", "entrant", "test@example.com","0");
     }
 
     @Test
@@ -43,10 +47,14 @@ public class ProfileTest {
         profile.setPassword("newpass");
         profile.setEmail("newemail@example.com");
         profile.setType("organizer");
+        profile.setPhoneNumber("1234567890");
 
         assertEquals("NewUser", profile.getUsername());
         assertEquals("newpass", profile.getPassword());
         assertEquals("organizer", profile.getType());
+        assertEquals("newemail@example.com", profile.getEmail());
+        assertEquals("1234567890", profile.getPhoneNumber());
+
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -56,13 +64,13 @@ public class ProfileTest {
 
     @Test
     public void testEqualityBasedOnUsername() {
-        Profile p2 = new Profile("Amaan", "differentPass", "organizer", "other@example.com");
+        Profile p2 = new Profile("1", "Amaan", "differentPass", "organizer", "other@example.com","0");
         assertEquals(profile, p2);
     }
 
     @Test
     public void testHashCodeConsistency() {
-        Profile p2 = new Profile("Amaan", "pass", "entrant", "mail@example.com");
+        Profile p2 = new Profile("1","Amaan", "pass", "entrant", "mail@example.com","0");
         assertEquals(profile.hashCode(), p2.hashCode());
     }
 
