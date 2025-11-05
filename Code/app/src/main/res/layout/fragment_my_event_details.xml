@@ -28,9 +28,9 @@ tools:context=".EventFragment">
         android:layout_height="wrap_content"
         android:text="Update poster"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_entrant_info" />
 
     <Button
         android:id="@+id/btnBack"
@@ -101,7 +101,7 @@ tools:context=".EventFragment">
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btn_entrant_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="132dp"
