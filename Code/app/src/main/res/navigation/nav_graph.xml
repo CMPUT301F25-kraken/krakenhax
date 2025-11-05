@@ -141,6 +141,10 @@
             app:destination="@+id/EventsFragment"
             app:popUpTo="@id/LoginFragment"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_login_to_admin"
+            app:destination="@+id/adminListFragment" />
     </fragment>
 
     <!-- Destination for Type Chooser Fragment -->
@@ -184,5 +188,10 @@
             android:id="@+id/action_EventFragment_to_EventsFragment"
             app:destination="@+id/EventsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/adminListFragment"
+        android:name="com.kraken.krakenhax.AdminListFragment"
+        android:label="AdminListFragment"
+        tools:layout="@layout/fragment_admin_list"/>
 
 </navigation>

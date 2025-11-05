@@ -116,8 +116,8 @@ public class LoginFragment extends Fragment {
                         navController.navigate(R.id.action_login_to_events);
                     } else if (Objects.equals(foundUser.getType(), "Entrant")) {
                         navController.navigate(R.id.action_login_to_events);
-                    } else { // Includes Admin
-                        navController.navigate(R.id.action_login_to_events);
+                    } else if (Objects.equals(foundUser.getType(), "Admin")) { // Includes Admin
+                        navController.navigate(R.id.action_login_to_admin);
                     }
                 } else {
                     // --- FAILED LOGIN ---
