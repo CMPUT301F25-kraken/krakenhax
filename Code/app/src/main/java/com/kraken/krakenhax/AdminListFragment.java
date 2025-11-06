@@ -7,21 +7,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
 public class AdminListFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
+
+    public ProfileViewModel profileModel;
+    public FirebaseFirestore db;
+    public profileAdapter profileAdapter;
+    private ArrayList<Profile> EntrantList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private ListView profileListView;
+
+
+
 
     public AdminListFragment() {
         // Required empty public constructor
@@ -40,7 +54,13 @@ public class AdminListFragment extends Fragment {
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
         Spinner spinner = view.findViewById(R.id.spinner_admin_lists);
         String[] spinnerList = {"Entrants", "Organizers", "Events", "Photos"};
+        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+        db = FirebaseFirestore.getInstance();
+        recyclerView = view.findViewById(R.id.recycler_view_admin_lists);
+        profileListView = view.findViewById(R.id.list_view_admin_lists);
 
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         ArrayAdapter<String> SpinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, spinnerList);
         SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(SpinnerAdapter);
@@ -50,6 +70,24 @@ public class AdminListFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 Toast.makeText(requireContext(), "Selected: " + selectedItem, Toast.LENGTH_SHORT).show();
+                switch (selectedItem) {
+                    case "Entrants":
+                        recyclerView.setVisibility(View.GONE);
+                        profileListView.setVisibility(View.VISIBLE);
+                        getEntrants();
+                        break;
+                    case "Organizers":
+                        recyclerView.setVisibility(View.GONE);
+                        profileListView.setVisibility(View.VISIBLE);
+                        getOrganizers();
+                        break;
+                    case "Events":
+                        profileListView.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        getEvents(view, navController);
+                        break;
+                }
+
             }
 
             @Override
@@ -57,12 +95,10 @@ public class AdminListFragment extends Fragment {
                 // Do nothing
             }
         });
-        
+    }
 
+    public void getEvents(View view, NavController navController){
 
-        // Set up recycler view
-        RecyclerView recycler_view_event_list = view.findViewById(R.id.recycler_view_admin_lists);
-        recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         ArrayList<Event> demo_list = new ArrayList<>();
         demo_list.add(new Event("Event 1"));
@@ -78,9 +114,9 @@ public class AdminListFragment extends Fragment {
         Event testEvent = demo_list.get(0);
 
         // Creating demo entrant profiles
-        Profile entrant1 = new Profile("2","Amaan", "1234", "Entrant", "amaaniqb@ualberta.ca","0");
-        Profile entrant2 = new Profile("3","Markus", "abcd", "Entrant", "mhenze@ualberta.ca","0");
-        Profile entrant3 = new Profile("4","Logan", "pass", "Entrant", "lapope@ualberta.ca","0");
+        Profile entrant1 = new Profile("2", "Amaan", "1234", "Entrant", "amaaniqb@ualberta.ca", "0");
+        Profile entrant2 = new Profile("3", "Markus", "abcd", "Entrant", "mhenze@ualberta.ca", "0");
+        Profile entrant3 = new Profile("4", "Logan", "pass", "Entrant", "lapope@ualberta.ca", "0");
 
         // Add to event waitlist
         testEvent.addToWaitList(entrant1);
@@ -116,7 +152,37 @@ public class AdminListFragment extends Fragment {
             navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
         });
 
-        recycler_view_event_list.setAdapter(adapter);
-
+        recyclerView.setAdapter(adapter);
     }
+
+    public void getEntrants() {
+       profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+            EntrantList.clear();
+
+            for (Profile profile : profiles) {
+                if (profile.getType().equals("Entrant")) {
+                    EntrantList.add(profile);
+                }
+            }
+
+           profileAdapter = new profileAdapter(requireContext(), EntrantList);
+           profileListView.setAdapter(profileAdapter);
+       });
+    }
+
+    public void getOrganizers() {
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+            EntrantList.clear();
+
+            for (Profile profile : profiles) {
+                if (profile.getType().equals("Organizer")) {
+                    EntrantList.add(profile);
+                }
+            }
+
+            profileAdapter = new profileAdapter(requireContext(), EntrantList);
+            profileListView.setAdapter(profileAdapter);
+        });
+    }
+
 }
