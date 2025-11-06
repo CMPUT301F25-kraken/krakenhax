@@ -3,6 +3,7 @@ package com.kraken.krakenhax;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -347,27 +348,42 @@ public class Event implements Parcelable {
 
     public ArrayList<Profile> getLostList() { return lostList; }
 
-
+    /**
+     * Retrieves the AcceptList associated with this event.
+     * This list stores entrants who were accepted their entry after the draw.
+     *
+     * @return the ArrayList for this event's AcceptList
+     */
     public ArrayList<Profile> getAcceptList() { return acceptList; }
 
-    public void addToAcceptList(Profile profile) {
-        this.acceptList.add(profile);
+    public void addToAcceptList(Profile profile)  {
+        if (this.wonList.contains(profile)) {
+            this.acceptList.add(profile);
+            this.wonList.remove(profile);
+        } else {
+            Log.d("Event", "Profile must be in wonList to be added to acceptList");
+        }
     }
 
     public void addToCancelList(Profile profile) {
-        this.cancelList.add(profile);
+        if (this.wonList.contains(profile)) {
+            this.cancelList.add(profile);
+            this.wonList.remove(profile);
+        } else {
+            Log.d("Event", "Profile must be in wonList to be added to cancelList");
+        }
     }
 
     public void addToWaitList(Profile profile) {
-        this.cancelList.add(profile);
+        this.waitList.add(profile);
     }
 
     public void addToWonList(Profile profile) {
-        this.cancelList.add(profile);
+        this.wonList.add(profile);
     }
 
     public void addToLostList(Profile profile) {
-        this.cancelList.add(profile);
+        this.lostList.add(profile);
     }
 
     public void removeFromAcceptList(Profile profile) {
@@ -379,15 +395,15 @@ public class Event implements Parcelable {
     }
 
     public void removeFromWaitList(Profile profile) {
-        this.cancelList.remove(profile);
+        this.waitList.remove(profile);
     }
 
     public void removeFromWonList(Profile profile) {
-        this.cancelList.remove(profile);
+        this.wonList.remove(profile);
     }
 
     public void removeFromLostList(Profile profile) {
-        this.cancelList.remove(profile);
+        this.lostList.remove(profile);
     }
 
     /**
@@ -413,8 +429,6 @@ public class Event implements Parcelable {
 
         this.lostList = losers;
     }
-
-
 
     /**
      * Flatten this object in to a Parcel.

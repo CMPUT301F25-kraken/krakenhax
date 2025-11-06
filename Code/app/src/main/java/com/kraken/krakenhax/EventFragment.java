@@ -31,43 +31,46 @@ public class EventFragment extends Fragment {
 
         // Logic for buttons depending on users status in the event.
         // WON LOTTERY, WAITING TO ACCEPT
-        if (event.getWonList().getWinners().contains(currentUser)) {
+        if (event.getWonList().contains(currentUser)) {
             buttonSignup.setVisibility(View.GONE);
             buttonAccept.setVisibility(View.VISIBLE);
             buttonDecline.setVisibility(View.VISIBLE);
 
             buttonAccept.setOnClickListener(v -> {
-                // Logic for accepting the event
-                // For demo purposes, just navigate back
-                navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+                event.addToAcceptList(currentUser);
+                updateButtons(view, event, navController);
             });
 
             buttonDecline.setOnClickListener(v -> {
-                // Logic for declining the event
-                // For demo purposes, just navigate back
-                navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+                event.addToCancelList(currentUser);
+                updateButtons(view, event, navController);
             });
 
             // WON LOTTERY, CANCELED ENTRY
-        } else if (event.getCancelList().getCancelled().contains(currentUser)) {
+        } else if (event.getCancelList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You cancelled your entry");
 
             // LOST LOTTERY
-        } else if (event.getLostList().getLosers().contains(currentUser)) {
+        } else if (event.getLostList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You were not selected");
 
             // ON WAITLIST
-        } else if (event.getWaitList().getEntrants().contains(currentUser)) {
-            buttonSignup.setClickable(false);
-            buttonSignup.setText("You are on the waitlist");
+        } else if (event.getWaitList().contains(currentUser)) {
+            buttonSignup.setText("Withdraw");
+
+            buttonSignup.setOnClickListener(v -> {
+                event.removeFromWaitList(currentUser);
+                updateButtons(view, event, navController);
+            });
 
             // NOT SIGNED UP
         } else {
+            buttonSignup.setText("Sign Up");
 
             buttonSignup.setOnClickListener(v -> {
-                event.getWaitList().addEntrant(currentUser);
+                event.addToWaitList(currentUser);
                 updateButtons(view, event, navController);
             });
 
