@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean loggedIn;
     public ProfileViewModel profileModel;
     private FirebaseFirestore db;
+    public boolean admin;
     private CollectionReference ProfileRef;
 
     @Override
@@ -46,17 +47,19 @@ public class MainActivity extends AppCompatActivity {
         bottom_navigation_bar = findViewById(R.id.bottom_navigation_bar);
         admin_navigation_bar = findViewById(R.id.bottom_navigation_Ad);
         NavigationUI.setupWithNavController(bottom_navigation_bar, navController);
+        admin = false;
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destinationId = destination.getId();
-            String type = currentUser.getType();
+
             if (destinationId == R.id.LoginFragment || destinationId == R.id.signup || destinationId == R.id.selection_type) {
                 bottom_navigation_bar.setVisibility(View.GONE);
                 admin_navigation_bar.setVisibility(View.GONE);
-            } else if (Objects.equals(type, "Organizer") || Objects.equals(type, "Entrant")) {
+            } else if (destinationId == R.id.EventsFragment) {
                 bottom_navigation_bar.setVisibility(View.VISIBLE);
-            } else if (Objects.equals(type, "Admin")) {
+            } else if (destinationId == R.id.adminListFragment) {
                 admin_navigation_bar.setVisibility(View.VISIBLE);
+                admin = true;
             }
 
         });
