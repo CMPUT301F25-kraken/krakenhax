@@ -187,6 +187,15 @@
         <action
             android:id="@+id/action_EventFragment_to_EventsFragment"
             app:destination="@+id/EventsFragment" />
+        <action
+            android:id="@+id/action_EventFragment_self"
+            app:destination="@id/EventFragment" />
+        <argument
+            android:name="eventId"
+            app:argType="string" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="krakenhax://open/event/{eventId}" />
     </fragment>
     <fragment
         android:id="@+id/adminListFragment"
