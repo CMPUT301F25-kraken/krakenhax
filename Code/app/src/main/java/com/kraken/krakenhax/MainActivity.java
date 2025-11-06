@@ -16,10 +16,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Objects;
+
 
 public class MainActivity extends AppCompatActivity {
     public NavController navController;
     public BottomNavigationView bottom_navigation_bar;
+    public BottomNavigationView admin_navigation_bar;
     public Profile currentUser;
     public boolean loggedIn;
     public ProfileViewModel profileModel;
@@ -41,15 +44,21 @@ public class MainActivity extends AppCompatActivity {
         assert navHostFragment != null;
         navController = navHostFragment.getNavController();
         bottom_navigation_bar = findViewById(R.id.bottom_navigation_bar);
+        admin_navigation_bar = findViewById(R.id.bottom_navigation_Ad);
         NavigationUI.setupWithNavController(bottom_navigation_bar, navController);
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destinationId = destination.getId();
+            String type = currentUser.getType();
             if (destinationId == R.id.LoginFragment || destinationId == R.id.signup || destinationId == R.id.selection_type) {
                 bottom_navigation_bar.setVisibility(View.GONE);
-            } else {
+                admin_navigation_bar.setVisibility(View.GONE);
+            } else if (Objects.equals(type, "Organizer") || Objects.equals(type, "Entrant")) {
                 bottom_navigation_bar.setVisibility(View.VISIBLE);
+            } else if (Objects.equals(type, "Admin")) {
+                admin_navigation_bar.setVisibility(View.VISIBLE);
             }
+
         });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
