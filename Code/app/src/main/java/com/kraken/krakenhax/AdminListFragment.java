@@ -83,21 +83,21 @@ public class AdminListFragment extends Fragment {
         Profile entrant3 = new Profile("4","Logan", "pass", "Entrant", "lapope@ualberta.ca","0");
 
         // Add to event waitlist
-        testEvent.getWaitList().addEntrant(entrant1);
-        testEvent.getWaitList().addEntrant(entrant2);
-        testEvent.getWaitList().addEntrant(entrant3);
+        testEvent.addToWaitList(entrant1);
+        testEvent.addToWaitList(entrant2);
+        testEvent.addToWaitList(entrant3);
 
         // Organizer picks one as winner
-        testEvent.getWonList().addWinner(entrant1);
+        testEvent.addToWonList(entrant1);
 
         // One entrant cancels
-        testEvent.getCancelList().addCancelled(entrant2);
+        testEvent.addToCancelList(entrant2);
 
         // Draw replacement (Story 30)
         if (!testEvent.getWaitList().isEmpty()) {
-            Profile replacement = testEvent.getWaitList().getEntrants().get(0);
-            testEvent.getWonList().addWinner(replacement);
-            testEvent.getWaitList().removeEntrant(replacement);
+            Profile replacement = testEvent.getWaitList().get(0);
+            testEvent.addToWonList(replacement);
+            testEvent.removeFromWaitList(replacement);
         }
 
         // Notify users

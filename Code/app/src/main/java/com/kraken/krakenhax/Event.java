@@ -3,6 +3,7 @@ package com.kraken.krakenhax;
 import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -27,10 +28,11 @@ public class Event implements Parcelable {
     private String location; //Done
     private Integer Radius; //Done
     private String poster;
-    private WaitList waitList;
-    private CancelList cancelList;
-    private WonList wonList;
-    private LostList lostList;
+    private ArrayList<Profile> waitList;
+    private ArrayList<Profile> lostList;
+    private ArrayList<Profile> wonList;
+    private ArrayList<Profile> cancelList;
+    private ArrayList<Profile> acceptList;
     private String id;
 
 
@@ -45,10 +47,11 @@ public class Event implements Parcelable {
         this.location = "";
         this.Radius = 0;
         this.poster = null;
-        this.cancelList = new CancelList();
-        this.waitList = new WaitList();
-        this.lostList = new LostList();
-        this.wonList = new WonList();
+        this.cancelList = new ArrayList<Profile>();
+        this.waitList = new ArrayList<Profile>();
+        this.lostList = new ArrayList<Profile>();
+        this.wonList = new ArrayList<Profile>();
+        this.acceptList = new ArrayList<Profile>();
     }
 
     /**
@@ -62,10 +65,11 @@ public class Event implements Parcelable {
         this.location = "";
         this.Radius = 0;
         this.poster = null;
-        this.waitList = new WaitList();
-        this.cancelList = new CancelList();
-        this.wonList = new WonList();
-        this.lostList = new LostList();
+        this.cancelList = new ArrayList<Profile>();
+        this.waitList = new ArrayList<Profile>();
+        this.lostList = new ArrayList<Profile>();
+        this.wonList = new ArrayList<Profile>();
+        this.acceptList = new ArrayList<Profile>();
 
     }
     /** Lightweight constructor for fake/local events */
@@ -87,10 +91,11 @@ public class Event implements Parcelable {
         // initialize collection fields so the object is always safe to use
         this.categories = new ArrayList<>();
         this.timeframe = new ArrayList<>();
-        this.cancelList = new CancelList();
-        this.waitList = new WaitList();
-        this.lostList = new LostList();
-        this.wonList = new WonList();
+        this.cancelList = new ArrayList<Profile>();
+        this.waitList = new ArrayList<Profile>();
+        this.lostList = new ArrayList<Profile>();
+        this.wonList = new ArrayList<Profile>();
+        this.acceptList = new ArrayList<Profile>();
     }
     /**
      * Returns the title of the event.
@@ -264,6 +269,14 @@ public class Event implements Parcelable {
         Radius = radius;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     /**
      * Returns the poster of the event.
      * @return
@@ -301,76 +314,126 @@ public class Event implements Parcelable {
 
 
     /**
-     * Retrieves the {@link WaitList} associated with this event.
+     * Retrieves the WaitList associated with this event.
      * The waitlist contains entrants who have registered but are not yet confirmed.
      *
-     * @return the WaitList instance for this event
+     * @return the ArrayList for this event's WaitList
      */
-    public WaitList getWaitList() { return waitList; }
+    public ArrayList<Profile> getWaitList() { return waitList; }
 
     /**
-     * Retrieves the {@link CancelList} associated with this event.
+     * Retrieves the CancelList associated with this event.
      * This list tracks entrants who have cancelled their registration.
      *
-     * @return the CancelList instance for this event
+     * @return the ArrayList for this event's CancelList
      */
 
-    public CancelList getCancelList() { return cancelList; }
+    public ArrayList<Profile> getCancelList() { return cancelList; }
 
     /**
-     * Retrieves the {@link WonList} associated with this event.
+     * Retrieves the WonList associated with this event.
      * This list contains entrants who have been selected to participate.
      *
-     * @return the WonList instance for this event
+     * @return the ArrayList for this event's WonList
      */
 
-    public WonList getWonList() { return wonList; }
+    public ArrayList<Profile> getWonList() { return wonList; }
 
     /**
-     * Retrieves the {@link LostList} associated with this event.
+     * Retrieves the LostList associated with this event.
      * This list stores entrants who were not selected after the lottery draw.
      *
-     * @return the LostList instance for this event
+     * @return the ArrayList for this event's LostList
      */
 
-    public LostList getLostList() { return lostList; }
-
-
-    // Lottery System
+    public ArrayList<Profile> getLostList() { return lostList; }
 
     /**
-     * Draws a random lottery to select event winners.
-     * Winners are added to the WonList; non-selected entrants go to the LostList.
+     * Retrieves the AcceptList associated with this event.
+     * This list stores entrants who were accepted their entry after the draw.
      *
-     * @param numberOfWinners Number of winners to be selected.
+     * @return the ArrayList for this event's AcceptList
      */
-    public void drawLottery(int numberOfWinners) {
-        ArrayList<Profile> entrantPool = new ArrayList<>(waitList.getEntrants());
-        if (entrantPool.isEmpty()) return;
+    public ArrayList<Profile> getAcceptList() { return acceptList; }
 
-        Collections.shuffle(entrantPool);
-        wonList.clearWinners();
-        lostList.clearLosers();
-
-        for (int i = 0; i < numberOfWinners && i < entrantPool.size(); i++) {
-            Profile winner = entrantPool.get(i);
-            wonList.addWinner(winner);
-        }
-
-        for (Profile entrant: entrantPool) {
-            if (!wonList.getWinners().contains(entrant))
-                lostList.addLoser(entrant);
+    public void addToAcceptList(Profile profile)  {
+        if (this.wonList.contains(profile)) {
+            this.acceptList.add(profile);
+            this.wonList.remove(profile);
+        } else {
+            Log.d("Event", "Profile must be in wonList to be added to acceptList");
         }
     }
 
+    public void addToCancelList(Profile profile) {
+        if (this.wonList.contains(profile)) {
+            this.cancelList.add(profile);
+            this.wonList.remove(profile);
+        } else {
+            Log.d("Event", "Profile must be in wonList to be added to cancelList");
+        }
+    }
 
+    public void addToWaitList(Profile profile) {
+        this.waitList.add(profile);
+    }
+
+    public void addToWonList(Profile profile) {
+        this.wonList.add(profile);
+    }
+
+    public void addToLostList(Profile profile) {
+        this.lostList.add(profile);
+    }
+
+    public void removeFromAcceptList(Profile profile) {
+        this.acceptList.remove(profile);
+    }
+
+    public void removeFromCancelList(Profile profile) {
+        this.cancelList.remove(profile);
+    }
+
+    public void removeFromWaitList(Profile profile) {
+        this.waitList.remove(profile);
+    }
+
+    public void removeFromWonList(Profile profile) {
+        this.wonList.remove(profile);
+    }
+
+    public void removeFromLostList(Profile profile) {
+        this.lostList.remove(profile);
+    }
+
+    /**
+     * Draws the lottery for the event, selecting a number of winners from the entrant pool.
+     * Winners are added to the wonList, and all the losers replace the existing lostList.
+     * @param entrantPool
+     *        List of Profiles who signed up for the lottery.
+     * @param numberOfWinners
+     *        The number of winners to be selected from the entrant pool.
+     */
+    public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
+        ArrayList<Profile> winners = this.wonList;
+        ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
+
+        ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
+        Collections.shuffle(shuffled);
+
+        for (int i = 0; i < numberOfWinners && i < shuffled.size(); i++) {
+            Profile winner = shuffled.get(i);
+            winners.add(winner);
+            losers.remove(winner);
+        }
+
+        this.lostList = losers;
+    }
 
     /**
      * Flatten this object in to a Parcel.
      *
-     * @param dest  The Parcel in which the object should be written.
-     * @param flags Additional flags about how the object should be written.
-     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     * @param in  The Parcel in which the object should be written.
      */
 
     protected Event(Parcel in) {
@@ -427,13 +490,5 @@ public class Event implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeInt(Radius);
         }
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

@@ -64,28 +64,24 @@ public class EventsFragment extends Fragment {
         Profile entrant3 = new Profile("4","Logan", "pass", "Entrant", "lapope@ualberta.ca","0");
 
         // Add to event waitlist
-        testEvent.getWaitList().addEntrant(entrant1);
-        testEvent.getWaitList().addEntrant(entrant2);
-        testEvent.getWaitList().addEntrant(entrant3);
+        testEvent.addToWaitList(entrant1);
+        testEvent.addToWaitList(entrant2);
+        testEvent.addToWaitList(entrant3);
 
-        // Organizer picks one as winner
-        testEvent.getWonList().addWinner(entrant1);
+        testEvent.drawLottery(testEvent.getWaitList(), 2);
 
         // One entrant cancels
-        testEvent.getCancelList().addCancelled(entrant2);
+        testEvent.addToCancelList(testEvent.getWonList().get(0));
 
         // Draw replacement (Story 30)
         if (!testEvent.getWaitList().isEmpty()) {
-            Profile replacement = testEvent.getWaitList().getEntrants().get(0);
-            testEvent.getWonList().addWinner(replacement);
-            testEvent.getWaitList().removeEntrant(replacement);
+            testEvent.drawLottery(testEvent.getLostList(), 1);
         }
 
         // Notify users
         NotifyUser notifyUser = new NotifyUser();
-        notifyUser.sendNotification(entrant1, "You’ve been accepted into " + testEvent.getTitle() + "!");
-        notifyUser.sendNotification(entrant2, "You’ve been cancelled from " + testEvent.getTitle() + ".");
-        notifyUser.sendNotification(entrant3, "You’ve been moved from waitlist to accepted!");
+        notifyUser.sendBroadcast(testEvent.getWonList(), "You’ve been selected to sign up for " + testEvent.getTitle() + "!");
+        notifyUser.sendBroadcast(testEvent.getCancelList(), "You’ve declined to sign up for " + testEvent.getTitle() + ".");
 
 
         adapter = new MyRecyclerViewAdapter(demo_list);

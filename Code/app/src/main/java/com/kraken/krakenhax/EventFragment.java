@@ -18,9 +18,63 @@ import androidx.navigation.Navigation;
  * The Event Page
  */
 public class EventFragment extends Fragment {
+    private Profile currentUser;
 
     public EventFragment() {
         // Required empty public constructor
+    }
+
+    private void updateButtons(View view, Event event, NavController navController) {
+        Button buttonAccept = view.findViewById(R.id.button_accept);
+        Button buttonDecline = view.findViewById(R.id.button_decline);
+        Button buttonSignup = view.findViewById(R.id.button_signup);
+
+        // Logic for buttons depending on users status in the event.
+        // WON LOTTERY, WAITING TO ACCEPT
+        if (event.getWonList().contains(currentUser)) {
+            buttonSignup.setVisibility(View.GONE);
+            buttonAccept.setVisibility(View.VISIBLE);
+            buttonDecline.setVisibility(View.VISIBLE);
+
+            buttonAccept.setOnClickListener(v -> {
+                event.addToAcceptList(currentUser);
+                updateButtons(view, event, navController);
+            });
+
+            buttonDecline.setOnClickListener(v -> {
+                event.addToCancelList(currentUser);
+                updateButtons(view, event, navController);
+            });
+
+            // WON LOTTERY, CANCELED ENTRY
+        } else if (event.getCancelList().contains(currentUser)) {
+            buttonSignup.setClickable(false);
+            buttonSignup.setText("You cancelled your entry");
+
+            // LOST LOTTERY
+        } else if (event.getLostList().contains(currentUser)) {
+            buttonSignup.setClickable(false);
+            buttonSignup.setText("You were not selected");
+
+            // ON WAITLIST
+        } else if (event.getWaitList().contains(currentUser)) {
+            buttonSignup.setText("Withdraw");
+
+            buttonSignup.setOnClickListener(v -> {
+                event.removeFromWaitList(currentUser);
+                updateButtons(view, event, navController);
+            });
+
+            // NOT SIGNED UP
+        } else {
+            buttonSignup.setText("Sign Up");
+
+            buttonSignup.setOnClickListener(v -> {
+                event.addToWaitList(currentUser);
+                updateButtons(view, event, navController);
+            });
+
+        }
     }
 
     @Override
@@ -32,6 +86,11 @@ public class EventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            currentUser = mainActivity.currentUser;
+        }
 
         // Get the event object passed from the other fragment
         assert getArguments() != null;
@@ -50,6 +109,8 @@ public class EventFragment extends Fragment {
         buttonBack.setOnClickListener(v -> {
             navController.navigate(R.id.action_EventFragment_to_EventsFragment);
         });
+
+        updateButtons(view, event, navController);
 
         // Demo: simulate organizer notification for this event
         Button buttonNotify = view.findViewById(R.id.button_notify);
