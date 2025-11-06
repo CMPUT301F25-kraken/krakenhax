@@ -1,6 +1,6 @@
 package com.kraken.krakenhax;
 
-import static java.util.function.Predicate.isEqual;
+
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,10 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -29,7 +27,7 @@ public class ProfileFragment extends Fragment {
     public EditText PhoneNumberView;
     public Button updateButton;
     public Profile profile;
-    public ProfileViewModel profileModel;
+
     private FirebaseFirestore db;
     private CollectionReference ProfileRef;
 
@@ -61,10 +59,15 @@ public class ProfileFragment extends Fragment {
         EmailView.setText(profile.getEmail());
         String phoneNumber = profile.getPhoneNumber();
         if (Objects.equals(phoneNumber, "0")) {
-            PhoneNumberView.setText("No Phone Number");
+            PhoneNumberView.setHint("No Phone Number");
+            PhoneNumberView.setText("");
         } else {
             PhoneNumberView.setText(profile.getPhoneNumber());
         }
+        ImageView profilePic = view.findViewById(R.id.profile_pic);
+
+        // Set a default profile picture
+        profilePic.setImageResource(R.drawable.obama);
 
         updateButton.setOnClickListener(new View.OnClickListener() {
             @Override
