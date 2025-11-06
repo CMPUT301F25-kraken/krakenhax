@@ -64,8 +64,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sign Up"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/event_image"
         app:layout_constraintStart_toStartOf="@+id/tv_date_time" />
+
+    <Button
+        android:id="@+id/button_accept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:outlineAmbientShadowColor="@color/acceptButton"
+        android:outlineSpotShadowColor="@color/acceptButton"
+        android:shadowColor="@color/acceptButton"
+        android:text="Accept"
+        android:textColorHighlight="@color/acceptButton"
+        android:textColorHint="@color/acceptButton"
+        android:textColorLink="@color/acceptButton"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/event_image"
+        app:layout_constraintStart_toEndOf="@+id/event_image" />
+
+    <Button
+        android:id="@+id/button_decline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:outlineAmbientShadowColor="@color/declineButton"
+        android:outlineSpotShadowColor="@color/declineButton"
+        android:shadowColor="@color/declineButton"
+        android:text="Decline"
+        android:textColorHighlight="@color/declineButton"
+        android:textColorHint="@color/declineButton"
+        android:textColorLink="@color/declineButton"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/event_image"
+        app:layout_constraintStart_toEndOf="@+id/button_signup" />
 
     <TextView
         android:id="@+id/tv_registration_info"
