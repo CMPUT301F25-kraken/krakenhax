@@ -95,8 +95,11 @@ public class CreateEventFragment extends Fragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        Profile currentUser = mainActivity.currentUser;
         event = new Event();
         event.setId(FirebaseFirestore.getInstance().collection("events").document().getId());
+        event.setOrgId(currentUser.getID());
         navController = Navigation.findNavController(view);
         backButton.setOnClickListener(v -> {
             // Navigate back to the my events fragment

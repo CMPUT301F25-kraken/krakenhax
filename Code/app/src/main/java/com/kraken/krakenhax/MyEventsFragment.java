@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 /**
@@ -86,6 +87,8 @@ public class MyEventsFragment extends Fragment {
                 Log.e("Firestore", "Listen failed", e);
                 return;
             }
+            MainActivity mainActivity = (MainActivity) getActivity();
+            Profile currentUser = mainActivity.currentUser;
             if (snap != null && !snap.isEmpty()) {
                 events.clear();
                 for (QueryDocumentSnapshot snapshot : snap) {
@@ -94,9 +97,10 @@ public class MyEventsFragment extends Fragment {
                     String eventDetails = snapshot.getString("eventDetails");
                     String location = snapshot.getString("location");
                     String poster = snapshot.getString("poster");
-
-                    events.add(new Event(id, title, eventDetails, location, 0, poster));
-
+                    String orgProfile = snapshot.getString("orgId");
+                    if (Objects.equals(orgProfile, currentUser.getID())) {
+                        events.add(new Event(id, title, eventDetails, location, 0, poster));
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
