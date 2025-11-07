@@ -1,39 +1,35 @@
 package com.kraken.krakenhax;
 
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ArrayAdapter;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-public class profileAdapter extends ArrayAdapter<Profile> {
 
-    private ArrayList<Profile> profiles;
-    private Context context;
+public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
-    private Set<String> selectedProfileIds = new HashSet<>();
+    private final ArrayList<Profile> profiles;
+    private final Context context;
 
+    private final Set<String> selectedProfileIds = new HashSet<>();
 
-
-    public profileAdapter(Context context, ArrayList<Profile> profiles) {
+    public ProfileAdapterJ(Context context, ArrayList<Profile> profiles) {
         super(context, 0, profiles);
         this.profiles = profiles;
         this.context = context;
     }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -52,11 +48,9 @@ public class profileAdapter extends ArrayAdapter<Profile> {
         assert profile != null;
         checkBox.setChecked(selectedProfileIds.contains(profile.getID()));
 
-
         name.setText(profile.getUsername());
         Email.setText(profile.getEmail());
         profilePic.setImageResource(R.drawable.obama);
-
 
         return view;
     }

@@ -21,7 +21,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -33,8 +32,8 @@ public class AdminListFragment extends Fragment {
 
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
-    public profileAdapter profileAdapter;
-    private ArrayList<Profile> EntrantList = new ArrayList<>();
+    public ProfileAdapterJ profileAdapterJ;
+    private final ArrayList<Profile> EntrantList = new ArrayList<>();
     private RecyclerView recyclerView;
     private ListView profileListView;
     private Button DelSelButton;
@@ -112,9 +111,9 @@ public class AdminListFragment extends Fragment {
 
         DelSelButton.setOnClickListener(v -> {
 
-            if (profileAdapter == null) return;
+            if (profileAdapterJ == null) return;
 
-            Set<String> selectedIds = profileAdapter.getSelectedProfileIds();
+            Set<String> selectedIds = profileAdapterJ.getSelectedProfileIds();
 
             if (selectedIds.isEmpty()) {
                 Toast.makeText(requireContext(), "No profiles selected", Toast.LENGTH_SHORT).show();
@@ -133,8 +132,8 @@ public class AdminListFragment extends Fragment {
                 EntrantList.remove(profile);
             }
 
-            profileAdapter.clearSelection();
-            profileAdapter.notifyDataSetChanged();
+            profileAdapterJ.clearSelection();
+            profileAdapterJ.notifyDataSetChanged();
 
 
             Toast.makeText(requireContext(), "Delete Selected", Toast.LENGTH_SHORT).show();
@@ -202,7 +201,7 @@ public class AdminListFragment extends Fragment {
     }
 
     public void getEntrants() {
-       profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+       ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {
@@ -211,17 +210,17 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-           profileAdapter = new ProfileAdapter(requireContext(), EntrantList);
-           profileListView.setAdapter(profileAdapter);
+           profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
+           profileListView.setAdapter(profileAdapterJ);
 
            profileListView.setOnItemClickListener((parent, view, position, id) -> {
-               profileAdapter.toggleSelection(position);
+               profileAdapterJ.toggleSelection(position);
            });
        });
     }
 
     public void getOrganizers() {
-        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {
@@ -230,11 +229,11 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-            profileAdapter = new profileAdapter(requireContext(), EntrantList);
-            profileListView.setAdapter(profileAdapter);
+            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
+            profileListView.setAdapter(profileAdapterJ);
 
             profileListView.setOnItemClickListener((parent, view, position, id) -> {
-                profileAdapter.toggleSelection(position);
+                profileAdapterJ.toggleSelection(position);
             });
         });
     }
