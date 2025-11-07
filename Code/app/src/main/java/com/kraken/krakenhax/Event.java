@@ -7,9 +7,12 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -24,7 +27,7 @@ import java.util.Objects;
 public class Event implements Parcelable {
     private String title;
     private ArrayList<String> categories;
-    private ArrayList<ZonedDateTime> timeframe;
+    private ArrayList<Date> timeframe;
     private String eventDetails;
     private String location;
     private Integer Radius;
@@ -46,7 +49,7 @@ public class Event implements Parcelable {
     public Event() {
         this.title = "";
         this.categories = new ArrayList<String>();
-        this.timeframe = new ArrayList<ZonedDateTime>();
+        this.timeframe = new ArrayList<Date>();
         this.eventDetails = "";
         this.location = "";
         this.Radius = 0;
@@ -64,7 +67,7 @@ public class Event implements Parcelable {
     public Event(String title) {
         this.title = title;
         this.categories = new ArrayList<String>();
-        this.timeframe = new ArrayList<ZonedDateTime>();
+        this.timeframe = new ArrayList<Date>();
         this.eventDetails = "";
         this.location = "";
         this.Radius = 0;
@@ -185,9 +188,9 @@ public class Event implements Parcelable {
     /**
      * Returns the timeframe of the event.
      * @return
-     *        an ArrayList of ZonedDateTime representing the event timeframe
+     *        an ArrayList of Date representing the event timeframe
      */
-    public ArrayList<ZonedDateTime> getTimeframe() {
+    public ArrayList<Date> getTimeframe() {
         return timeframe;
     }
 
@@ -195,15 +198,15 @@ public class Event implements Parcelable {
     /**
      * Sets the timeframe of the event.
      * @param timeframe
-     *        an ArrayList of ZonedDateTime representing the event timeframe
+     *        an ArrayList of Date representing the event timeframe
      * @throws IllegalArgumentException
      *        if the timeframe ArrayList is not of size 2
      *        if the start time is after the end time
      */
-    public void setTimeframe(ArrayList<ZonedDateTime> timeframe) {
+    public void setTimeframe(ArrayList<Date> timeframe) {
         if (timeframe.size() != 2) {
             throw new IllegalArgumentException("Timeframe only have start and end fields");
-        } else if (timeframe.get(0).isAfter(timeframe.get(1))) {
+        } else if (timeframe.get(0).after(timeframe.get(1))) {
             throw new IllegalArgumentException("Start time cannot be after end time");
         } else {
             this.timeframe = timeframe;

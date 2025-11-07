@@ -29,11 +29,13 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CreateEventFragment extends Fragment {
     private Button backButton;
@@ -218,16 +220,16 @@ public class CreateEventFragment extends Fragment {
                 long startDateMillis = selection.first;
                 long endDateMillis = selection.second;
 
-                ZonedDateTime startDate = Instant.ofEpochMilli(startDateMillis).atZone(ZoneId.systemDefault());
-                ZonedDateTime endDate = Instant.ofEpochMilli(endDateMillis).atZone(ZoneId.systemDefault());
+                Date startDate = Date.from(Instant.ofEpochMilli(startDateMillis));
+                Date endDate = Date.from(Instant.ofEpochMilli(endDateMillis));
 
-                ArrayList<ZonedDateTime> timeframe = new ArrayList<>();
+                ArrayList<Date> timeframe = new ArrayList<>();
                 timeframe.add(startDate);
                 timeframe.add(endDate);
                 event.setTimeframe(timeframe);
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy)");
-                dateTimeButton.setText(String.format("%s - %s", startDate.format(formatter), endDate.format(formatter)));
+                SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy)");
+                dateTimeButton.setText(String.format("%s - %s", formatter.format(startDate), formatter.format(endDate)));
 
             });
         });

@@ -74,37 +74,5 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // QR Code Link Handling
-        handleIncomingIntent(getIntent());
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        handleIncomingIntent(intent);
-    }
-
-    private void handleIncomingIntent(Intent intent) {
-        if (intent == null) return;
-        Uri data = intent.getData();
-        if (data == null) return;
-
-        if (navController != null && navController.handleDeepLink(intent)) {
-            return;
-        }
-
-        // QR Code Link Format: krakenhax://event/{id}
-        List<String> segments = data.getPathSegments();
-        if (segments.size() >= 2) {
-            String first = segments.get(0); // expected "event"
-            String id = segments.get(1);    // expected event id
-            if ("event".equalsIgnoreCase(first) && navController != null) {
-                Bundle args = new Bundle();
-                args.putString("eventId", id);
-                // Replace R.id.eventFragment with your actual destination id in nav graph
-                navController.navigate(R.id.action_EventFragment_self, args);
-            }
-        }
     }
 }
