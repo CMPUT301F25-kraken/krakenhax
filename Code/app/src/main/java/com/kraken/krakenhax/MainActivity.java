@@ -75,4 +75,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Ensure fragments read the latest deep link when the activity is reused
+        setIntent(intent);
+    }
 }
