@@ -2,7 +2,6 @@
 package com.kraken.krakenhax;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
@@ -18,8 +17,6 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     public NavController navController;

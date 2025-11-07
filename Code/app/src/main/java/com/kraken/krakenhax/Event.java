@@ -7,13 +7,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.google.firebase.Timestamp;
-
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Represents an event in the KrakenHax application.
