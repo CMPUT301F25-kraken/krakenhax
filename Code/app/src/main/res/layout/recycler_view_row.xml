@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         android:layout_marginVertical="10dp"
-        app:cardBackgroundColor="#11B88F"
+        app:cardBackgroundColor="@color/eventCardBackgroundColor"
         app:cardCornerRadius="20dp"
         app:contentPadding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"

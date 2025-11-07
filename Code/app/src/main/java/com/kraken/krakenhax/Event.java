@@ -312,7 +312,6 @@ public class Event implements Parcelable {
         return 0;
     }
 
-
     /**
      * Retrieves the WaitList associated with this event.
      * The waitlist contains entrants who have registered but are not yet confirmed.
@@ -465,8 +464,6 @@ public class Event implements Parcelable {
             return new Event[size];
         }
     };
-
-
 
     /**
      * Writes the {@link Event} object's data into a {@link Parcel}, allowing it to be
