@@ -1,12 +1,6 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +9,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +31,11 @@ public class EntrantInfoFragment extends Fragment {
 
     private TextView eventTitle;
 
-    private ProfileAdapter adapter;
+    private ProfileAdapterS adapter;
 
     public EntrantInfoFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,9 +52,9 @@ public class EntrantInfoFragment extends Fragment {
         eventTitle.setText(event.getTitle());
         //fake profiles to view lists
 
-        event.addToWaitList(new Profile("test","test","test","test","test","test"));
-        event.addToWaitList(new Profile("test2","test2","test2","test2","test2","test2"));
-        event.addToWonList(new Profile("test4","test4","test4","test4","test4","test4"));
+        event.addToWaitList(new Profile("test", "test", "test", "test", "test", "test"));
+        event.addToWaitList(new Profile("test2", "test2", "test2", "test2", "test2", "test2"));
+        event.addToWonList(new Profile("test4", "test4", "test4", "test4", "test4", "test4"));
 
         List<String> statuses = Arrays.asList("Waitlisted", "Enrolled", "Cancelled");
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(
@@ -75,14 +72,14 @@ public class EntrantInfoFragment extends Fragment {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 entrantType.setText("Entrant " + selectedItem);
                 if (selectedItem.equals("Waitlisted")) {
-                    adapter = new ProfileAdapter(event.getWaitList());
+                    adapter = new ProfileAdapterS(event.getWaitList());
                     profileRecycler.setAdapter(adapter);
                 } else if (selectedItem.equals("Enrolled")) {
-                    adapter = new ProfileAdapter(event.getWonList());
+                    adapter = new ProfileAdapterS(event.getWonList());
                     profileRecycler.setAdapter(adapter);
 
                 } else if (selectedItem.equals("Cancelled")) {
-                    adapter = new ProfileAdapter(event.getCancelList());
+                    adapter = new ProfileAdapterS(event.getCancelList());
                     profileRecycler.setAdapter(adapter);
                 }
             }
@@ -93,16 +90,12 @@ public class EntrantInfoFragment extends Fragment {
             }
         });
 
-
-
-
-
         backBtn.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigateUp();
         });
 
         return view;
 
-
     }
+
 }
