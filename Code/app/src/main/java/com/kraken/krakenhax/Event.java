@@ -38,6 +38,7 @@ public class Event implements Parcelable {
     private int waitListCap;
     private int WinnerNumber;
     private boolean useGeolocation;
+    private Profile orgProfile;
 
 
     /**

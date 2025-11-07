@@ -52,7 +52,7 @@ public class EventViewModel extends ViewModel {
                     String downloadUrl = uri.toString();
                     Log.d("Firebase", "Download URL: " + downloadUrl);
                     event.setPoster(downloadUrl);
-                    db.collection("events")
+                    db.collection("Events")
                             .document(event.getId())
                             .set(event)
                             .addOnSuccessListener(aVoid -> {

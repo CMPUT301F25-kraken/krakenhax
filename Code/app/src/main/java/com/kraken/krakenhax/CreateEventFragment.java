@@ -226,7 +226,8 @@ public class CreateEventFragment extends Fragment {
 
                 SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
                 dateTimeButton.setText(String.format("%s - %s", formatter.format(startDate), formatter.format(endDate)));
-
+                startDate.toString();
+                endDate.toString();
             });
         });
 
