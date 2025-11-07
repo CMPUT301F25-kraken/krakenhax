@@ -7,9 +7,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 
 /**
  * Represents an event in the KrakenHax application.
@@ -23,7 +24,7 @@ import java.util.Date;
 public class Event implements Parcelable {
     private String title;
     private ArrayList<String> categories;
-    private ArrayList<Date> timeframe;
+    private ArrayList<Timestamp> timeframe;
     private String eventDetails;
     private String location;
     private Integer Radius;
@@ -37,6 +38,7 @@ public class Event implements Parcelable {
     private int waitListCap;
     private int WinnerNumber;
     private boolean useGeolocation;
+    private String orgId;
 
 
     /**
@@ -45,7 +47,7 @@ public class Event implements Parcelable {
     public Event() {
         this.title = "";
         this.categories = new ArrayList<String>();
-        this.timeframe = new ArrayList<Date>();
+        this.timeframe = new ArrayList<Timestamp>();
         this.eventDetails = "";
         this.location = "";
         this.Radius = 0;
@@ -55,6 +57,9 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
+        this.waitListCap = 0;
+        this.WinnerNumber = 0;
+        this.useGeolocation = false;
     }
 
     /**
@@ -63,7 +68,7 @@ public class Event implements Parcelable {
     public Event(String title) {
         this.title = title;
         this.categories = new ArrayList<String>();
-        this.timeframe = new ArrayList<Date>();
+        this.timeframe = new ArrayList<Timestamp>();
         this.eventDetails = "";
         this.location = "";
         this.Radius = 0;
@@ -73,7 +78,6 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
-
     }
     /** Lightweight constructor for fake/local events */
     public Event(String id,
@@ -184,9 +188,9 @@ public class Event implements Parcelable {
     /**
      * Returns the timeframe of the event.
      * @return
-     *        an ArrayList of Date representing the event timeframe
+     *        an ArrayList of Timestamp representing the event timeframe
      */
-    public ArrayList<Date> getTimeframe() {
+    public ArrayList<Timestamp> getTimeframe() {
         return timeframe;
     }
 
@@ -194,19 +198,10 @@ public class Event implements Parcelable {
     /**
      * Sets the timeframe of the event.
      * @param timeframe
-     *        an ArrayList of Date representing the event timeframe
-     * @throws IllegalArgumentException
-     *        if the timeframe ArrayList is not of size 2
-     *        if the start time is after the end time
+     *        an ArrayList of Timestamp representing the event timeframe
      */
-    public void setTimeframe(ArrayList<Date> timeframe) {
-        if (timeframe.size() != 2) {
-            throw new IllegalArgumentException("Timeframe only have start and end fields");
-        } else if (timeframe.get(0).after(timeframe.get(1))) {
-            throw new IllegalArgumentException("Start time cannot be after end time");
-        } else {
-            this.timeframe = timeframe;
-        }
+    public void setTimeframe(ArrayList<Timestamp> timeframe) {
+        this.timeframe = timeframe;
     }
 
 
@@ -243,15 +238,9 @@ public class Event implements Parcelable {
      * Sets the address of the event.
      * @param location
      *        a String representing the event's address
-     * @throws IllegalArgumentException
-     *        if the location does not contain a number in the address
      */
     public void setLocation(String location) {
-        if (location == null || location.trim().isEmpty()) {
-            throw new IllegalArgumentException("Location cannot be empty");
-        } else {
-            this.location = location;
-        }
+        this.location = location;
     }
 
     /**
@@ -447,12 +436,28 @@ public class Event implements Parcelable {
     public void setWaitListCap(int cap) {
         this.waitListCap = cap;
     }
+    public int getWaitListCap() {
+        return this.waitListCap;
+    }
     public void setWinnerNumber(int num) {
         this.WinnerNumber = num;
+    }
+    public int getWinnerNumber() {
+        return this.WinnerNumber;
     }
     public void setUseGeolocation(boolean use) {
         this.useGeolocation = use;
     }
+    public boolean getUseGeolocation() {
+        return this.useGeolocation;
+    }
+    public String getOrgId() {
+        return this.orgId;
+    }
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
+    }
+
 
     /**
      * Flatten this object in to a Parcel.

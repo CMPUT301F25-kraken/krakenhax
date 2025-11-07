@@ -20,90 +20,92 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The Event Page
  */
 public class EventFragment extends Fragment {
     private Profile currentUser;
+    private Button buttonSignup;
+    private Button buttonAccept;
+    private Button buttonDecline;
+    private Button buttonNotify;
+    private Button deleteButton;
     private FirebaseFirestore db;
 
     public EventFragment() {
         // Required empty public constructor
     }
 
-    private void updateButtons(View view, Event event, NavController navController) {
-        Button buttonAccept = view.findViewById(R.id.button_accept);
-        Button buttonDecline = view.findViewById(R.id.button_decline);
-        Button buttonSignup = view.findViewById(R.id.button_signup);
+    private void updateEventInFirestore(Event event) {
+        if (event != null && event.getId() != null) {
+            db.collection("Events").document(event.getId()).set(event)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
+        }
+    }
 
-        // Logic for buttons depending on users status in the event.
-        // WON LOTTERY, WAITING TO ACCEPT
-        if (event.getWonList().contains(currentUser)) {
+    private void deleteEventFromFirestore(Event event, NavController navController) {
+        if (event != null && event.getId() != null) {
+            db.collection("Events").document(event.getId()).delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("Firestore", "Event deleted successfully!");
+                        navController.popBackStack(); // Go back after deleting
+                    })
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error deleting event", e));
+        }
+    }
+
+    private void updateButtons(View view, Event event, NavController navController) {
+        buttonAccept = view.findViewById(R.id.button_accept);
+        buttonDecline = view.findViewById(R.id.button_decline);
+        buttonSignup = view.findViewById(R.id.button_signup);
+        deleteButton = view.findViewById(R.id.EventDeleteButton);
+
+        if (currentUser.getType().equals("Admin")) {
+            buttonSignup.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.VISIBLE);
+        } else if (event.getWonList().contains(currentUser)) {
             buttonSignup.setVisibility(View.GONE);
             buttonAccept.setVisibility(View.VISIBLE);
             buttonDecline.setVisibility(View.VISIBLE);
 
             buttonAccept.setOnClickListener(v -> {
                 event.addToAcceptList(currentUser);
+                updateEventInFirestore(event);
                 updateButtons(view, event, navController);
             });
 
             buttonDecline.setOnClickListener(v -> {
                 event.addToCancelList(currentUser);
+                updateEventInFirestore(event);
                 updateButtons(view, event, navController);
             });
-
-            // WON LOTTERY, CANCELED ENTRY
         } else if (event.getCancelList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You cancelled your entry");
-
-            // LOST LOTTERY
         } else if (event.getLostList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You were not selected");
-
-            // ON WAITLIST
         } else if (event.getWaitList().contains(currentUser)) {
             buttonSignup.setText("Withdraw");
-
             buttonSignup.setOnClickListener(v -> {
                 event.removeFromWaitList(currentUser);
+                updateEventInFirestore(event);
                 updateButtons(view, event, navController);
             });
-
-            // NOT SIGNED UP
         } else {
             buttonSignup.setText("Sign Up");
-
             buttonSignup.setOnClickListener(v -> {
                 event.addToWaitList(currentUser);
+                updateEventInFirestore(event);
                 updateButtons(view, event, navController);
             });
-
         }
-    }
-
-    private void populateEventView(View view, Event event, NavController navController) {
-        if (event == null) {
-            Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        TextView tvEventName = view.findViewById(R.id.tv_event_name);
-        tvEventName.setText(event.getTitle());
-
-        Button buttonBack = view.findViewById(R.id.button_back);
-        buttonBack.setOnClickListener(v -> navController.navigate(R.id.action_EventFragment_to_EventsFragment));
-
-        Button buttonNotify = view.findViewById(R.id.button_notify);
-        buttonNotify.setOnClickListener(v -> {
-            NotifyUser notifyUser = new NotifyUser();
-            notifyUser.sendNotification(currentUser, "Notification from organizer for " + event.getTitle());
-        });
-
-        updateButtons(view, event, navController);
     }
 
     @Override
@@ -122,53 +124,46 @@ public class EventFragment extends Fragment {
             currentUser = mainActivity.currentUser;
         }
 
-        // Set up nav controller
+        assert getArguments() != null;
+        Event event = getArguments().getParcelable("event_name");
+
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
-        // FROM EventsFragment
-        Event eventFromArgs = null;
-        Bundle args = getArguments();
-        if (args != null && args.containsKey("event_name")) {
-            eventFromArgs = args.getParcelable("event_name");
-        }
+        TextView tvEventName = view.findViewById(R.id.tv_event_name);
+        assert event != null;
+        tvEventName.setText(event.getTitle());
 
-        if (eventFromArgs != null) {
-            populateEventView(view, eventFromArgs, navController);
-            return;
-        }
+        TextView tvLocation = view.findViewById(R.id.tv_location_field);
+        tvLocation.setText(event.getLocation());
 
-        // From QR Code
-        String eventId = null;
-        if (args != null && args.containsKey("eventId")) {
-            eventId = args.getString("eventId");
-        }
+        Button buttonBack = view.findViewById(R.id.button_back);
+        buttonBack.setOnClickListener(v -> {
+            if (currentUser.getType().equals("Admin")) {
+                navController.navigate(R.id.action_MyEventDetailsFragment_to_AdminListFragment);
+            } else {
+                navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+            }
+        });
 
-        if (eventId != null && !eventId.isEmpty()) {
-            db.collection("Events").document(eventId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Event eventFromDb = document.toObject(Event.class);
-                            populateEventView(view, eventFromDb, navController);
-                        } else {
-                            // Document does not exist
-                            Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_SHORT).show();
-                            navController.navigate(R.id.action_EventFragment_to_EventsFragment);
-                        }
-                    } else {
-                        Log.d("EventFragment", "get failed with ", task.getException());
-                        Toast.makeText(requireContext(), "Error retrieving event", Toast.LENGTH_SHORT).show();
-                        navController.navigate(R.id.action_EventFragment_to_EventsFragment);
-                    }
-                }
-            });
-            return;
-        }
+        updateButtons(view, event, navController);
 
-        // No event info provided
-        Toast.makeText(requireContext(), "No event data provided", Toast.LENGTH_SHORT).show();
-        navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+        buttonNotify = view.findViewById(R.id.button_notify);
+        if (currentUser.getType().equals("Admin")) {
+            buttonNotify.setVisibility(View.GONE);
+        }
+        buttonNotify.setOnClickListener(v -> {
+            NotifyUser notifyUser = new NotifyUser();
+            List<Profile> allUsers = new ArrayList<>();
+            allUsers.addAll(event.getWaitList());
+            allUsers.addAll(event.getWonList());
+            allUsers.addAll(event.getAcceptList());
+            allUsers.addAll(event.getLostList());
+            allUsers.addAll(event.getCancelList());
+
+            notifyUser.sendBroadcast(allUsers, "Notification from organizer for " + event.getTitle());
+        });
+
+        deleteButton = view.findViewById(R.id.EventDeleteButton);
+        deleteButton.setOnClickListener(v -> deleteEventFromFirestore(event, navController));
     }
 }

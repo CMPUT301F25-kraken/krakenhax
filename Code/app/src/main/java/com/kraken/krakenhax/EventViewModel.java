@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -19,16 +18,19 @@ import java.util.ArrayList;
 public class EventViewModel extends ViewModel {
     private static MutableLiveData<ArrayList<Event>> eventList;
 
-    private FirebaseFirestore db;
-    private CollectionReference eventCollection;
-    private StorageReference storageRef;
+    private final FirebaseFirestore db;
+    private final CollectionReference eventCollection;
+    private final StorageReference storageRef;
 
     public void addEvent(Event event) {
+        // First, add the event to the local list for immediate UI update.
         ArrayList<Event> currentList = eventList.getValue();
         if (currentList != null) {
             currentList.add(event);
             eventList.setValue(currentList);
         }
+        // Then, upload the event to Firestore.
+        uploadEvent(event);
     }
     public EventViewModel() {
         eventList = new MutableLiveData<>(new ArrayList<>());
@@ -50,7 +52,7 @@ public class EventViewModel extends ViewModel {
                     String downloadUrl = uri.toString();
                     Log.d("Firebase", "Download URL: " + downloadUrl);
                     event.setPoster(downloadUrl);
-                    db.collection("events")
+                    db.collection("Events")
                             .document(event.getId())
                             .set(event)
                             .addOnSuccessListener(aVoid -> {
@@ -95,11 +97,16 @@ public class EventViewModel extends ViewModel {
                 ArrayList<Event> events = new ArrayList<>();
                 for (QueryDocumentSnapshot doc : snapshots) {
                     // Convert each document into an Event object.
-                    Event event = doc.toObject(Event.class);
-                    if (event.getId() == null) {
-                        event.setId(doc.getId());
+                    try {
+                        Event event = doc.toObject(Event.class);
+                        if (event.getId() == null) {
+                            event.setId(doc.getId());
+                        }
+                        events.add(event);
+                    } catch (Exception e) {
+                        Log.e("Firestore Deserialization", "Error converting document to Event object", e);
                     }
-                    events.add(event);
+
                 }
                 eventList.setValue(events);
             }

@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
+        admin = false;
         loggedIn = false;
         db = FirebaseFirestore.getInstance();
         ProfileRef = db.collection("Profiles");
@@ -45,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
         navController = navHostFragment.getNavController();
         bottom_navigation_bar = findViewById(R.id.bottom_navigation_bar);
         admin_navigation_bar = findViewById(R.id.bottom_navigation_Ad);
-        NavigationUI.setupWithNavController(bottom_navigation_bar, navController);
-        admin = false;
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destinationId = destination.getId();
@@ -55,9 +53,11 @@ public class MainActivity extends AppCompatActivity {
                 bottom_navigation_bar.setVisibility(View.GONE);
                 admin_navigation_bar.setVisibility(View.GONE);
             } else if (destinationId == R.id.EventsFragment) {
+                NavigationUI.setupWithNavController(bottom_navigation_bar, navController);
                 bottom_navigation_bar.setVisibility(View.VISIBLE);
             } else if (destinationId == R.id.adminListFragment) {
                 admin_navigation_bar.setVisibility(View.VISIBLE);
+                NavigationUI.setupWithNavController(admin_navigation_bar, navController);
                 admin = true;
             }
 

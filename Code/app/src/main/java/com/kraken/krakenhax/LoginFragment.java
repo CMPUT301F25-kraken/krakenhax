@@ -23,6 +23,11 @@ import androidx.navigation.Navigation;
 import java.util.ArrayList;
 import java.util.Objects;
 
+/**
+ * The login page for the app. This is the First page the user sees when they open the app.
+ * Allows users to login or sign up. If they choose to sign up, they are sent to the type selector page.
+ * If they choose to login, if their user data is stored in the database, they are logged in.
+ */
 public class LoginFragment extends Fragment {
     // Keep UI elements private
     private Button signup;
@@ -35,14 +40,45 @@ public class LoginFragment extends Fragment {
 
     private String eventId;
 
+    /**
+     * Required empty public constructor
+     */
     public LoginFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     * Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
+
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored.
+     * This gives subclasses a chance to initialize themselves once
+     * they know their view hierarchy has been completely created.
+     * Initializes the interface and sets up listeners.
+     * Contains the main functionality of the fragment.
+     * On login click, it gets the info from the edit text and validates it in the validate function.
+     * On signup click, it navigates to the type selector page.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -99,6 +135,16 @@ public class LoginFragment extends Fragment {
         });
     }
 
+    /**
+     * Validates the login information.
+     * Takes the username and password from the edit text and checks them against the database.
+     * If they match, the user is logged in. If not, an error message is displayed.
+     * If the user is a organizer, they are navigated to the events page.
+     * If the user is an entrant, they are navigated to the events page.
+     * If the user is an admin, they are navigated to the admin page.
+     * @param usernameInput
+     * @param passwordInput
+     */
     private void validateLogin(String usernameInput, String passwordInput) {
         // Get the LiveData from the ViewModel INSTANCE
         LiveData<ArrayList<Profile>> profileListLiveData = profileModel.getProfileList();

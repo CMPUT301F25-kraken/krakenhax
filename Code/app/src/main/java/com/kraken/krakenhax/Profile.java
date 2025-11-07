@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * <p>Collaborators: Event, WaitList, Organizer, Administrator</p>
  *
- * @author Amaan, Jacob
+ *
  * @version 1.2
  */
 public class Profile {
@@ -23,6 +23,10 @@ public class Profile {
     private String type; // e.g., "entrant", "organizer", "admin"
     private String phoneNumber;
     private String ID;
+    private boolean notificationsEnabled = true;
+    public boolean isNotificationsEnabled() { return notificationsEnabled; }
+    public void setNotificationsEnabled(boolean enabled) { this.notificationsEnabled = enabled; }
+
     /**
      * Constructs a new user profile with the given details.
      * @param username the user's username

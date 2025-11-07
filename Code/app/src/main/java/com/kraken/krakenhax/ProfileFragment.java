@@ -1,7 +1,5 @@
 package com.kraken.krakenhax;
 
-
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,15 +9,16 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
-
 /**
- * Displays the profile page.
+ * Displays the profile page. Allows the user to update their profile.
  */
 public class ProfileFragment extends Fragment {
     public EditText usernameView;
@@ -31,8 +30,6 @@ public class ProfileFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference ProfileRef;
 
-
-
     /**
      * Required empty public constructor
      */
@@ -40,6 +37,22 @@ public class ProfileFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * Contains the main functionality of the fragment.
+     * Sets up the listeners for the buttons.
+     * On update button click, it updates the profile with the changes made in the edit texts.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -69,28 +82,30 @@ public class ProfileFragment extends Fragment {
         // Set a default profile picture
         profilePic.setImageResource(R.drawable.obama);
 
-        updateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newUsername = usernameView.getText().toString();
-                String newEmail = EmailView.getText().toString();
-                String phoneNumberStr = PhoneNumberView.getText().toString();
+        updateButton.setOnClickListener(v -> {
+            String newUsername = usernameView.getText().toString();
+            String newEmail = EmailView.getText().toString();
+            String phoneNumberStr = PhoneNumberView.getText().toString();
 
-                profile.setUsername(newUsername);
-                profile.setEmail(newEmail);
+            profile.setUsername(newUsername);
+            profile.setEmail(newEmail);
 
-
-                try {
-                    profile.setPhoneNumber(phoneNumberStr);
-                } catch (NumberFormatException e) {
-                    profile.setPhoneNumber("0");
-                }
-                assert mainActivity != null;
-                mainActivity.currentUser = profile;
-                String ID = String.valueOf(profile.getID());
-                ProfileRef.document(ID).set(profile);
-
+            try {
+                profile.setPhoneNumber(phoneNumberStr);
+            } catch (NumberFormatException e) {
+                profile.setPhoneNumber("0");
             }
+            assert mainActivity != null;
+            mainActivity.currentUser = profile;
+            String ID = String.valueOf(profile.getID());
+            ProfileRef.document(ID).set(profile);
+
+        });
+
+        Button signoutButton = view.findViewById(R.id.button_signout);
+        signoutButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+            navController.navigate(R.id.action_signout);
         });
 
         return view;

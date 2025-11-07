@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
 
+public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHolder> {
 
-    private ArrayList<Profile> profileList;
+    private final ArrayList<Profile> profileList;
 
-    public ProfileAdapter(ArrayList<Profile> profileList) {
+    public ProfileAdapterS(ArrayList<Profile> profileList) {
 
         this.profileList = profileList;
     }
@@ -25,7 +25,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.profile_item, parent, false);
-        return new ProfileAdapter.ViewHolder(view);
+        return new ProfileAdapterS.ViewHolder(view);
     }
 
     @Override
@@ -50,4 +50,5 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         }
 
     }
+
 }

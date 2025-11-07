@@ -27,6 +27,7 @@ tools:context=".EventFragment">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Update poster"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,6 +37,7 @@ tools:context=".EventFragment">
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="visible"
         android:text="Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -112,5 +114,35 @@ tools:context=".EventFragment">
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+
+    <TextView
+        android:id="@+id/tv_location2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="Location:"
+        app:layout_constraintStart_toStartOf="@+id/tv_event_description"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+
+    <TextView
+        android:id="@+id/tv_location_field2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="Example location"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_location2"
+        app:layout_constraintStart_toEndOf="@+id/tv_location2"
+        app:layout_constraintTop_toTopOf="@+id/tv_location2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
