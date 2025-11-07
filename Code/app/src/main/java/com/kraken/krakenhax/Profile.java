@@ -12,7 +12,7 @@ import java.util.Objects;
  *
  * <p>Collaborators: Event, WaitList, Organizer, Administrator</p>
  *
- * @author Amaan, Jacob
+ *
  * @version 1.2
  */
 public class Profile {

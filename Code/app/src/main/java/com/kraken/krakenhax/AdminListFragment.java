@@ -23,10 +23,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Set;
 
+/**
+ * Admin fragment to display the lists of entrants, organizers, and events.
+ * Will later display images and notifications.
+ * Allows the admin to delete profiles.
+ */
 public class AdminListFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
 
@@ -34,30 +40,55 @@ public class AdminListFragment extends Fragment {
     public FirebaseFirestore db;
     public ProfileAdapterJ profileAdapterJ;
     private final ArrayList<Profile> EntrantList = new ArrayList<>();
+    private ArrayList<Event> events;
     private RecyclerView recyclerView;
     private ListView profileListView;
     private Button DelSelButton;
     private CheckBox checkBox;
     private CollectionReference profileRef;
+    private CollectionReference eventsRef;
 
 
     //private ListView profileListView;
 
 
-
-
+    /**
+     * Required empty public constructor
+     */
     public AdminListFragment() {
         // Required empty public constructor
     }
 
 
-
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_admin_list, container, false);
     }
 
-
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored.
+     * Contains the main functionality of the fragment.
+     * Sets up the listener for the delete button.
+     * Sets up the spinner and the lists displayed by the spinner.
+     * Sets up the adapter for the list view.
+     * Sets up the listener for the list view.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
@@ -140,54 +171,22 @@ public class AdminListFragment extends Fragment {
 
         });
     }
-
+    /**
+     * Gets the events from the database.
+     * @param view
+     * @param navController
+     */
     public void getEvents(View view, NavController navController){
 
 
-        ArrayList<Event> demo_list = new ArrayList<>();
-        demo_list.add(new Event("Event 1"));
-        demo_list.add(new Event("Event 2"));
-        demo_list.add(new Event("Event 3"));
-        demo_list.add(new Event("Event 4"));
-        demo_list.add(new Event("Event 5"));
-        demo_list.add(new Event("Event 6"));
-        demo_list.add(new Event("Event 7"));
-        demo_list.add(new Event("Event 8"));
+        events = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
+        adapter = new MyRecyclerViewAdapter(events);
+        recyclerView.setAdapter(adapter);
 
-        // DEMO ORGANIZER LOGIC
-        Event testEvent = demo_list.get(0);
+        db = FirebaseFirestore.getInstance();
+        startFirestoreListener();
 
-        // Creating demo entrant profiles
-        Profile entrant1 = new Profile("2", "Amaan", "1234", "Entrant", "amaaniqb@ualberta.ca", "0");
-        Profile entrant2 = new Profile("3", "Markus", "abcd", "Entrant", "mhenze@ualberta.ca", "0");
-        Profile entrant3 = new Profile("4", "Logan", "pass", "Entrant", "lapope@ualberta.ca", "0");
-
-        // Add to event waitlist
-        testEvent.addToWaitList(entrant1);
-        testEvent.addToWaitList(entrant2);
-        testEvent.addToWaitList(entrant3);
-
-        // Organizer picks one as winner
-        testEvent.addToWonList(entrant1);
-
-        // One entrant cancels
-        testEvent.addToCancelList(entrant2);
-
-        // Draw replacement (Story 30)
-        if (!testEvent.getWaitList().isEmpty()) {
-            Profile replacement = testEvent.getWaitList().get(0);
-            testEvent.addToWonList(replacement);
-            testEvent.removeFromWaitList(replacement);
-        }
-
-        // Notify users
-        NotifyUser notifyUser = new NotifyUser();
-        notifyUser.sendNotification(entrant1, "You’ve been accepted into " + testEvent.getTitle() + "!");
-        notifyUser.sendNotification(entrant2, "You’ve been cancelled from " + testEvent.getTitle() + ".");
-        notifyUser.sendNotification(entrant3, "You’ve been moved from waitlist to accepted!");
-
-
-        adapter = new MyRecyclerViewAdapter(demo_list);
         adapter.setClickListener((v, position) -> {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
@@ -199,7 +198,24 @@ public class AdminListFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
     }
-
+    private void startFirestoreListener() {
+        eventsRef = db.collection("Events"); // Corrected to capital 'E'
+        eventsRef.addSnapshotListener((snap, e) -> {
+            if (e != null) {
+                Log.e("Firestore", "Listen failed", e);
+                return;
+            }
+            if (snap != null && !snap.isEmpty()) {
+                events.clear();
+                for (QueryDocumentSnapshot doc : snap) {
+                    // Use .toObject() for robust deserialization
+                    Event event = doc.toObject(Event.class);
+                    events.add(event);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
     public void getEntrants() {
        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();

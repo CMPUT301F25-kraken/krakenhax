@@ -44,13 +44,6 @@ public class MainActivity extends AppCompatActivity {
         navController = navHostFragment.getNavController();
         bottom_navigation_bar = findViewById(R.id.bottom_navigation_bar);
         admin_navigation_bar = findViewById(R.id.bottom_navigation_Ad);
-        //if (!admin){
-        //
-        //} else {
-
-       // }
-
-
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             int destinationId = destination.getId();
