@@ -57,6 +57,9 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
+        this.waitListCap = 0;
+        this.WinnerNumber = 0;
+        this.useGeolocation = false;
     }
 
     /**
@@ -75,7 +78,6 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
-
     }
     /** Lightweight constructor for fake/local events */
     public Event(String id,
@@ -434,12 +436,28 @@ public class Event implements Parcelable {
     public void setWaitListCap(int cap) {
         this.waitListCap = cap;
     }
+    public int getWaitListCap() {
+        return this.waitListCap;
+    }
     public void setWinnerNumber(int num) {
         this.WinnerNumber = num;
+    }
+    public int getWinnerNumber() {
+        return this.WinnerNumber;
     }
     public void setUseGeolocation(boolean use) {
         this.useGeolocation = use;
     }
+    public boolean getUseGeolocation() {
+        return this.useGeolocation;
+    }
+    public Profile getOrgProfile() {
+        return this.orgProfile;
+    }
+    public void setOrgProfile(Profile profile) {
+        this.orgProfile = profile;
+    }
+
 
     /**
      * Flatten this object in to a Parcel.
