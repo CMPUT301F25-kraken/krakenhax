@@ -12,20 +12,44 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-
+/**
+ * Selects the type of user. Entrants or organizers.
+ * Packages the type into a bundle and sends it to the SignUpFragment with safe args.
+ */
 public class TypeChooserFragment extends Fragment {
     private Button entrant;
     private Button organizer;
     private NavController navController;
+    /**
+     * Required empty public constructor
+     */
     public TypeChooserFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_type, container, false);
     }
-
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored.
+     * Contains the main functionality of the fragment.
+     * Sets up the listeners for the buttons.
+     * On button click, it navigates to the SignUpFragment with the selected user type.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
