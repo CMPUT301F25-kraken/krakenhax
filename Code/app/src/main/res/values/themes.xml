@@ -1,13 +1,18 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.KrakenHax" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Set the status bar color to match the nav bar -->
+        <item name="android:statusBarColor">@color/eventCardBackgroundColor</item>
     </style>
 
     <style name="ShapeAppearance.App.CircleImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="ShapeAppearance.App.RoundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
     </style>
 
     <style name="Theme.KrakenHax" parent="Base.Theme.KrakenHax" />

@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -43,6 +42,7 @@ public class AdminListFragment extends Fragment {
     private CollectionReference profileRef;
 
 
+    //private ListView profileListView;
 
 
 
@@ -211,7 +211,7 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-           profileAdapter = new profileAdapter(requireContext(), EntrantList);
+           profileAdapter = new ProfileAdapter(requireContext(), EntrantList);
            profileListView.setAdapter(profileAdapter);
 
            profileListView.setOnItemClickListener((parent, view, position, id) -> {

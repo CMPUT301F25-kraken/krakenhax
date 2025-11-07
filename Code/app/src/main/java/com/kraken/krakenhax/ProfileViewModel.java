@@ -29,6 +29,7 @@ public class ProfileViewModel extends ViewModel {
         // Start listening for real-time updates from Firestore.
         addSnapshotListener();
     }
+
     public void addProfile(Profile profile) {
         ArrayList<Profile> currentList = profileList.getValue();
         if (currentList != null) {
@@ -36,6 +37,7 @@ public class ProfileViewModel extends ViewModel {
             profileList.setValue(currentList);
         }
     }
+
     private void addSnapshotListener() {
         // This listener will be active for the entire lifecycle of the ViewModel.
         profileCollection.addSnapshotListener((snapshots, error) -> {

@@ -82,6 +82,9 @@
         <action
             android:id="@+id/action_myEvents_to_MyEventDetailsFragment"
             app:destination="@id/MyEventDetailsFragment" />
+        <action
+            android:id="@+id/action_MyEventsFragment_to_CreateEventFragment"
+            app:destination="@id/CreateEventFragment" />
     </fragment>
 
     <!-- Destination for MyEventDetailsFragment -->
@@ -212,5 +215,16 @@
             android:id="@+id/action_adminListFragment_to_EventFragment"
             app:destination="@id/EventFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/CreateEventFragment"
+        android:name="com.kraken.krakenhax.CreateEventFragment"
+        android:label="CreateEventFragment"
+        tools:layout="@layout/create_event_fragment">
+        <action
+            android:id="@+id/action_CreateEventFragment_to_MyEventsFragment"
+            app:destination="@id/MyEventsFragment" />
+    </fragment>
+
 
 </navigation>

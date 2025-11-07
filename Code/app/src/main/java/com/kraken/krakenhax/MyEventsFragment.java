@@ -7,7 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,10 +37,11 @@ public class MyEventsFragment extends Fragment {
 
     private CollectionReference eventsRef;
     private MyRecyclerViewAdapter adapter;
+    private Button makeEventButton;
+
     public MyEventsFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +56,12 @@ public class MyEventsFragment extends Fragment {
 
         RecyclerView recycler_view_event_list2 = view.findViewById(R.id.recycler_view_events_list2);
         recycler_view_event_list2.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        makeEventButton = view.findViewById(R.id.MakeEventButton);
+
+        makeEventButton.setOnClickListener(v -> {
+            NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_CreateEventFragment);
+        });
 
 
         events = new ArrayList<>();
