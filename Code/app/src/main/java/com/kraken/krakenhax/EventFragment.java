@@ -36,6 +36,7 @@ public class EventFragment extends Fragment {
     private Button buttonNotify;
     private Button deleteButton;
     private FirebaseFirestore db;
+    private Event event;
 
     public EventFragment() {
         // Required empty public constructor
@@ -118,16 +119,50 @@ public class EventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             currentUser = mainActivity.currentUser;
         }
 
-        assert getArguments() != null;
-        Event event = getArguments().getParcelable("event_name");
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("event_name")) {
+            event = args.getParcelable("event_name");
+        }
 
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        // From QR Code
+        String eventId = null;
+        if (args != null && args.containsKey("eventId")) {
+            eventId = args.getString("eventId");
+        }
+
+        if (eventId != null && !eventId.isEmpty()) {
+            db.collection("Events").document(eventId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            event = (Event) document.toObject(Event.class);
+                        } else {
+                            // Document does not exist
+                            Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_SHORT).show();
+                            navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+                        }
+                    } else {
+                        Log.d("EventFragment", "get failed with ", task.getException());
+                        Toast.makeText(requireContext(), "Error retrieving event", Toast.LENGTH_SHORT).show();
+                        navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+                    }
+                }
+            });
+            return;
+        }
+
+        // No event info provided
+        Toast.makeText(requireContext(), "No event data provided", Toast.LENGTH_SHORT).show();
+        navController.navigate(R.id.action_EventFragment_to_EventsFragment);
 
         TextView tvEventName = view.findViewById(R.id.tv_event_name);
         assert event != null;
