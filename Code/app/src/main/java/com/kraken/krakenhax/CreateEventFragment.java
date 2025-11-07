@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+
 public class CreateEventFragment extends Fragment {
     private Button backButton;
     private Event event;
@@ -263,4 +264,5 @@ public class CreateEventFragment extends Fragment {
             }
         });
     }
+
 }
