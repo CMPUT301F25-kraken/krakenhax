@@ -2,13 +2,13 @@ package com.kraken.krakenhax;
 
 import org.junit.Before;
 import org.junit.Test;
+
 import java.util.ArrayList;
 
 /**
  * Simple tests for NotifyUser class.
  * Verifies notification logic runs without errors.
  *
- * Author: Amaan
  */
 public class NotifyUserTest {
 

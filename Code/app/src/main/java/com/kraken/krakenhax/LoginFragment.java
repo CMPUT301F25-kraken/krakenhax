@@ -1,19 +1,18 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast; // Import Toast
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer; // Import Observer
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -21,6 +20,11 @@ import androidx.navigation.Navigation;
 import java.util.ArrayList;
 import java.util.Objects;
 
+
+/**
+ * A simple {@link Fragment} for handling user login.
+ * It allows users to enter their credentials, sign up for a new account, or continue as a guest.
+ */
 public class LoginFragment extends Fragment {
     // Keep UI elements private
     private Button signup;
@@ -31,15 +35,34 @@ public class LoginFragment extends Fragment {
     private ProfileViewModel profileModel;
     private NavController navController;
 
+    /**
+     * Required empty public constructor for fragment instantiation.
+     */
     public LoginFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the user interface view for this fragment.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned,
+     * but before any saved state has been restored in to the view.
+     * This is where UI components are initialized and listeners are set up.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -83,9 +106,16 @@ public class LoginFragment extends Fragment {
         });
     }
 
+    /**
+     * Validates the user's login credentials against the list of profiles.
+     * On successful validation, it navigates to the appropriate screen.
+     *
+     * @param usernameInput The username entered by the user.
+     * @param passwordInput The password entered by the user.
+     */
     private void validateLogin(String usernameInput, String passwordInput) {
         // Get the LiveData from the ViewModel INSTANCE
-        LiveData<ArrayList<Profile>> profileListLiveData = profileModel.getProfileList();
+        LiveData<ArrayList<Profile>> profileListLiveData = ProfileViewModel.getProfileList();
 
         // Observe the LiveData to safely access the list of profiles
         profileListLiveData.observe(getViewLifecycleOwner(), new Observer<>() {

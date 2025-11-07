@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.util.Log;
+
 import java.util.List;
 
 /**
@@ -10,7 +11,6 @@ import java.util.List;
  *
  * <p>Collaborators: Entrant, Organizer, Event, NotifyLog</p>
  *
- * @author Amaan
  * @version 1.1
  */
 public class NotifyUser {

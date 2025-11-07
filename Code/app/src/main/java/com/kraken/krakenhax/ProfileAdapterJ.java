@@ -17,6 +17,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+/**
+ * Custom ArrayAdapter for displaying a list of Profile objects.
+ * This adapter is used to populate a ListView with profile information, including a checkbox for selection.
+ */
 public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
     private final ArrayList<Profile> profiles;
@@ -24,12 +28,24 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
     private final Set<String> selectedProfileIds = new HashSet<>();
 
+    /**
+     * Constructor for the ProfileAdapterJ.
+     * @param context The current context.
+     * @param profiles The list of profiles to be displayed.
+     */
     public ProfileAdapterJ(Context context, ArrayList<Profile> profiles) {
         super(context, 0, profiles);
         this.profiles = profiles;
         this.context = context;
     }
 
+    /**
+     * Get a View that displays the data at the specified position in the data set.
+     * @param position The position of the item within the adapter's data set of the item whose view we want.
+     * @param convertView The old view to reuse, if possible.
+     * @param parent The parent that this view will eventually be attached to.
+     * @return A View corresponding to the data at the specified position.
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -55,6 +71,10 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
         return view;
     }
 
+    /**
+     * Toggles the selection state of a profile at a given position.
+     * @param position The position of the profile to toggle.
+     */
     public void toggleSelection(int position) {
         Profile profile = profiles.get(position);
         if (profile != null) {
@@ -68,10 +88,17 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
         }
     }
 
+    /**
+     * Gets the set of currently selected profile IDs.
+     * @return A Set of strings containing the unique IDs of the selected profiles.
+     */
     public Set<String> getSelectedProfileIds() {
         return selectedProfileIds;
     }
 
+    /**
+     * Clears the current selection of profiles.
+     */
     public void clearSelection() {
         selectedProfileIds.clear();
         notifyDataSetChanged();

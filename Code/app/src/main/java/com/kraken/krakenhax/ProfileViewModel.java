@@ -11,15 +11,17 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
 
+/**
+ * ViewModel for managing and providing access to a list of user profiles.
+ * This class handles the business logic for fetching profile data from Firestore and making it available to the UI.
+ */
 public class ProfileViewModel extends ViewModel {
     private static MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
 
-    public static LiveData<ArrayList<Profile>> getProfileList() {
-        return profileList;
-    }
-
-    public CollectionReference profileCollection;
-
+    /**
+     * Constructor for the ProfileViewModel.
+     * Initializes Firestore and sets up a snapshot listener to keep the profile list updated in real-time.
+     */
     public ProfileViewModel() {
         profileList = new MutableLiveData<>();
         // Initialize the Firestore database and get the "Profiles" collection reference.
@@ -30,6 +32,21 @@ public class ProfileViewModel extends ViewModel {
         addSnapshotListener();
     }
 
+    public CollectionReference profileCollection;
+
+    /**
+     * Returns the LiveData list of profiles.
+     * UI components can observe this to get real-time updates.
+     * @return A LiveData object containing the list of profiles.
+     */
+    public static LiveData<ArrayList<Profile>> getProfileList() {
+        return profileList;
+    }
+
+    /**
+     * Adds a single profile to the local list.
+     * @param profile The profile to add.
+     */
     public void addProfile(Profile profile) {
         ArrayList<Profile> currentList = profileList.getValue();
         if (currentList != null) {
@@ -38,6 +55,10 @@ public class ProfileViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Attaches a snapshot listener to the Firestore "Profiles" collection.
+     * This listener updates the local profile list whenever the data changes in the database.
+     */
     private void addSnapshotListener() {
         // This listener will be active for the entire lifecycle of the ViewModel.
         profileCollection.addSnapshotListener((snapshots, error) -> {

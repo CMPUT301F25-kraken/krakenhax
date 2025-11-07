@@ -2,7 +2,6 @@ package com.kraken.krakenhax;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -12,7 +11,6 @@ import java.util.Objects;
  *
  * <p>Collaborators: Event, WaitList, Organizer, Administrator</p>
  *
- * @author Amaan, Jacob
  * @version 1.2
  */
 public class Profile {

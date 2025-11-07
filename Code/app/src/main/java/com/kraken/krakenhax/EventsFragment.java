@@ -31,16 +31,35 @@ public class EventsFragment extends Fragment {
     private ArrayList<Event> events;
     private CollectionReference eventsRef;
 
+    /**
+     * Required empty public constructor for fragment instantiation.
+     */
     public EventsFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the layout for this fragment.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_events, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned,
+     * but before any saved state has been restored in to the view.
+     * This is where UI components are initialized and listeners are set up.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -71,6 +90,9 @@ public class EventsFragment extends Fragment {
         });
     }
 
+    /**
+     * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
+     */
     private void startFirestoreListener() {
         eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.addSnapshotListener((snap, e) -> {

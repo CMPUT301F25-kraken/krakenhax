@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Set;
 
 
+/**
+ * A fragment for administrators to view and manage lists of users (Entrants, Organizers) and events.
+ */
 public class AdminListFragment extends Fragment {
     private final ArrayList<Profile> EntrantList = new ArrayList<>();
     public ProfileViewModel profileModel;
@@ -46,11 +49,27 @@ public class AdminListFragment extends Fragment {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the layout for this fragment.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_admin_list, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned,
+     * but before any saved state has been restored in to the view.
+     * This is where UI components are initialized and listeners are set up.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
@@ -131,6 +150,11 @@ public class AdminListFragment extends Fragment {
         });
     }
 
+    /**
+     * Populates the RecyclerView with a list of events and sets up a click listener.
+     * @param view The current view.
+     * @param navController The navigation controller for handling item clicks.
+     */
     public void getEvents(View view, NavController navController) {
 
         ArrayList<Event> demo_list = new ArrayList<>();
@@ -188,6 +212,9 @@ public class AdminListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
     }
 
+    /**
+     * Fetches and displays a list of all users with the 'Entrant' type.
+     */
     public void getEntrants() {
         ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
@@ -207,6 +234,9 @@ public class AdminListFragment extends Fragment {
         });
     }
 
+    /**
+     * Fetches and displays a list of all users with the 'Organizer' type.
+     */
     public void getOrganizers() {
         ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();

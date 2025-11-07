@@ -21,10 +21,20 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     private final ArrayList<Event> data;
     private ItemClickListener clickListener;
 
+    /**
+     * Constructor for the adapter.
+     * @param data The list of events to be displayed.
+     */
     public MyRecyclerViewAdapter(ArrayList<Event> data) {
         this.data = data;
     }
 
+    /**
+     * Called when RecyclerView needs a new {@link MyViewHolder} to represent an item.
+     * @param parent The ViewGroup into which the new View will be added.
+     * @param viewType The view type of the new View.
+     * @return A new MyViewHolder that holds a View of the given view type.
+     */
     @NonNull
     @Override
     public MyRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -32,6 +42,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         return new MyRecyclerViewAdapter.MyViewHolder(view);
     }
 
+    /**
+     * Called by RecyclerView to display the data at the specified position.
+     * @param holder The ViewHolder which should be updated to represent the contents of the item.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull MyRecyclerViewAdapter.MyViewHolder holder, int position) {
         Event event = data.get(position);
@@ -50,26 +65,51 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         }
     }
 
+    /**
+     * Returns the total number of items in the data set held by the adapter.
+     * @return The total number of items in this adapter.
+     */
     @Override
     public int getItemCount() {
         return data.size();
     }
 
+    /**
+     * Updates the data set of the adapter.
+     * @param newData The new list of events to display.
+     */
     public void updateData(ArrayList<Event> newData) {
         this.data.clear();
         this.data.addAll(newData);
         notifyDataSetChanged();
     }
 
+    /**
+     * Sets the click listener for the items in the RecyclerView.
+     * @param itemClickListener The listener to be set.
+     */
     public void setClickListener(ItemClickListener itemClickListener) {
         this.clickListener = itemClickListener;
     }
 
+    /**
+     * Gets the event at a specific position.
+     * @param id The position of the item.
+     * @return The event at the specified position.
+     */
     public Event getItem(int id) {
         return data.get(id);
     }
 
+    /**
+     * Interface for handling click events on RecyclerView items.
+     */
     public interface ItemClickListener {
+        /**
+         * Called when an item in the RecyclerView is clicked.
+         * @param view The view that was clicked.
+         * @param position The position of the view in the adapter.
+         */
         void onItemClick(View view, int position);
     }
 
@@ -81,6 +121,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
         final TextView tvDescription;
         final ImageView ivEventImage;
+
+        /**
+         * Constructor for the MyViewHolder.
+         * @param itemView The view for a single row in the list.
+         */
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -91,6 +136,10 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
             itemView.setOnClickListener(this);
         }
 
+        /**
+         * Called when a view has been clicked.
+         * @param view The View that was clicked.
+         */
         @Override
         public void onClick(View view) {
             if (clickListener != null) {

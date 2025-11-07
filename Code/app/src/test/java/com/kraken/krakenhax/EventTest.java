@@ -1,16 +1,20 @@
 package com.kraken.krakenhax;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
-import java.util.ArrayList;
+
 import java.time.ZonedDateTime;
-import static org.junit.Assert.*;
+import java.util.ArrayList;
 
 /**
  * Unit tests for the Event class.
  * Verifies basic getters/setters, category logic, and timeframe validation.
  *
- * Author: Amaan
  */
 public class EventTest {
 
