@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Event Page
+ * A {@link Fragment} that displays the details of a single event.
+ * It handles user interactions such as signing up, withdrawing, accepting, declining, and deleting an event.
+ * The UI dynamically changes based on the user's role and their status for the event.
  */
 public class EventFragment extends Fragment {
     private Profile currentUser;
@@ -38,10 +40,17 @@ public class EventFragment extends Fragment {
     private FirebaseFirestore db;
     private Event event;
 
+    /**
+     * Required empty public constructor for fragment instantiation.
+     */
     public EventFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Updates the given event document in the "Events" collection in Firestore.
+     * @param event The event object to be updated.
+     */
     private void updateEventInFirestore(Event event) {
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).set(event)
@@ -50,6 +59,12 @@ public class EventFragment extends Fragment {
         }
     }
 
+    /**
+     * Deletes the given event document from the "Events" collection in Firestore.
+     * On success, it navigates back to the previous screen.
+     * @param event The event object to be deleted.
+     * @param navController The NavController used to navigate back.
+     */
     private void deleteEventFromFirestore(Event event, NavController navController) {
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).delete()
@@ -61,6 +76,12 @@ public class EventFragment extends Fragment {
         }
     }
 
+    /**
+     * Dynamically updates the visibility and text of action buttons based on the user's relationship with the event.
+     * @param view The parent view containing the buttons.
+     * @param event The event being displayed.
+     * @param navController The NavController for navigation.
+     */
     private void updateButtons(View view, Event event, NavController navController) {
         buttonAccept = view.findViewById(R.id.button_accept);
         buttonDecline = view.findViewById(R.id.button_decline);
@@ -109,6 +130,14 @@ public class EventFragment extends Fragment {
         }
     }
 
+    /**
+     * Inflates the user interface view for this fragment.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         db = FirebaseFirestore.getInstance();
@@ -116,6 +145,14 @@ public class EventFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned,
+     * but before any saved state has been restored in to the view.
+     * This is where UI components are initialized, event data is retrieved, and listeners are set up.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
