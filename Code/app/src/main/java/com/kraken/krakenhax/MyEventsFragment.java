@@ -108,7 +108,7 @@ public class MyEventsFragment extends Fragment {
         return view;
     }
     private void startFirestoreListener() {
-        eventsRef = db.collection("events");
+        eventsRef = db.collection("Events");
         eventsRef.addSnapshotListener((snap, e) -> {
                     if (e != null) {
                         Log.e("Firestore", "Listen failed", e);
