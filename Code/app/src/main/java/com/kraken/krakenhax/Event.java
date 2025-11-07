@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Represents an event in the KrakenHax application.
@@ -21,12 +22,12 @@ import java.util.Collections;
  */
 
 public class Event implements Parcelable {
-    private String title; //Done
-    private ArrayList<String> categories; //Done
-    private ArrayList<ZonedDateTime> timeframe; //Done
-    private String eventDetails; //Done
-    private String location; //Done
-    private Integer Radius; //Done
+    private String title;
+    private ArrayList<String> categories;
+    private ArrayList<ZonedDateTime> timeframe;
+    private String eventDetails;
+    private String location;
+    private Integer Radius;
     private String poster;
     private ArrayList<Profile> waitList;
     private ArrayList<Profile> lostList;
@@ -34,6 +35,9 @@ public class Event implements Parcelable {
     private ArrayList<Profile> cancelList;
     private ArrayList<Profile> acceptList;
     private String id;
+    private int waitListCap;
+    private int WinnerNumber;
+    private boolean useGeolocation;
 
 
     /**
@@ -349,7 +353,7 @@ public class Event implements Parcelable {
 
     /**
      * Retrieves the AcceptList associated with this event.
-     * This list stores entrants who were accepted their entry after the draw.
+     * This list stores entrants who accepted their entry after the draw.
      *
      * @return the ArrayList for this event's AcceptList
      */
@@ -374,11 +378,23 @@ public class Event implements Parcelable {
     }
 
     public void addToWaitList(Profile profile) {
-        this.waitList.add(profile);
+        if (this.waitListCap <= 0) {
+            this.waitList.add(profile);
+        } else {
+            if (this.waitList.size() < this.waitListCap) {
+                this.waitList.add(profile);
+            } else {
+                throw new IllegalArgumentException("Waitlist is full");
+            }
+        }
     }
 
     public void addToWonList(Profile profile) {
-        this.wonList.add(profile);
+        if (wonList.size() >= this.WinnerNumber) {
+            throw new IllegalArgumentException("Wonlist is full");
+        } else {
+            this.wonList.add(profile);
+        }
     }
 
     public void addToLostList(Profile profile) {
@@ -427,6 +443,16 @@ public class Event implements Parcelable {
         }
 
         this.lostList = losers;
+    }
+
+    public void setWaitListCap(int cap) {
+        this.waitListCap = cap;
+    }
+    public void setWinnerNumber(int num) {
+        this.WinnerNumber = num;
+    }
+    public void setUseGeolocation(boolean use) {
+        this.useGeolocation = use;
     }
 
     /**
