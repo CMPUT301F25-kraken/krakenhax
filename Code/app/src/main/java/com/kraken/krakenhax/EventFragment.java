@@ -19,18 +19,31 @@ import androidx.navigation.Navigation;
  */
 public class EventFragment extends Fragment {
     private Profile currentUser;
+    private Button buttonSignup;
+    private Button buttonAccept;
+    private Button buttonDecline;
+    private Button buttonNotify;
+    private Button deleteButton;
+
 
     public EventFragment() {
         // Required empty public constructor
     }
 
     private void updateButtons(View view, Event event, NavController navController) {
-        Button buttonAccept = view.findViewById(R.id.button_accept);
-        Button buttonDecline = view.findViewById(R.id.button_decline);
-        Button buttonSignup = view.findViewById(R.id.button_signup);
+        buttonAccept = view.findViewById(R.id.button_accept);
+        buttonDecline = view.findViewById(R.id.button_decline);
+        buttonSignup = view.findViewById(R.id.button_signup);
+        deleteButton = view.findViewById(R.id.EventDeleteButton);
+
 
         // Logic for buttons depending on users status in the event.
         // WON LOTTERY, WAITING TO ACCEPT
+        if (currentUser.getType().equals("Admin")){
+            buttonSignup.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.VISIBLE);
+            //buttonNotify.setVisibility(View.VISIBLE);
+        }
         if (event.getWonList().contains(currentUser)) {
             buttonSignup.setVisibility(View.GONE);
             buttonAccept.setVisibility(View.VISIBLE);
@@ -107,13 +120,21 @@ public class EventFragment extends Fragment {
         // Set up on click listener for button to go back to events view
         Button buttonBack = view.findViewById(R.id.button_back);
         buttonBack.setOnClickListener(v -> {
-            navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+            if (currentUser.getType().equals("Admin")) {
+                navController.navigate(R.id.action_MyEventDetailsFragment_to_AdminListFragment);
+            } else {
+                navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+
+            }
         });
 
         updateButtons(view, event, navController);
 
         // Demo: simulate organizer notification for this event
-        Button buttonNotify = view.findViewById(R.id.button_notify);
+        buttonNotify = view.findViewById(R.id.button_notify);
+        if (currentUser.getType().equals("Admin")) {
+            buttonNotify.setVisibility(View.GONE);
+        }
         buttonNotify.setOnClickListener(v -> {
             NotifyUser notifyUser = new NotifyUser();
             notifyUser.sendNotification(new Profile("1","DemoUser", "pass", "Entrant", "demo@example.com", "0"),

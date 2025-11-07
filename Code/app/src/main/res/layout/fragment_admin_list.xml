@@ -22,7 +22,7 @@
 
     <Spinner
         android:id="@+id/spinner_admin_lists"
-        android:layout_width="409dp"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:prompt="@string/spinner_prompt"
@@ -57,5 +57,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_admin_lists" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/DelSelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Selected"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/linear_layout_events_list"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
