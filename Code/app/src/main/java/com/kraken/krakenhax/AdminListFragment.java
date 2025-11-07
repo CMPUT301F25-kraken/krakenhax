@@ -40,6 +40,7 @@ public class AdminListFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
     public FirebaseFirestore db;
     public ProfileAdapterJ profileAdapterJ;
+
     private ArrayList<Event> events;
     private RecyclerView recyclerView;
     private ListView profileListView;

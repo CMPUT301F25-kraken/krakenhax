@@ -35,6 +35,11 @@ import java.util.Date;
 import java.util.Locale;
 
 
+/**
+ * A {@link Fragment} for creating a new event.
+ * It provides a form for organizers to input event details such as title, description, location, and timeframe.
+ * It also handles event poster uploads.
+ */
 public class CreateEventFragment extends Fragment {
     private Button backButton;
     private Event event;
@@ -71,7 +76,6 @@ public class CreateEventFragment extends Fragment {
         confirmButton = view.findViewById(R.id.ConfirmEditsButton);
         return view;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

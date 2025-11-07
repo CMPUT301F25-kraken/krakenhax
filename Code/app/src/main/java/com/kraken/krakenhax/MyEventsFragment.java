@@ -21,7 +21,9 @@ import java.util.Objects;
 
 
 /**
- * Displays a list of events. For the entrant the events he signed up for. For the organizer the events he is organizing.
+ * Displays a list of events relevant to the current user.
+ * For an organizer, it shows events they have created.
+ * For an entrant, it should show events they have signed up for (current implementation is for organizers).
  */
 public class MyEventsFragment extends Fragment {
 
@@ -34,10 +36,22 @@ public class MyEventsFragment extends Fragment {
     private Button makeEventButton;
     private Profile orgProfile;
 
+    /**
+     * Required empty public constructor for fragment instantiation.
+     */
     public MyEventsFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the layout for this fragment, initializes UI components and Firestore,
+     * and sets up listeners for user interactions.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -89,6 +103,10 @@ public class MyEventsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Sets up a Firestore snapshot listener to get real-time updates for the "Events" collection.
+     * It filters events to show only those created by the current user (organizer).
+     */
     private void startFirestoreListener() {
         eventsRef = db.collection("Events");
         eventsRef.addSnapshotListener((snap, e) -> {

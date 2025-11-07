@@ -24,6 +24,11 @@ import com.google.firebase.storage.StorageRegistrar;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
+
+/**
+ * A {@link Fragment} that displays the detailed view of an event created by the current user (organizer).
+ * It allows the organizer to upload a poster, view entrant information, and displays event details in real-time.
+ */
 public class MyEventDetailsFragment extends Fragment {
     private FirebaseStorage storage;
     private FirebaseFirestore db;
@@ -41,10 +46,22 @@ public class MyEventDetailsFragment extends Fragment {
     //hardcoded event for now
     //private Event selectedEvent;
 
+    /**
+     * Required empty public constructor for fragment instantiation.
+     */
     public MyEventDetailsFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the layout for this fragment, initializes Firestore and Storage,
+     * and sets up listeners for UI components.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_event_details, container, false);
@@ -144,6 +161,11 @@ public class MyEventDetailsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Sets up a real-time Firestore snapshot listener for the current event document.
+     * This ensures the UI is always displaying the most up-to-date event information.
+     * @param view The root view of the fragment, used to find UI elements to update.
+     */
     private void setupFirestoreListener(View view) {
         if (event == null || event.getId() == null) {
             Log.e("Firestore", "Event or Event ID is null. Cannot set up listener.");
@@ -169,6 +191,10 @@ public class MyEventDetailsFragment extends Fragment {
         });
     }
 
+    /**
+     * Updates all UI elements in the fragment with the latest data from the event object.
+     * @param view The root view of the fragment, used to find UI elements.
+     */
     private void updateUI(View view) {
         if (event == null) return;
 
@@ -196,6 +222,9 @@ public class MyEventDetailsFragment extends Fragment {
         }
     }
 
+    /**
+     * Uploads the selected poster image to Firebase Storage and updates the event document with the image URL.
+     */
     public void uploadPosterForEvent() {
         if (filePath != null && event != null && event.getId() != null) {
             StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
