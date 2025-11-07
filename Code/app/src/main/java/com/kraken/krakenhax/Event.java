@@ -38,7 +38,7 @@ public class Event implements Parcelable {
     private int waitListCap;
     private int WinnerNumber;
     private boolean useGeolocation;
-    private Profile orgProfile;
+    private String orgId;
 
 
     /**
@@ -451,11 +451,11 @@ public class Event implements Parcelable {
     public boolean getUseGeolocation() {
         return this.useGeolocation;
     }
-    public Profile getOrgProfile() {
-        return this.orgProfile;
+    public String getOrgId() {
+        return this.orgId;
     }
-    public void setOrgProfile(Profile profile) {
-        this.orgProfile = profile;
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
 

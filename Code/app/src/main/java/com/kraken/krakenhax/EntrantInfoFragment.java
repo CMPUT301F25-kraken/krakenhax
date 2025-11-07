@@ -54,7 +54,7 @@ public class EntrantInfoFragment extends Fragment {
 
         event.addToWaitList(new Profile("test", "test", "test", "test", "test", "test"));
         event.addToWaitList(new Profile("test2", "test2", "test2", "test2", "test2", "test2"));
-//        event.addToWonList(new Profile("test4", "test4", "test4", "test4", "test4", "test4"));
+        //event.addToWonList(new Profile("test4", "test4", "test4", "test4", "test4", "test4"));
 
         List<String> statuses = Arrays.asList("Waitlisted", "Enrolled", "Cancelled");
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(
