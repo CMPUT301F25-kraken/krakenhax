@@ -36,7 +36,6 @@ public class EventFragment extends Fragment {
         buttonSignup = view.findViewById(R.id.button_signup);
         deleteButton = view.findViewById(R.id.EventDeleteButton);
 
-
         // Logic for buttons depending on users status in the event.
         // WON LOTTERY, WAITING TO ACCEPT
         if (currentUser.getType().equals("Admin")){
@@ -116,6 +115,10 @@ public class EventFragment extends Fragment {
         TextView tvEventName = view.findViewById(R.id.tv_event_name);
         assert event != null;
         tvEventName.setText(event.getTitle());
+
+        // Set the event location
+        TextView tvLocation = view.findViewById(R.id.tv_location_field);
+        tvLocation.setText(event.getLocation());
 
         // Set up on click listener for button to go back to events view
         Button buttonBack = view.findViewById(R.id.button_back);
