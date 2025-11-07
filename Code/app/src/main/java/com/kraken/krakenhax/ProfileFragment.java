@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,8 +29,6 @@ public class ProfileFragment extends Fragment {
 
     private FirebaseFirestore db;
     private CollectionReference ProfileRef;
-
-
 
     /**
      * Required empty public constructor
@@ -82,28 +82,30 @@ public class ProfileFragment extends Fragment {
         // Set a default profile picture
         profilePic.setImageResource(R.drawable.obama);
 
-        updateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newUsername = usernameView.getText().toString();
-                String newEmail = EmailView.getText().toString();
-                String phoneNumberStr = PhoneNumberView.getText().toString();
+        updateButton.setOnClickListener(v -> {
+            String newUsername = usernameView.getText().toString();
+            String newEmail = EmailView.getText().toString();
+            String phoneNumberStr = PhoneNumberView.getText().toString();
 
-                profile.setUsername(newUsername);
-                profile.setEmail(newEmail);
+            profile.setUsername(newUsername);
+            profile.setEmail(newEmail);
 
-
-                try {
-                    profile.setPhoneNumber(phoneNumberStr);
-                } catch (NumberFormatException e) {
-                    profile.setPhoneNumber("0");
-                }
-                assert mainActivity != null;
-                mainActivity.currentUser = profile;
-                String ID = String.valueOf(profile.getID());
-                ProfileRef.document(ID).set(profile);
-
+            try {
+                profile.setPhoneNumber(phoneNumberStr);
+            } catch (NumberFormatException e) {
+                profile.setPhoneNumber("0");
             }
+            assert mainActivity != null;
+            mainActivity.currentUser = profile;
+            String ID = String.valueOf(profile.getID());
+            ProfileRef.document(ID).set(profile);
+
+        });
+
+        Button signoutButton = view.findViewById(R.id.button_signout);
+        signoutButton.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+            navController.navigate(R.id.action_signout);
         });
 
         return view;

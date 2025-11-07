@@ -36,6 +36,8 @@ import java.util.Set;
 public class AdminListFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
 
+public class AdminListFragment extends Fragment {
+    private final ArrayList<Profile> EntrantList = new ArrayList<>();
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
     public ProfileAdapterJ profileAdapterJ;
@@ -47,7 +49,6 @@ public class AdminListFragment extends Fragment {
     private CheckBox checkBox;
     private CollectionReference profileRef;
     private CollectionReference eventsRef;
-
 
     //private ListView profileListView;
 
@@ -101,7 +102,6 @@ public class AdminListFragment extends Fragment {
         profileListView = view.findViewById(R.id.list_view_admin_lists);
         DelSelButton = view.findViewById(R.id.DelSelButton);
 
-
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         ArrayAdapter<String> SpinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, spinnerList);
         SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -139,7 +139,6 @@ public class AdminListFragment extends Fragment {
             }
         });
 
-
         DelSelButton.setOnClickListener(v -> {
 
             if (profileAdapterJ == null) return;
@@ -165,7 +164,6 @@ public class AdminListFragment extends Fragment {
 
             profileAdapterJ.clearSelection();
             profileAdapterJ.notifyDataSetChanged();
-
 
             Toast.makeText(requireContext(), "Delete Selected", Toast.LENGTH_SHORT).show();
 
@@ -217,7 +215,7 @@ public class AdminListFragment extends Fragment {
         });
     }
     public void getEntrants() {
-       ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {
@@ -226,13 +224,13 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-           profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
-           profileListView.setAdapter(profileAdapterJ);
+            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
+            profileListView.setAdapter(profileAdapterJ);
 
-           profileListView.setOnItemClickListener((parent, view, position, id) -> {
-               profileAdapterJ.toggleSelection(position);
-           });
-       });
+            profileListView.setOnItemClickListener((parent, view, position, id) -> {
+                profileAdapterJ.toggleSelection(position);
+            });
+        });
     }
 
     public void getOrganizers() {

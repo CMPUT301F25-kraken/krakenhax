@@ -103,6 +103,7 @@
             app:destination="@id/adminListFragment" />
 
     </fragment>
+
     <!-- Destination for EntrantInfoFragment -->
     <fragment
         android:id="@+id/EntrantInfoFragment"
@@ -131,7 +132,13 @@
 
         <action
             android:id="@+id/action_ProfileFragment_to_adminListFragment"
-            app:destination="@id/adminListFragment"/>
+            app:destination="@id/adminListFragment" />
+
+        <!-- Action to sign out -->
+        <action
+            android:id="@+id/action_signout"
+            app:destination="@+id/LoginFragment" />
+
     </fragment>
 
     <!-- Destination for Login Fragment -->
@@ -208,8 +215,9 @@
         android:label="AdminListFragment"
         tools:layout="@layout/fragment_admin_list">
 
-        <action android:id="@+id/action_adminListFragment_to_profileFragment"
-            app:destination="@id/ProfileFragment"/>
+        <action
+            android:id="@+id/action_adminListFragment_to_profileFragment"
+            app:destination="@id/ProfileFragment" />
 
         <action
             android:id="@+id/action_adminListFragment_to_EventFragment"

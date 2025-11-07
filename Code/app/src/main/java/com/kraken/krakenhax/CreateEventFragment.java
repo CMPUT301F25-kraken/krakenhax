@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+
 public class CreateEventFragment extends Fragment {
     private Button backButton;
     private Event event;
@@ -95,8 +96,11 @@ public class CreateEventFragment extends Fragment {
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        Profile currentUser = mainActivity.currentUser;
         event = new Event();
         event.setId(FirebaseFirestore.getInstance().collection("events").document().getId());
+        event.setOrgId(currentUser.getID());
         navController = Navigation.findNavController(view);
         backButton.setOnClickListener(v -> {
             // Navigate back to the my events fragment
@@ -226,7 +230,8 @@ public class CreateEventFragment extends Fragment {
 
                 SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
                 dateTimeButton.setText(String.format("%s - %s", formatter.format(startDate), formatter.format(endDate)));
-
+                startDate.toString();
+                endDate.toString();
             });
         });
 
@@ -259,4 +264,5 @@ public class CreateEventFragment extends Fragment {
             }
         });
     }
+
 }
