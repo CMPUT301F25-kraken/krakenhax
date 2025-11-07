@@ -1,5 +1,7 @@
+// java
 package com.kraken.krakenhax;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -16,11 +18,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
-/**
- * The main and only activity for the application.
- * This activity hosts the navigation component and manages the primary UI container and navigation bars.
- */
 public class MainActivity extends AppCompatActivity {
     public NavController navController;
     public BottomNavigationView bottom_navigation_bar;
@@ -81,7 +78,13 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
+
     }
 
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Ensure fragments read the latest deep link when the activity is reused
+        setIntent(intent);
+    }
 }

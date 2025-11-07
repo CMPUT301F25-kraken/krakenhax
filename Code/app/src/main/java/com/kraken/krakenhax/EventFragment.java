@@ -7,12 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -32,6 +38,7 @@ public class EventFragment extends Fragment {
     private Button buttonNotify;
     private Button deleteButton;
     private FirebaseFirestore db;
+    private Event event;
 
     /**
      * Required empty public constructor for fragment instantiation.
@@ -133,6 +140,8 @@ public class EventFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        db = FirebaseFirestore.getInstance();
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
@@ -147,18 +156,50 @@ public class EventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        db = FirebaseFirestore.getInstance();
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             currentUser = mainActivity.currentUser;
         }
 
-        assert getArguments() != null;
-        Event event = getArguments().getParcelable("event_name");
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("event_name")) {
+            event = args.getParcelable("event_name");
+        }
 
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        // From QR Code
+        String eventId = null;
+        if (args != null && args.containsKey("eventId")) {
+            eventId = args.getString("eventId");
+        }
+
+        if (eventId != null && !eventId.isEmpty()) {
+            db.collection("Events").document(eventId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            event = (Event) document.toObject(Event.class);
+                        } else {
+                            // Document does not exist
+                            Toast.makeText(requireContext(), "Event not found", Toast.LENGTH_SHORT).show();
+                            navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+                        }
+                    } else {
+                        Log.d("EventFragment", "get failed with ", task.getException());
+                        Toast.makeText(requireContext(), "Error retrieving event", Toast.LENGTH_SHORT).show();
+                        navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+                    }
+                }
+            });
+            return;
+        }
+
+        // No event info provided
+        Toast.makeText(requireContext(), "No event data provided", Toast.LENGTH_SHORT).show();
+        navController.navigate(R.id.action_EventFragment_to_EventsFragment);
 
         TextView tvEventName = view.findViewById(R.id.tv_event_name);
         assert event != null;

@@ -1,5 +1,7 @@
 package com.kraken.krakenhax;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +37,8 @@ public class LoginFragment extends Fragment {
     private Button guest;
     private ProfileViewModel profileModel;
     private NavController navController;
+
+    private String eventId;
 
     /**
      * Required empty public constructor
@@ -84,6 +88,12 @@ public class LoginFragment extends Fragment {
         navController = Navigation.findNavController(view);
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
+        Uri intentData = getActivity().getIntent().getData();
+        if (intentData != null) {
+            eventId = intentData.getLastPathSegment();
+            Log.d("LoginFragment", "Received eventId from intent: " + eventId);
+        }
+
         // --- Find Views ---
         signup = view.findViewById(R.id.signup_button);
         login = view.findViewById(R.id.login_button);
@@ -115,7 +125,13 @@ public class LoginFragment extends Fragment {
                 mainActivity.currentUser =  new Profile("5", "Guest", "Guest", "Guest", "Guest" + "@gmail.com", "0");
                 mainActivity.loggedIn = true; // Make sure to set this for guest too
             }
-            navController.navigate(R.id.action_login_to_events);
+            if (eventId != null) {
+                Bundle b = new Bundle();
+                b.putString("eventId", eventId);
+                navController.navigate(R.id.action_LoginFragment_to_EventFragment, b);
+            } else {
+                navController.navigate(R.id.action_login_to_events);
+            }
         });
     }
 
@@ -157,7 +173,12 @@ public class LoginFragment extends Fragment {
                     }
                     Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
 
-                    // Navigate based on user type
+                    // Navigate based on user type, or if eventId is present
+                    if (eventId != null) {
+                        Bundle b = new Bundle();
+                        b.putString("eventId", eventId);
+                        navController.navigate(R.id.action_LoginFragment_to_EventFragment, b);
+                    } else
                     if (Objects.equals(foundUser.getType(), "Organizer")) {
                         navController.navigate(R.id.action_login_to_events);
                     } else if (Objects.equals(foundUser.getType(), "Entrant")) {
