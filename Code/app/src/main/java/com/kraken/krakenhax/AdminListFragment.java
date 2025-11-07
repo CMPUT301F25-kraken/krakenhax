@@ -27,36 +27,29 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class AdminListFragment extends Fragment {
-    private MyRecyclerViewAdapter adapter;
 
+public class AdminListFragment extends Fragment {
+    private final ArrayList<Profile> EntrantList = new ArrayList<>();
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
     public ProfileAdapterJ profileAdapterJ;
-    private final ArrayList<Profile> EntrantList = new ArrayList<>();
+    private MyRecyclerViewAdapter adapter;
     private RecyclerView recyclerView;
     private ListView profileListView;
     private Button DelSelButton;
     private CheckBox checkBox;
     private CollectionReference profileRef;
 
-
     //private ListView profileListView;
-
-
-
 
     public AdminListFragment() {
         // Required empty public constructor
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_admin_list, container, false);
     }
-
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -69,7 +62,6 @@ public class AdminListFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view_admin_lists);
         profileListView = view.findViewById(R.id.list_view_admin_lists);
         DelSelButton = view.findViewById(R.id.DelSelButton);
-
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         ArrayAdapter<String> SpinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, spinnerList);
@@ -108,7 +100,6 @@ public class AdminListFragment extends Fragment {
             }
         });
 
-
         DelSelButton.setOnClickListener(v -> {
 
             if (profileAdapterJ == null) return;
@@ -135,14 +126,12 @@ public class AdminListFragment extends Fragment {
             profileAdapterJ.clearSelection();
             profileAdapterJ.notifyDataSetChanged();
 
-
             Toast.makeText(requireContext(), "Delete Selected", Toast.LENGTH_SHORT).show();
 
         });
     }
 
-    public void getEvents(View view, NavController navController){
-
+    public void getEvents(View view, NavController navController) {
 
         ArrayList<Event> demo_list = new ArrayList<>();
         demo_list.add(new Event("Event 1"));
@@ -186,7 +175,6 @@ public class AdminListFragment extends Fragment {
         notifyUser.sendNotification(entrant2, "You’ve been cancelled from " + testEvent.getTitle() + ".");
         notifyUser.sendNotification(entrant3, "You’ve been moved from waitlist to accepted!");
 
-
         adapter = new MyRecyclerViewAdapter(demo_list);
         adapter.setClickListener((v, position) -> {
             Event clickedEvent = adapter.getItem(position);
@@ -201,7 +189,7 @@ public class AdminListFragment extends Fragment {
     }
 
     public void getEntrants() {
-       ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {
@@ -210,13 +198,13 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-           profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
-           profileListView.setAdapter(profileAdapterJ);
+            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
+            profileListView.setAdapter(profileAdapterJ);
 
-           profileListView.setOnItemClickListener((parent, view, position, id) -> {
-               profileAdapterJ.toggleSelection(position);
-           });
-       });
+            profileListView.setOnItemClickListener((parent, view, position, id) -> {
+                profileAdapterJ.toggleSelection(position);
+            });
+        });
     }
 
     public void getOrganizers() {
