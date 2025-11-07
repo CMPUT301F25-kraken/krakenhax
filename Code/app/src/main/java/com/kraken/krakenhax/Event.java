@@ -196,18 +196,9 @@ public class Event implements Parcelable {
      * Sets the timeframe of the event.
      * @param timeframe
      *        an ArrayList of Timestamp representing the event timeframe
-     * @throws IllegalArgumentException
-     *        if the timeframe ArrayList is not of size 2
-     *        if the start time is after the end time
      */
     public void setTimeframe(ArrayList<Timestamp> timeframe) {
-        if (timeframe.size() != 2) {
-            throw new IllegalArgumentException("Timeframe only have start and end fields");
-        } else if (timeframe.get(0).compareTo(timeframe.get(1)) > 0) {
-            throw new IllegalArgumentException("Start time cannot be after end time");
-        } else {
-            this.timeframe = timeframe;
-        }
+        this.timeframe = timeframe;
     }
 
 

@@ -21,15 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnGoToNew"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="add fake events"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_my_events" />
-
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
@@ -39,7 +30,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnGoToNew">
+        app:layout_constraintTop_toBottomOf="@+id/tv_my_events">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_events_list2"
