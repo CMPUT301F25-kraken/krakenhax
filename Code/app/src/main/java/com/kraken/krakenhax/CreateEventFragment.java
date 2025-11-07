@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -24,16 +25,14 @@ import androidx.navigation.Navigation;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class CreateEventFragment extends Fragment {
     private Button backButton;
@@ -52,9 +51,6 @@ public class CreateEventFragment extends Fragment {
     private ImageView eventPoster;
     private Button confirmButton;
 
-
-
-
     private NavController navController;
 
     @Override
@@ -71,7 +67,6 @@ public class CreateEventFragment extends Fragment {
         dateTimeButton = view.findViewById(R.id.ChangeDateTimeButton);
         eventPoster = view.findViewById(R.id.imagePosterView);
         uploadPosterButton = view.findViewById(R.id.UploadPosterButton);
-        dateTimeButton = view.findViewById(R.id.ChangeDateTimeButton);
         confirmButton = view.findViewById(R.id.ConfirmEditsButton);
         return view;
     }
@@ -122,7 +117,7 @@ public class CreateEventFragment extends Fragment {
             public void afterTextChanged(android.text.Editable s) {
                 if (event != null) {
                     event.setTitle(s.toString());
-                    Log.d("EditText", "afterTextChanged: " + s.toString());
+                    Log.d("EditText", "afterTextChanged: " + s);
                 }
             }
         });
@@ -141,7 +136,7 @@ public class CreateEventFragment extends Fragment {
             public void afterTextChanged(android.text.Editable s) {
                 if (event != null) {
                     event.setEventDetails(s.toString());
-                    Log.d("TextInputEditText", "afterTextChanged: " + s.toString());
+                    Log.d("TextInputEditText", "afterTextChanged: " + s);
                 }
             }
         });
@@ -160,7 +155,7 @@ public class CreateEventFragment extends Fragment {
             public void afterTextChanged(android.text.Editable s) {
                 if (event != null) {
                     event.setLocation(s.toString());
-                    Log.d("EditText", "afterTextChanged: " + s.toString());
+                    Log.d("EditText", "afterTextChanged: " + s);
                 }
             }
         });
@@ -176,9 +171,9 @@ public class CreateEventFragment extends Fragment {
 
             @Override
             public void afterTextChanged(android.text.Editable s) {
-                if (event != null) {
+                if (event != null && !s.toString().isEmpty()) {
                     event.setWinnerNumber(Integer.parseInt(s.toString()));
-                    Log.d("EditText", "afterTextChanged: " + s.toString());
+                    Log.d("EditText", "afterTextChanged: " + s);
                 }
             }
         });
@@ -195,9 +190,9 @@ public class CreateEventFragment extends Fragment {
 
             @Override
             public void afterTextChanged(android.text.Editable s) {
-                if (event != null) {
+                if (event != null && !s.toString().isEmpty()) {
                     event.setWaitListCap(Integer.parseInt(s.toString()));
-                    Log.d("EditText", "afterTextChanged: " + s.toString());
+                    Log.d("EditText", "afterTextChanged: " + s);
                 }
             }
         });
@@ -218,22 +213,40 @@ public class CreateEventFragment extends Fragment {
                 long startDateMillis = selection.first;
                 long endDateMillis = selection.second;
 
-                ZonedDateTime startDate = Instant.ofEpochMilli(startDateMillis).atZone(ZoneId.systemDefault());
-                ZonedDateTime endDate = Instant.ofEpochMilli(endDateMillis).atZone(ZoneId.systemDefault());
+                Date startDate = new Date(startDateMillis);
+                Date endDate = new Date(endDateMillis);
 
-                ArrayList<ZonedDateTime> timeframe = new ArrayList<>();
-                timeframe.add(startDate);
-                timeframe.add(endDate);
+                Timestamp startTimestamp = new Timestamp(startDate);
+                Timestamp endTimestamp = new Timestamp(endDate);
+
+                ArrayList<Timestamp> timeframe = new ArrayList<>();
+                timeframe.add(startTimestamp);
+                timeframe.add(endTimestamp);
                 event.setTimeframe(timeframe);
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy)");
-                dateTimeButton.setText(String.format("%s - %s", startDate.format(formatter), endDate.format(formatter)));
+                SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+                dateTimeButton.setText(String.format("%s - %s", formatter.format(startDate), formatter.format(endDate)));
 
             });
         });
 
         confirmButton.setOnClickListener(v -> {
             if (event != null) {
+                // Validate required fields before saving
+                if (event.getTitle() == null || event.getTitle().trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Event title cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (event.getLocation() == null || event.getLocation().trim().isEmpty()) {
+                    Toast.makeText(getContext(), "Event location cannot be empty", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (event.getTimeframe() == null || event.getTimeframe().isEmpty()) {
+                    Toast.makeText(getContext(), "Please select a timeframe for the event", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // All checks passed, proceed with saving the event
                 eventViewModel.addEvent(event);
                 navController.navigate(R.id.action_CreateEventFragment_to_MyEventsFragment);
             } else {
