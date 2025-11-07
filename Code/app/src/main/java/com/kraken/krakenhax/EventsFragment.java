@@ -14,6 +14,10 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 
 
@@ -23,6 +27,9 @@ import java.util.ArrayList;
 public class EventsFragment extends Fragment {
 
     private MyRecyclerViewAdapter adapter;
+    private FirebaseFirestore db;
+    private ArrayList<Event> events;
+    private CollectionReference eventsRef;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -41,50 +48,17 @@ public class EventsFragment extends Fragment {
         // Set up nav controller
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
-        // Set up recycler view
+        // Set up recycler view for events list
         RecyclerView recycler_view_event_list = view.findViewById(R.id.recycler_view_events_list);
         recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
+        events = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
+        adapter = new MyRecyclerViewAdapter(events);
+        recycler_view_event_list.setAdapter(adapter);
 
-        ArrayList<Event> demo_list = new ArrayList<>();
-        demo_list.add(new Event("Event 1"));
-        demo_list.add(new Event("Event 2"));
-        demo_list.add(new Event("Event 3"));
-        demo_list.add(new Event("Event 4"));
-        demo_list.add(new Event("Event 5"));
-        demo_list.add(new Event("Event 6"));
-        demo_list.add(new Event("Event 7"));
-        demo_list.add(new Event("Event 8"));
-
-        // DEMO ORGANIZER LOGIC
-        Event testEvent = demo_list.get(0);
-
-        // Creating demo entrant profiles
-        Profile entrant1 = new Profile("2","Amaan", "1234", "Entrant", "amaaniqb@ualberta.ca","0");
-        Profile entrant2 = new Profile("3","Markus", "abcd", "Entrant", "mhenze@ualberta.ca","0");
-        Profile entrant3 = new Profile("4","Logan", "pass", "Entrant", "lapope@ualberta.ca","0");
-
-        // Add to event waitlist
-        testEvent.addToWaitList(entrant1);
-        testEvent.addToWaitList(entrant2);
-        testEvent.addToWaitList(entrant3);
-
-        testEvent.drawLottery(testEvent.getWaitList(), 2);
-
-        // One entrant cancels
-        testEvent.addToCancelList(testEvent.getWonList().get(0));
-
-        // Draw replacement (Story 30)
-        if (!testEvent.getWaitList().isEmpty()) {
-            testEvent.drawLottery(testEvent.getLostList(), 1);
-        }
-
-        // Notify users
-        NotifyUser notifyUser = new NotifyUser();
-        notifyUser.sendBroadcast(testEvent.getWonList(), "You’ve been selected to sign up for " + testEvent.getTitle() + "!");
-        notifyUser.sendBroadcast(testEvent.getCancelList(), "You’ve declined to sign up for " + testEvent.getTitle() + ".");
-
-
-        adapter = new MyRecyclerViewAdapter(demo_list);
+        // Set up a firebase listener to get the events
+        db = FirebaseFirestore.getInstance();
+        startFirestoreListener();
 
         // Set an on item click listener for the recycler view
         // When an event is clicked on
@@ -95,9 +69,25 @@ public class EventsFragment extends Fragment {
             bundle.putParcelable("event_name", clickedEvent);
             navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
         });
-
-        recycler_view_event_list.setAdapter(adapter);
-
-        //adapter.updateData(demo_list);
     }
+
+    private void startFirestoreListener() {
+        eventsRef = db.collection("Events"); // Corrected to capital 'E'
+        eventsRef.addSnapshotListener((snap, e) -> {
+            if (e != null) {
+                Log.e("Firestore", "Listen failed", e);
+                return;
+            }
+            if (snap != null && !snap.isEmpty()) {
+                events.clear();
+                for (QueryDocumentSnapshot doc : snap) {
+                    // Use .toObject() for robust deserialization
+                    Event event = doc.toObject(Event.class);
+                    events.add(event);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
 }
