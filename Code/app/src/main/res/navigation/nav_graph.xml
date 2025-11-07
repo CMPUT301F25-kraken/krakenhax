@@ -95,6 +95,10 @@
             android:id="@+id/action_MyEventDetailsFragment_to_EntrantInfoFragment"
             app:destination="@id/EntrantInfoFragment" />
 
+        <action
+            android:id="@+id/action_MyEventDetailsFragment_to_AdminListFragment"
+            app:destination="@id/adminListFragment" />
+
     </fragment>
     <!-- Destination for EntrantInfoFragment -->
     <fragment
@@ -121,6 +125,10 @@
         <action
             android:id="@+id/action_ProfileFragment_to_MyEventsFragment"
             app:destination="@+id/MyEventsFragment" />
+
+        <action
+            android:id="@+id/action_ProfileFragment_to_adminListFragment"
+            app:destination="@id/adminListFragment"/>
     </fragment>
 
     <!-- Destination for Login Fragment -->
@@ -192,6 +200,14 @@
         android:id="@+id/adminListFragment"
         android:name="com.kraken.krakenhax.AdminListFragment"
         android:label="AdminListFragment"
-        tools:layout="@layout/fragment_admin_list"/>
+        tools:layout="@layout/fragment_admin_list">
+
+        <action android:id="@+id/action_adminListFragment_to_profileFragment"
+            app:destination="@id/ProfileFragment"/>
+
+        <action
+            android:id="@+id/action_adminListFragment_to_myEventDetailsFragment"
+            app:destination="@id/MyEventDetailsFragment" />
+    </fragment>
 
 </navigation>

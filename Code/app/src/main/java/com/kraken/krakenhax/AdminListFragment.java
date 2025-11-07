@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -20,9 +22,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class AdminListFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
@@ -33,6 +38,11 @@ public class AdminListFragment extends Fragment {
     private ArrayList<Profile> EntrantList = new ArrayList<>();
     private RecyclerView recyclerView;
     private ListView profileListView;
+    private Button DelSelButton;
+    private CheckBox checkBox;
+    private CollectionReference profileRef;
+
+
 
 
 
@@ -53,11 +63,13 @@ public class AdminListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
         Spinner spinner = view.findViewById(R.id.spinner_admin_lists);
-        String[] spinnerList = {"Entrants", "Organizers", "Events", "Photos"};
+        String[] spinnerList = {"Entrants", "Organizers", "Events"};
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         db = FirebaseFirestore.getInstance();
+        profileRef = db.collection("Profiles");
         recyclerView = view.findViewById(R.id.recycler_view_admin_lists);
         profileListView = view.findViewById(R.id.list_view_admin_lists);
+        DelSelButton = view.findViewById(R.id.DelSelButton);
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -82,6 +94,7 @@ public class AdminListFragment extends Fragment {
                         getOrganizers();
                         break;
                     case "Events":
+                        DelSelButton.setVisibility(View.GONE);
                         profileListView.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.VISIBLE);
                         getEvents(view, navController);
@@ -94,6 +107,38 @@ public class AdminListFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
                 // Do nothing
             }
+        });
+
+
+        DelSelButton.setOnClickListener(v -> {
+
+            if (profileAdapter == null) return;
+
+            Set<String> selectedIds = profileAdapter.getSelectedProfileIds();
+
+            if (selectedIds.isEmpty()) {
+                Toast.makeText(requireContext(), "No profiles selected", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            ArrayList<Profile> profilesToDel = new ArrayList<>();
+            for (Profile profile : EntrantList) {
+                if (profile.getID() != null && selectedIds.contains(profile.getID())) {
+                    profilesToDel.add(profile);
+                }
+            }
+
+            for (Profile profile : profilesToDel) {
+                profileRef.document(profile.getID()).delete();
+                EntrantList.remove(profile);
+            }
+
+            profileAdapter.clearSelection();
+            profileAdapter.notifyDataSetChanged();
+
+
+            Toast.makeText(requireContext(), "Delete Selected", Toast.LENGTH_SHORT).show();
+
         });
     }
 
@@ -167,6 +212,10 @@ public class AdminListFragment extends Fragment {
 
            profileAdapter = new profileAdapter(requireContext(), EntrantList);
            profileListView.setAdapter(profileAdapter);
+
+           profileListView.setOnItemClickListener((parent, view, position, id) -> {
+               profileAdapter.toggleSelection(position);
+           });
        });
     }
 
@@ -182,6 +231,10 @@ public class AdminListFragment extends Fragment {
 
             profileAdapter = new profileAdapter(requireContext(), EntrantList);
             profileListView.setAdapter(profileAdapter);
+
+            profileListView.setOnItemClickListener((parent, view, position, id) -> {
+                profileAdapter.toggleSelection(position);
+            });
         });
     }
 
