@@ -60,6 +60,11 @@ public class MyEventDetailsFragment extends Fragment {
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
         btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
+
+        // Set the event location
+        TextView tvLocation2 = view.findViewById(R.id.tv_location_field2);
+        tvLocation2.setText(event.getLocation());
+
         // Hardcoded event
         /*
         selectedEvent = new Event();
