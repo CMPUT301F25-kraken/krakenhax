@@ -10,17 +10,26 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-
 /**
- * ViewModel for managing and providing access to a list of user profiles.
- * This class handles the business logic for fetching profile data from Firestore and making it available to the UI.
+ * ViewModel for the profiles list.
+ * Kept up to date with the database.
+ * Contains a list of profiles.
  */
 public class ProfileViewModel extends ViewModel {
     private static MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
-
     /**
-     * Constructor for the ProfileViewModel.
-     * Initializes Firestore and sets up a snapshot listener to keep the profile list updated in real-time.
+     * Returns the list of profiles.
+     * @return the list of profiles
+     */
+    public static LiveData<ArrayList<Profile>> getProfileList() {
+        return profileList;
+    }
+
+    public CollectionReference profileCollection;
+    /**
+     * Required empty public constructor
+     * Initializes the ViewModel and connects to the Firestore database.
+     * Calls the addSnapshotListener method to start listening for real-time updates.
      */
     public ProfileViewModel() {
         profileList = new MutableLiveData<>();
@@ -31,21 +40,9 @@ public class ProfileViewModel extends ViewModel {
         // Start listening for real-time updates from Firestore.
         addSnapshotListener();
     }
-
-    public CollectionReference profileCollection;
-
     /**
-     * Returns the LiveData list of profiles.
-     * UI components can observe this to get real-time updates.
-     * @return A LiveData object containing the list of profiles.
-     */
-    public static LiveData<ArrayList<Profile>> getProfileList() {
-        return profileList;
-    }
-
-    /**
-     * Adds a single profile to the local list.
-     * @param profile The profile to add.
+     * Adds a profile to the list.
+     * @param profile the profile to add
      */
     public void addProfile(Profile profile) {
         ArrayList<Profile> currentList = profileList.getValue();
@@ -56,8 +53,7 @@ public class ProfileViewModel extends ViewModel {
     }
 
     /**
-     * Attaches a snapshot listener to the Firestore "Profiles" collection.
-     * This listener updates the local profile list whenever the data changes in the database.
+     * Updates the profile list in real-time.
      */
     private void addSnapshotListener() {
         // This listener will be active for the entire lifecycle of the ViewModel.

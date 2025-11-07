@@ -17,10 +17,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
-
 /**
- * A {@link Fragment} for displaying and updating the current user's profile information.
- * Allows the user to edit their username, email, and phone number, and to sign out.
+ * Displays the profile page. Allows the user to update their profile.
  */
 public class ProfileFragment extends Fragment {
     public EditText usernameView;
@@ -33,20 +31,27 @@ public class ProfileFragment extends Fragment {
     private CollectionReference ProfileRef;
 
     /**
-     * Required empty public constructor for fragment instantiation.
+     * Required empty public constructor
      */
     public ProfileFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Inflates the layout for this fragment, initializes UI components and Firestore,
-     * populates the views with the current user's data, and sets up listeners for profile updates and sign-out.
+     * Called to have the fragment instantiate its user interface view.
+     * Contains the main functionality of the fragment.
+     * Sets up the listeners for the buttons.
+     * On update button click, it updates the profile with the changes made in the edit texts.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return The View for the fragment's UI, or null.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

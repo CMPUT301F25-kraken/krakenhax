@@ -16,10 +16,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
- * Custom ArrayAdapter for displaying a list of Profile objects.
- * This adapter is used to populate a ListView with profile information, including a checkbox for selection.
+ * profile adapter for the Admin list of profiles.
  */
 public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
@@ -29,9 +27,10 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
     private final Set<String> selectedProfileIds = new HashSet<>();
 
     /**
-     * Constructor for the ProfileAdapterJ.
-     * @param context The current context.
-     * @param profiles The list of profiles to be displayed.
+     * Required public constructor
+     * Takes context and an arraylist of profiles.
+     * @param context
+     * @param profiles
      */
     public ProfileAdapterJ(Context context, ArrayList<Profile> profiles) {
         super(context, 0, profiles);
@@ -40,11 +39,11 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
     }
 
     /**
-     * Get a View that displays the data at the specified position in the data set.
-     * @param position The position of the item within the adapter's data set of the item whose view we want.
-     * @param convertView The old view to reuse, if possible.
-     * @param parent The parent that this view will eventually be attached to.
-     * @return A View corresponding to the data at the specified position.
+     * Returns the view for the list item.
+     * @param position
+     * @param convertView
+     * @param parent
+     * @return the view for the list item.
      */
     @NonNull
     @Override
@@ -70,10 +69,9 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
         return view;
     }
-
     /**
-     * Toggles the selection state of a profile at a given position.
-     * @param position The position of the profile to toggle.
+     * Toggles the selection of a profile.
+     * @param position
      */
     public void toggleSelection(int position) {
         Profile profile = profiles.get(position);
@@ -87,17 +85,16 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
             notifyDataSetChanged();
         }
     }
-
     /**
-     * Gets the set of currently selected profile IDs.
-     * @return A Set of strings containing the unique IDs of the selected profiles.
+     * Returns the set of selected profile IDs.
+     * @return the set of selected profile IDs.
      */
     public Set<String> getSelectedProfileIds() {
         return selectedProfileIds;
     }
 
     /**
-     * Clears the current selection of profiles.
+     * Clears the selection of all profiles.
      */
     public void clearSelection() {
         selectedProfileIds.clear();

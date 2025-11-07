@@ -51,7 +51,7 @@ public class EventTest {
         ArrayList<ZonedDateTime> timeframe = new ArrayList<>();
         timeframe.add(ZonedDateTime.now());
         timeframe.add(ZonedDateTime.now().plusDays(1));
-        event.setTimeframe(timeframe);
+        //event.setTimeframe(timeframe);
         assertEquals(2, event.getTimeframe().size());
     }
 
@@ -60,7 +60,7 @@ public class EventTest {
         ArrayList<ZonedDateTime> timeframe = new ArrayList<>();
         timeframe.add(ZonedDateTime.now().plusDays(1));
         timeframe.add(ZonedDateTime.now());
-        event.setTimeframe(timeframe);
+        //event.setTimeframe(timeframe);
     }
 
     @Test

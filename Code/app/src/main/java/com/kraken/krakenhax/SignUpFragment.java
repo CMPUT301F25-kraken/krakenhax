@@ -19,10 +19,13 @@ import androidx.navigation.Navigation;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.Objects;
 
 /**
- * A {@link Fragment} that handles user registration.
- * It allows users to create a new profile with a username, password, and email.
+ * Fragment class to handle the sign-up process.
+ * Creates new organizers or Entrants.
+ * Logs the new user into the app.
  */
 public class SignUpFragment extends Fragment {
     private Button signupButton;
@@ -35,19 +38,21 @@ public class SignUpFragment extends Fragment {
     private NavController navController;
 
     /**
-     * Required empty public constructor for fragment instantiation.
+     * Required empty public constructor
      */
     public SignUpFragment() {
         // Required empty public constructor
     }
-
     /**
-     * Inflates the user interface view for this fragment.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI.
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     * @return The View for the fragment's UI, or null.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,12 +61,16 @@ public class SignUpFragment extends Fragment {
     }
 
     /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned,
-     * but before any saved state has been restored in to the view.
-     * This is where UI components are initialized and listeners are set up.
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored.
+     * Contains the main functionality of the fragment.
+     * Sets up the listeners for the buttons.
+     * On sign up button click, it checks if the username already exists. if it does, it shows a toast.
+     * if it doesn't, it sends the username, password, and email to the createNewProfile function.
      *
      * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
      */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -99,7 +108,7 @@ public class SignUpFragment extends Fragment {
             }
 
             // Observe the LiveData to safely check for existing usernames
-            ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+            profileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
                 // This block runs only when `profiles` is not null.
                 boolean usernameExists = false;
                 for (Profile p : profiles) {
@@ -118,18 +127,20 @@ public class SignUpFragment extends Fragment {
 
                 // Important: Remove the observer after use to prevent it from firing again
                 // if the user stays on the screen and the data changes for another reason.
-                ProfileViewModel.getProfileList().removeObservers(getViewLifecycleOwner());
+                profileViewModel.getProfileList().removeObservers(getViewLifecycleOwner());
             });
         });
     }
 
     /**
-     * Creates a new user profile and saves it to Firestore.
-     * On success, it navigates to the events screen.
-     *
-     * @param username The username for the new profile.
-     * @param password The password for the new profile.
-     * @param email The email address for the new profile.
+     * Creates a new profile in Firestore and adds it to the ViewModel.
+     * Firestore creates a new user ID, then its added to the profile object.
+     * The profile is then added to the ViewModel.
+     * Sets the current user in MainActivity.
+     * Navigates to the next screen.
+     * @param username
+     * @param password
+     * @param email
      */
     private void createNewProfile(String username, String password, String email) {
         // Let Firestore generate the ID. The 'id' field in the constructor can be null or empty for now.

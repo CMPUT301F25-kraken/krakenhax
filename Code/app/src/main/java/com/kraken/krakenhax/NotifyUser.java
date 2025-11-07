@@ -1,7 +1,6 @@
 package com.kraken.krakenhax;
 
 import android.util.Log;
-
 import java.util.List;
 
 /**
@@ -11,33 +10,41 @@ import java.util.List;
  *
  * <p>Collaborators: Entrant, Organizer, Event, NotifyLog</p>
  *
- * @version 1.1
+ * @author Amaan
+ * @version 1.2 — Added opt-out support for entrants
  */
 public class NotifyUser {
 
     /**
-     * Sends a notification to the specified entrant.
+     * Sends a notification to the specified entrant,
+     * respecting their notification preferences.
+     *
      * @param recipient the entrant receiving the notification
-     * @param message the message body
+     * @param message   the message body
      */
     public void sendNotification(Profile recipient, String message) {
         if (recipient == null || message == null) return;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.DONUT) {
-            try {
-                Log.d("NotifyUser", "Notification to " + recipient.getUsername() + ": " + message);
-            } catch (Exception e) {
-                System.out.println("[NotifyUser] " + recipient.getUsername() + ": " + message);
-            }
-        } else {
-            System.out.println("[NotifyUser] " + recipient.getUsername() + ": " + message);
+
+        // opt-out preference
+        if (!recipient.isNotificationsEnabled()) {
+            Log.d("NotifyUser", "Skipped notification for " + recipient.getUsername() + " (opted out)");
+            return;
         }
 
+        // Send notification
+        try {
+            Log.d("NotifyUser", "Notification to " + recipient.getUsername() + ": " + message);
+        } catch (Exception e) {
+            System.out.println("[NotifyUser] " + recipient.getUsername() + ": " + message);
+        }
     }
 
     /**
-     * Sends a single notification to multiple entrants.
+     * Sends a single notification to multiple entrants,
+     * skipping those who have opted out.
+     *
      * @param recipients list of entrants to notify
-     * @param message the message body
+     * @param message    the message body
      */
     public void sendBroadcast(List<Profile> recipients, String message) {
         if (recipients == null || message == null) return;

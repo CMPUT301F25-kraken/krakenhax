@@ -2,6 +2,7 @@ package com.kraken.krakenhax;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -10,6 +11,7 @@ import java.util.Objects;
  * Stores user credentials and contact details.
  *
  * <p>Collaborators: Event, WaitList, Organizer, Administrator</p>
+ *
  *
  * @version 1.2
  */
@@ -21,6 +23,10 @@ public class Profile {
     private String type; // e.g., "entrant", "organizer", "admin"
     private String phoneNumber;
     private String ID;
+    private boolean notificationsEnabled = true;
+    public boolean isNotificationsEnabled() { return notificationsEnabled; }
+    public void setNotificationsEnabled(boolean enabled) { this.notificationsEnabled = enabled; }
+
     /**
      * Constructs a new user profile with the given details.
      * @param username the user's username
