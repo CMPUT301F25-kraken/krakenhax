@@ -35,6 +35,7 @@
         android:text="Send Demo Notification"
         android:backgroundTint="@color/LoginButtonColor"
         android:layout_marginTop="3dp"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_back" />
 
@@ -145,6 +146,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:text="Organized by: "
+        android:visibility="visible"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/tv_event_description"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
@@ -158,5 +160,16 @@
         android:text="Event Organizer"
         app:layout_constraintStart_toEndOf="@+id/textView5"
         app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+    <Button
+        android:id="@+id/EventDeleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Event"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

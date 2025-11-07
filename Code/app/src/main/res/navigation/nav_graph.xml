@@ -195,6 +195,9 @@
         <action
             android:id="@+id/action_EventFragment_to_EventsFragment"
             app:destination="@+id/EventsFragment" />
+        <action
+            android:id="@id/action_MyEventDetailsFragment_to_AdminListFragment"
+            app:destination="@id/adminListFragment" />
     </fragment>
     <fragment
         android:id="@+id/adminListFragment"
@@ -206,8 +209,8 @@
             app:destination="@id/ProfileFragment"/>
 
         <action
-            android:id="@+id/action_adminListFragment_to_myEventDetailsFragment"
-            app:destination="@id/MyEventDetailsFragment" />
+            android:id="@+id/action_adminListFragment_to_EventFragment"
+            app:destination="@id/EventFragment" />
     </fragment>
 
 </navigation>

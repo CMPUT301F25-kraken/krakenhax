@@ -194,7 +194,8 @@ public class AdminListFragment extends Fragment {
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
             bundle.putParcelable("event_name", clickedEvent);
-            navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
+
+            navController.navigate(R.id.action_adminListFragment_to_EventFragment, bundle);
         });
 
         recyclerView.setAdapter(adapter);
