@@ -19,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageRegistrar;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
@@ -32,6 +33,7 @@ public class MyEventDetailsFragment extends Fragment {
     private ImageView imgPoster;
     private Button btnUploadPoster;
     private Button btnBack;
+    private Button deleteButton;
 
     private Button btnentrantInfo;
     private ActivityResultLauncher<String> imagePicker;
@@ -60,6 +62,8 @@ public class MyEventDetailsFragment extends Fragment {
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
         btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
+        deleteButton = view.findViewById(R.id.DeleteButton);
+
 
         // Set the event location
         TextView tvLocation2 = view.findViewById(R.id.tv_location_field2);
@@ -119,6 +123,23 @@ public class MyEventDetailsFragment extends Fragment {
             Bundle bundle = new Bundle();
             bundle.putParcelable("event", event);
             NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_EntrantInfoFragment, bundle);
+
+        });
+
+        deleteButton.setOnClickListener(v -> {
+            db.collection("events").document(event.getId()).delete().addOnSuccessListener(aVoid -> {
+            Log.d("Firebase", "Event deleted successfully");
+            String posterUrl = event.getPoster();
+            if (posterUrl != null && !posterUrl.isEmpty()) {
+                StorageReference posterRef = storage.getReferenceFromUrl(posterUrl);
+                posterRef.delete().addOnSuccessListener(aVoid1 -> {
+                    Log.d("Firebase", "Poster deleted successfully");
+                }).addOnFailureListener(e -> {
+                    Log.e("Firebase", "Error deleting poster", e);
+                });
+            }
+            NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_MyEventsFragment);
+        });
 
         });
         return view;
