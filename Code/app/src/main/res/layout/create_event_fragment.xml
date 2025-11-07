@@ -32,7 +32,7 @@
         android:id="@+id/EventNameEditText"
         android:layout_width="128dp"
         android:layout_height="70dp"
-        android:text="Event Name"
+        android:hint="Event Name"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

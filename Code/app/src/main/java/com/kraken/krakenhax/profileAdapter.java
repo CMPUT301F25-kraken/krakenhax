@@ -1,47 +1,54 @@
 package com.kraken.krakenhax;
 
-import static java.security.AccessController.getContext;
-
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ArrayAdapter;
-
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class profileAdapter extends ArrayAdapter<Profile> {
+public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
 
-    public profileAdapter(@NonNull Context context, ArrayList<Profile> profiles) {
-        super(context, 0, profiles);
+
+    private ArrayList<Profile> profileList;
+
+    public ProfileAdapter(ArrayList<Profile> profileList) {
+
+        this.profileList = profileList;
     }
+
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.profile_format, parent, false);
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.profile_item, parent, false);
+        return new ProfileAdapter.ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Profile profile = profileList.get(position);
+        holder.nameText.setText(profile.getUsername());
+        holder.emailText.setText(profile.getEmail());
+    }
+
+    @Override
+    public int getItemCount() {
+        return profileList.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView nameText, emailText;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            nameText = itemView.findViewById(R.id.textViewProfileName);
+            emailText = itemView.findViewById(R.id.textViewProfileEmail);
         }
 
-        Profile profile = getItem(position);
-
-        TextView name = convertView.findViewById(R.id.UsernameDisplay);
-        TextView Email = convertView.findViewById(R.id.EmailDisplay);
-        ImageView profilePic = convertView.findViewById(R.id.profilePic);
-
-
-        if (profile != null) {
-            name.setText(profile.getUsername());
-            Email.setText(profile.getEmail());
-            profilePic.setImageResource(R.drawable.obama);
-        }
-
-        return convertView;
     }
 }
