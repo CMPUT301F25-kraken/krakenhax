@@ -29,10 +29,10 @@ public class AdminListFragment extends Fragment {
 
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
-    public profileAdapter profileAdapter;
+    public ProfileAdapter profileAdapter;
     private ArrayList<Profile> EntrantList = new ArrayList<>();
     private RecyclerView recyclerView;
-    private ListView profileListView;
+    //private ListView profileListView;
 
 
 
@@ -57,7 +57,7 @@ public class AdminListFragment extends Fragment {
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         db = FirebaseFirestore.getInstance();
         recyclerView = view.findViewById(R.id.recycler_view_admin_lists);
-        profileListView = view.findViewById(R.id.list_view_admin_lists);
+        //profileListView = view.findViewById(R.id.list_view_admin_lists);
 
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -73,16 +73,16 @@ public class AdminListFragment extends Fragment {
                 switch (selectedItem) {
                     case "Entrants":
                         recyclerView.setVisibility(View.GONE);
-                        profileListView.setVisibility(View.VISIBLE);
+                        //profileListView.setVisibility(View.VISIBLE);
                         getEntrants();
                         break;
                     case "Organizers":
                         recyclerView.setVisibility(View.GONE);
-                        profileListView.setVisibility(View.VISIBLE);
+                        //profileListView.setVisibility(View.VISIBLE);
                         getOrganizers();
                         break;
                     case "Events":
-                        profileListView.setVisibility(View.GONE);
+                        //profileListView.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.VISIBLE);
                         getEvents(view, navController);
                         break;
@@ -165,8 +165,8 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-           profileAdapter = new profileAdapter(requireContext(), EntrantList);
-           profileListView.setAdapter(profileAdapter);
+           profileAdapter = new ProfileAdapter(EntrantList);
+           recyclerView.setAdapter(profileAdapter);
        });
     }
 
@@ -180,8 +180,8 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-            profileAdapter = new profileAdapter(requireContext(), EntrantList);
-            profileListView.setAdapter(profileAdapter);
+            profileAdapter = new ProfileAdapter(EntrantList);
+            recyclerView.setAdapter(profileAdapter);
         });
     }
 
