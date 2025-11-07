@@ -195,6 +195,10 @@ public class AdminListFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
     }
+
+    /**
+     * Sets up the listener for the events.
+     */
     private void startFirestoreListener() {
         eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.addSnapshotListener((snap, e) -> {
@@ -213,6 +217,9 @@ public class AdminListFragment extends Fragment {
             }
         });
     }
+    /**
+     * Gets the entrants from the database.
+     */
     public void getEntrants() {
         ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
@@ -232,6 +239,9 @@ public class AdminListFragment extends Fragment {
         });
     }
 
+    /**
+     * Gets the organizers from the database.
+     */
     public void getOrganizers() {
         ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
