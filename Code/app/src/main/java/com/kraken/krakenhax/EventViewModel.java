@@ -15,6 +15,11 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 
+
+/**
+ * ViewModel for managing event data.
+ * This class handles the business logic for fetching, creating, and updating events in Firestore.
+ */
 public class EventViewModel extends ViewModel {
     private static MutableLiveData<ArrayList<Event>> eventList;
 
@@ -22,16 +27,10 @@ public class EventViewModel extends ViewModel {
     private final CollectionReference eventCollection;
     private final StorageReference storageRef;
 
-    public void addEvent(Event event) {
-        // First, add the event to the local list for immediate UI update.
-        ArrayList<Event> currentList = eventList.getValue();
-        if (currentList != null) {
-            currentList.add(event);
-            eventList.setValue(currentList);
-        }
-        // Then, upload the event to Firestore.
-        uploadEvent(event);
-    }
+    /**
+     * Constructor for EventViewModel.
+     * Initializes Firestore, gets a reference to the "Events" collection, and sets up a real-time snapshot listener.
+     */
     public EventViewModel() {
         eventList = new MutableLiveData<>(new ArrayList<>());
         // Initialize the Firestore database and get the "Events" collection reference.
@@ -42,7 +41,27 @@ public class EventViewModel extends ViewModel {
         addSnapshotListener();
     }
 
+    /**
+     * Adds an event to the local list and triggers an upload to Firestore.
+     * @param event The event to be added.
+     */
+    public void addEvent(Event event) {
+        // First, add the event to the local list for immediate UI update.
+        ArrayList<Event> currentList = eventList.getValue();
+        if (currentList != null) {
+            currentList.add(event);
+            eventList.setValue(currentList);
+        }
+        // Then, upload the event to Firestore.
+        uploadEvent(event);
+    }
 
+    /**
+     * Uploads a poster image for a given event to Firebase Storage.
+     * On success, it updates the event document in Firestore with the new image URL.
+     * @param event The event to which the poster belongs.
+     * @param filePath The local Uri of the image file to be uploaded.
+     */
     public void uploadPosterForEvent(Event event, Uri filePath) {
         if (filePath != null && event != null && event.getId() != null) {
             StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
@@ -70,6 +89,10 @@ public class EventViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Uploads an event object to the "Events" collection in Firestore.
+     * @param event The event object to be uploaded.
+     */
     private void uploadEvent(Event event) {
         if (event == null || event.getId() == null) {
             Log.e("Firebase", "Event or ID is null");
@@ -85,6 +108,11 @@ public class EventViewModel extends ViewModel {
                 });
 
     }
+
+    /**
+     * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
+     * This keeps the local event list synchronized with the database.
+     */
     private void addSnapshotListener() {
         // This listener will be active for the entire lifecycle of the ViewModel.
         eventCollection.addSnapshotListener((snapshots, error) -> {

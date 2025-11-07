@@ -35,6 +35,11 @@ import java.util.Date;
 import java.util.Locale;
 
 
+/**
+ * A {@link Fragment} for creating a new event.
+ * It provides a form for organizers to input event details such as title, description, location, and timeframe.
+ * It also handles event poster uploads.
+ */
 public class CreateEventFragment extends Fragment {
     private Button backButton;
     private Event event;
@@ -54,6 +59,14 @@ public class CreateEventFragment extends Fragment {
 
     private NavController navController;
 
+    /**
+     * Inflates the layout for this fragment and initializes all the UI view components.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     * @return The View for the fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -72,6 +85,11 @@ public class CreateEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Called when the fragment is first created. This is where the ViewModel and image picker are initialized.
+     *
+     * @param savedInstanceState If the fragment is being re-created from a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +112,13 @@ public class CreateEventFragment extends Fragment {
         });
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned.
+     * This is where a new event object is created and all listeners for the UI components are set up.
+     *
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         MainActivity mainActivity = (MainActivity) getActivity();
