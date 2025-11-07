@@ -45,7 +45,7 @@
         android:layout_width="118dp"
         android:layout_height="35dp"
         android:backgroundTint="@color/white"
-        android:text="Event Date, Time"
+        android:text="Registration Period"
         android:textColor="@color/gray"
         android:textSize="7dp"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"

@@ -101,6 +101,9 @@
         <action
             android:id="@+id/action_MyEventDetailsFragment_to_AdminListFragment"
             app:destination="@id/adminListFragment" />
+        <action
+            android:id="@+id/action_MyEventDetailsFragment_to_MyEventsFragment"
+            app:destination="@id/MyEventsFragment" />
 
     </fragment>
 

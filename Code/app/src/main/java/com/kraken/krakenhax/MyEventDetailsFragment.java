@@ -20,6 +20,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageRegistrar;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
@@ -30,11 +31,15 @@ public class MyEventDetailsFragment extends Fragment {
     private ImageView imgPoster;
     private Button btnUploadPoster;
     private Button btnBack;
+    private Button deleteButton;
 
     private Button btnentrantInfo;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
+
+    //hardcoded event for now
+    //private Event selectedEvent;
 
     public MyEventDetailsFragment() {
         // Required empty public constructor
@@ -56,9 +61,41 @@ public class MyEventDetailsFragment extends Fragment {
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
         btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
+        deleteButton = view.findViewById(R.id.DeleteButton);
 
-        // Set up a real-time listener for the event
-        setupFirestoreListener(view);
+
+        // Set the event location
+        TextView tvLocation2 = view.findViewById(R.id.tv_location_field2);
+        tvLocation2.setText(event.getLocation());
+
+        // Hardcoded event
+        /*
+        selectedEvent = new Event();
+        selectedEvent.setId("test_event_001");
+        selectedEvent.setTitle("Swimming Lessons");
+        selectedEvent.setEventDetails("Test upload event");
+        selectedEvent.setPoster(null);
+        */
+        String poster = event.getPoster();
+        if (poster == null || poster.isEmpty()) {
+            imgPoster.setImageResource(R.drawable.outline_attractions_100);
+        } else {
+            Picasso.get()
+                    .load(poster)
+                    .placeholder(R.drawable.outline_attractions_100)
+                    .error(R.drawable.outline_attractions_100)
+                    .fit().centerCrop()
+                    .into(imgPoster);
+        }
+        TextView tvEventName = view.findViewById(R.id.tv_event_name);
+        assert event != null;
+        tvEventName.setText(event.getTitle());
+
+        TextView tvDescription = view.findViewById(R.id.tv_event_description);
+        tvDescription.setText(event.getEventDetails());
+
+
+
 
         // Image picker
         imagePicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -79,10 +116,29 @@ public class MyEventDetailsFragment extends Fragment {
         btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
         btnentrantInfo.setOnClickListener(v -> {
+
             Bundle bundle = new Bundle();
             // Pass the most up-to-date event object
             bundle.putParcelable("event", event);
             NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_EntrantInfoFragment, bundle);
+
+        });
+
+        deleteButton.setOnClickListener(v -> {
+            db.collection("events").document(event.getId()).delete().addOnSuccessListener(aVoid -> {
+            Log.d("Firebase", "Event deleted successfully");
+            String posterUrl = event.getPoster();
+            if (posterUrl != null && !posterUrl.isEmpty()) {
+                StorageReference posterRef = storage.getReferenceFromUrl(posterUrl);
+                posterRef.delete().addOnSuccessListener(aVoid1 -> {
+                    Log.d("Firebase", "Poster deleted successfully");
+                }).addOnFailureListener(e -> {
+                    Log.e("Firebase", "Error deleting poster", e);
+                });
+            }
+            NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_MyEventsFragment);
+        });
+
         });
 
         return view;
@@ -147,6 +203,7 @@ public class MyEventDetailsFragment extends Fragment {
             UploadTask uploadTask = eventPosterRef.putFile(filePath);
 
             uploadTask.addOnSuccessListener(taskSnapshot -> {
+                // Get the download URL
                 eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String downloadUrl = uri.toString();
                     Log.d("Firebase", "Download URL: " + downloadUrl);
