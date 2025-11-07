@@ -33,15 +33,13 @@ import java.util.Set;
  * Will later display images and notifications.
  * Allows the admin to delete profiles.
  */
-public class AdminListFragment extends Fragment {
-    private MyRecyclerViewAdapter adapter;
 
 public class AdminListFragment extends Fragment {
     private final ArrayList<Profile> EntrantList = new ArrayList<>();
     public ProfileViewModel profileModel;
+    private MyRecyclerViewAdapter adapter;
     public FirebaseFirestore db;
     public ProfileAdapterJ profileAdapterJ;
-    private final ArrayList<Profile> EntrantList = new ArrayList<>();
     private ArrayList<Event> events;
     private RecyclerView recyclerView;
     private ListView profileListView;

@@ -32,6 +32,7 @@ public class MyEventsFragment extends Fragment {
     private CollectionReference eventsRef;
     private MyRecyclerViewAdapter adapter;
     private Button makeEventButton;
+    private Profile orgProfile;
 
     public MyEventsFragment() {
         // Required empty public constructor
@@ -41,6 +42,8 @@ public class MyEventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_my_events, container, false);
+        MainActivity mainActivity = (MainActivity) getActivity();
+        orgProfile = mainActivity.currentUser;
 
         db = FirebaseFirestore.getInstance();
 
@@ -48,6 +51,12 @@ public class MyEventsFragment extends Fragment {
         recycler_view_event_list2.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         makeEventButton = view.findViewById(R.id.MakeEventButton);
+        if (orgProfile.getType().equals("Organizer")) {
+            makeEventButton.setVisibility(View.VISIBLE);
+        } else {
+            makeEventButton.setVisibility(View.GONE);
+        }
+
 
         makeEventButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_CreateEventFragment);
