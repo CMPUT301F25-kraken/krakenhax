@@ -145,15 +145,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GeolocationSwitch" />
 
-    <Button
-        android:id="@+id/BackButton"
+    <CalendarView
+        android:id="@+id/timeFrameCalendarView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="240dp"
-        android:layout_marginBottom="28dp"
-        android:backgroundTint="@color/loginTextColor"
-        android:text="Back"
-        app:layout_constraintBottom_toTopOf="@+id/EventNameEditText"
-        app:layout_constraintEnd_toStartOf="@+id/UploadPosterButton" />
+        android:background="@color/gray"
+        tools:layout_editor_absoluteX="30dp"
+        tools:layout_editor_absoluteY="210dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

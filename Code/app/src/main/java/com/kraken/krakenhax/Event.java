@@ -22,12 +22,12 @@ import java.util.Objects;
  */
 
 public class Event implements Parcelable {
-    private String title; //Done
-    private ArrayList<String> categories; //Done
-    private ArrayList<ZonedDateTime> timeframe; //Done
-    private String eventDetails; //Done
-    private String location; //Done
-    private Integer Radius; //Done
+    private String title;
+    private ArrayList<String> categories;
+    private ArrayList<ZonedDateTime> timeframe;
+    private String eventDetails;
+    private String location;
+    private Integer Radius;
     private String poster;
     private ArrayList<Profile> waitList;
     private ArrayList<Profile> lostList;
@@ -37,6 +37,7 @@ public class Event implements Parcelable {
     private String id;
     private int waitListCap;
     private int WinnerNumber;
+    private boolean useGeolocation;
 
 
     /**
@@ -450,6 +451,9 @@ public class Event implements Parcelable {
     }
     public void setWinnerNumber(int num) {
         this.WinnerNumber = num;
+    }
+    public void setUseGeolocation(boolean use) {
+        this.useGeolocation = use;
     }
 
     /**
