@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +32,8 @@ public class EntrantInfoFragment extends Fragment {
     private TextView entrantType;
 
     private TextView eventTitle;
+
+    private ProfileAdapter adapter;
 
     public EntrantInfoFragment() {
         // Required empty public constructor
@@ -48,8 +53,13 @@ public class EntrantInfoFragment extends Fragment {
         eventTitle = view.findViewById(R.id.event_title);
 
         eventTitle.setText(event.getTitle());
+        //fake profiles to view lists
 
-        List<String> statuses = Arrays.asList("Waitlisted", "Enrolled", "Cancelled", "Selected");
+        event.addToWaitList(new Profile("test","test","test","test","test","test"));
+        event.addToWaitList(new Profile("test2","test2","test2","test2","test2","test2"));
+        event.addToWonList(new Profile("test4","test4","test4","test4","test4","test4"));
+
+        List<String> statuses = Arrays.asList("Waitlisted", "Enrolled", "Cancelled");
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
@@ -57,12 +67,24 @@ public class EntrantInfoFragment extends Fragment {
         );
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_list.setAdapter(spinAdapter);
-
+        RecyclerView profileRecycler = view.findViewById(R.id.profile_recycler);
+        profileRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         spinner_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 entrantType.setText("Entrant " + selectedItem);
+                if (selectedItem.equals("Waitlisted")) {
+                    adapter = new ProfileAdapter(event.getWaitList());
+                    profileRecycler.setAdapter(adapter);
+                } else if (selectedItem.equals("Enrolled")) {
+                    adapter = new ProfileAdapter(event.getWonList());
+                    profileRecycler.setAdapter(adapter);
+
+                } else if (selectedItem.equals("Cancelled")) {
+                    adapter = new ProfileAdapter(event.getCancelList());
+                    profileRecycler.setAdapter(adapter);
+                }
             }
 
             @Override
@@ -70,6 +92,9 @@ public class EntrantInfoFragment extends Fragment {
                 // Handle case where nothing is selected
             }
         });
+
+
+
 
 
         backBtn.setOnClickListener(v -> {
