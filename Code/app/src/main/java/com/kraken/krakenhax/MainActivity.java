@@ -1,5 +1,6 @@
 package com.kraken.krakenhax;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -15,6 +16,9 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.os.Build;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -28,6 +32,27 @@ public class MainActivity extends AppCompatActivity {
     public boolean admin;
     private CollectionReference ProfileRef;
 
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "KrakenHaxNotifications";
+            String description = "Channel for app event notifications";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("kraken_channel", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    /**
+     * Called when the activity is first created. This is where you should do all of your normal static set up:
+     * create views, bind data to lists, etc. This method also provides you with a Bundle containing the activity's
+     * previously frozen state, if there was one.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle
+     *                           contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         loggedIn = false;
         db = FirebaseFirestore.getInstance();
         ProfileRef = db.collection("Profiles");
+        createNotificationChannel();
 
         // Set up the navigation bar
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);
@@ -69,7 +95,13 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
+
     }
 
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Ensure fragments read the latest deep link when the activity is reused
+        setIntent(intent);
+    }
 }

@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -18,90 +20,107 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Objects;
 
 /**
- * Displays the profile page. Allows the user to update their profile.
+ * Displays and allows editing of the current user's profile.
+ * Supports updating username, email, phone number, and notification preferences.
  */
 public class ProfileFragment extends Fragment {
-    public EditText usernameView;
-    public EditText EmailView;
-    public EditText PhoneNumberView;
-    public Button updateButton;
-    public Profile profile;
+
+    private EditText usernameView;
+    private EditText emailView;
+    private EditText phoneNumberView;
+    private Button updateButton;
+    private Switch notificationSwitch;
+    private Profile profile;
 
     private FirebaseFirestore db;
-    private CollectionReference ProfileRef;
+    private CollectionReference profileRef;
 
     /**
-     * Required empty public constructor
+     * Required empty public constructor.
      */
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
+    public ProfileFragment() {}
 
-    /**
-     * Called to have the fragment instantiate its user interface view.
-     * Contains the main functionality of the fragment.
-     * Sets up the listeners for the buttons.
-     * On update button click, it updates the profile with the changes made in the edit texts.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return The View for the fragment's UI, or null.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // Inflate the layout
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        db = FirebaseFirestore.getInstance();
-        ProfileRef = db.collection("Profiles");
-        usernameView = view.findViewById(R.id.UsernameTextView);
-        EmailView = view.findViewById(R.id.EmailTextView);
-        PhoneNumberView = view.findViewById(R.id.PhoneNumberTextView);
-        updateButton = view.findViewById(R.id.UpdateProfileButton);
 
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+        profileRef = db.collection("Profiles");
+
+        // UI bindings
+        usernameView = view.findViewById(R.id.UsernameTextView);
+        emailView = view.findViewById(R.id.EmailTextView);
+        phoneNumberView = view.findViewById(R.id.PhoneNumberTextView);
+        updateButton = view.findViewById(R.id.UpdateProfileButton);
+        notificationSwitch = view.findViewById(R.id.switch_notifications);
+        ImageView profilePic = view.findViewById(R.id.profile_pic);
+
+        // Load current user profile
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             profile = mainActivity.currentUser;
         }
-        usernameView.setText(profile.getUsername());
-        EmailView.setText(profile.getEmail());
-        String phoneNumber = profile.getPhoneNumber();
-        if (Objects.equals(phoneNumber, "0")) {
-            PhoneNumberView.setHint("No Phone Number");
-            PhoneNumberView.setText("");
-        } else {
-            PhoneNumberView.setText(profile.getPhoneNumber());
-        }
-        ImageView profilePic = view.findViewById(R.id.profile_pic);
 
-        // Set a default profile picture
+        // Populate fields
+        usernameView.setText(profile.getUsername());
+        emailView.setText(profile.getEmail());
+        String phoneNumber = profile.getPhoneNumber();
+        if (Objects.equals(phoneNumber, "0") || phoneNumber.isEmpty()) {
+            phoneNumberView.setHint("No Phone Number");
+            phoneNumberView.setText("");
+        } else {
+            phoneNumberView.setText(profile.getPhoneNumber());
+        }
+
+        // Set default profile picture
         profilePic.setImageResource(R.drawable.obama);
 
+        // Initialize notification switch
+        notificationSwitch.setChecked(profile.isNotificationsEnabled());
+        notificationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            profile.setNotificationsEnabled(isChecked);
+            Toast.makeText(requireContext(),
+                    isChecked ? "Notifications enabled" : "Notifications disabled",
+                    Toast.LENGTH_SHORT).show();
+
+            // Save preference in Firestore
+            String id = String.valueOf(profile.getID());
+            profileRef.document(id).update("notificationsEnabled", isChecked);
+        });
+
+        // Handle profile update
         updateButton.setOnClickListener(v -> {
-            String newUsername = usernameView.getText().toString();
-            String newEmail = EmailView.getText().toString();
-            String phoneNumberStr = PhoneNumberView.getText().toString();
+            String newUsername = usernameView.getText().toString().trim();
+            String newEmail = emailView.getText().toString().trim();
+            String phoneStr = phoneNumberView.getText().toString().trim();
+
+            if (newUsername.isEmpty() || newEmail.isEmpty()) {
+                Toast.makeText(requireContext(), "Username and Email cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             profile.setUsername(newUsername);
             profile.setEmail(newEmail);
-
             try {
-                profile.setPhoneNumber(phoneNumberStr);
+                profile.setPhoneNumber(phoneStr);
             } catch (NumberFormatException e) {
                 profile.setPhoneNumber("0");
             }
-            assert mainActivity != null;
-            mainActivity.currentUser = profile;
-            String ID = String.valueOf(profile.getID());
-            ProfileRef.document(ID).set(profile);
 
+            if (mainActivity != null) {
+                mainActivity.currentUser = profile;
+            }
+
+            // Update Firestore
+            String id = String.valueOf(profile.getID());
+            profileRef.document(id).set(profile);
+
+            Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
         });
 
+        // Handle sign-out button
         Button signoutButton = view.findViewById(R.id.button_signout);
         signoutButton.setOnClickListener(v -> {
             NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
@@ -110,5 +129,4 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
-
 }
