@@ -1,9 +1,14 @@
 package com.kraken.krakenhax;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -40,11 +45,35 @@ public class MainActivity extends AppCompatActivity {
      * @param savedInstanceState If the activity is being re-initialized after previously being shut down then this Bundle
      *                           contains the data it most recently supplied in onSaveInstanceState(Bundle). Note: Otherwise it is null.
      */
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+            CharSequence name = "KrakenHax Notifications";
+            String description = "Channel for event and system notifications";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+
+            NotificationChannel channel = new NotificationChannel("kraken_channel", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            createNotificationChannel();
+        }
+
         admin = false;
         loggedIn = false;
         db = FirebaseFirestore.getInstance();
