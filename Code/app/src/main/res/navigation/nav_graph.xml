@@ -163,9 +163,6 @@
         <action
             android:id="@+id/action_login_to_admin"
             app:destination="@+id/adminListFragment" />
-        <action
-            android:id="@+id/action_LoginFragment_to_EventFragment"
-            app:destination="@id/EventFragment" />
     </fragment>
 
     <!-- Destination for Type Chooser Fragment -->
@@ -211,9 +208,6 @@
         <action
             android:id="@id/action_MyEventDetailsFragment_to_AdminListFragment"
             app:destination="@id/adminListFragment" />
-        <argument
-            android:name="eventId"
-            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/adminListFragment"
