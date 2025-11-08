@@ -20,9 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A {@link Fragment} that displays the details of a single event.
- * It handles user interactions such as signing up, withdrawing, accepting, declining, and deleting an event.
- * The UI dynamically changes based on the user's role and their status for the event.
+ * The Event Page — displays event details and provides sign-up / cancel / notification functionality.
  */
 public class EventFragment extends Fragment {
     private Profile currentUser;
@@ -33,17 +31,10 @@ public class EventFragment extends Fragment {
     private Button deleteButton;
     private FirebaseFirestore db;
 
-    /**
-     * Required empty public constructor for fragment instantiation.
-     */
     public EventFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Updates the given event document in the "Events" collection in Firestore.
-     * @param event The event object to be updated.
-     */
     private void updateEventInFirestore(Event event) {
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).set(event)
@@ -52,12 +43,6 @@ public class EventFragment extends Fragment {
         }
     }
 
-    /**
-     * Deletes the given event document from the "Events" collection in Firestore.
-     * On success, it navigates back to the previous screen.
-     * @param event The event object to be deleted.
-     * @param navController The NavController used to navigate back.
-     */
     private void deleteEventFromFirestore(Event event, NavController navController) {
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).delete()
@@ -69,12 +54,6 @@ public class EventFragment extends Fragment {
         }
     }
 
-    /**
-     * Dynamically updates the visibility and text of action buttons based on the user's relationship with the event.
-     * @param view The parent view containing the buttons.
-     * @param event The event being displayed.
-     * @param navController The NavController for navigation.
-     */
     private void updateButtons(View view, Event event, NavController navController) {
         buttonAccept = view.findViewById(R.id.button_accept);
         buttonDecline = view.findViewById(R.id.button_decline);
@@ -112,38 +91,30 @@ public class EventFragment extends Fragment {
                 event.removeFromWaitList(currentUser);
                 updateEventInFirestore(event);
                 updateButtons(view, event, navController);
+
+                // Notify user
+                NotifyUser notifyUser = new NotifyUser(requireContext());
+                notifyUser.sendNotification(currentUser,
+                        "❌ You have withdrawn from " + event.getTitle());
             });
         } else {
             buttonSignup.setText("Sign Up");
-            buttonSignup.setOnClickListener(v -> {
-                event.addToWaitList(currentUser);
-                updateEventInFirestore(event);
-                updateButtons(view, event, navController);
-            });
+            event.addToWaitList(currentUser);
+            updateEventInFirestore(event);
+            updateButtons(view, event, navController);
+
+            // Notify user
+            NotifyUser notifyUser = new NotifyUser(requireContext());
+            notifyUser.sendNotification(currentUser,
+                    "✅ You have successfully signed up for " + event.getTitle());
         }
     }
 
-    /**
-     * Inflates the user interface view for this fragment.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
-    /**
-     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned,
-     * but before any saved state has been restored in to the view.
-     * This is where UI components are initialized, event data is retrieved, and listeners are set up.
-     *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -176,24 +147,37 @@ public class EventFragment extends Fragment {
             }
         });
 
+        // Update buttons for current user state
         updateButtons(view, event, navController);
 
+        // 🔔 DEMO NOTIFICATION BUTTON
+        Button demoNotifyBtn = view.findViewById(R.id.button_notify);
+        demoNotifyBtn.setOnClickListener(v -> {
+            Profile mockProfile = new Profile();
+            mockProfile.setUsername("Amaan");
+            mockProfile.setNotificationsEnabled(true);
+
+            NotifyUser notifyUser = new NotifyUser(requireContext());
+            notifyUser.sendNotification(mockProfile, "This is a demo notification from KrakenHax!");
+        });
+
+        // 🔔 REAL ORGANIZER BROADCAST
         buttonNotify = view.findViewById(R.id.button_notify);
         if (currentUser.getType().equals("Admin")) {
             buttonNotify.setVisibility(View.GONE);
         }
         buttonNotify.setOnClickListener(v -> {
-            NotifyUser notifyUser = new NotifyUser();
+            NotifyUser notifyUser = new NotifyUser(requireContext());
             List<Profile> allUsers = new ArrayList<>();
             allUsers.addAll(event.getWaitList());
             allUsers.addAll(event.getWonList());
-            allUsers.addAll(event.getAcceptList());
             allUsers.addAll(event.getLostList());
             allUsers.addAll(event.getCancelList());
 
-            notifyUser.sendBroadcast(allUsers, "Notification from organizer for " + event.getTitle());
+            notifyUser.sendBroadcast(allUsers, "📢 Update: " + event.getTitle() + " has new updates!");
         });
 
+        // Delete button logic
         deleteButton = view.findViewById(R.id.EventDeleteButton);
         deleteButton.setOnClickListener(v -> deleteEventFromFirestore(event, navController));
     }
