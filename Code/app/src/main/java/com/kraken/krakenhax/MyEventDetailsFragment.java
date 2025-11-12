@@ -190,4 +190,5 @@ public class MyEventDetailsFragment extends Fragment {
             });
         }
     }
+
 }

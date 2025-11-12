@@ -14,10 +14,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * The Event Page — displays event details and provides sign-up / cancel / notification functionality.
@@ -119,25 +122,50 @@ public class EventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
 
+        // Get the object for the current user
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             currentUser = mainActivity.currentUser;
         }
 
+        // Get the object for the event
         assert getArguments() != null;
         Event event = getArguments().getParcelable("event_name");
 
+        // Set up the nav controller
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
+        // Set the event name
         TextView tvEventName = view.findViewById(R.id.tv_event_name);
         assert event != null;
         tvEventName.setText(event.getTitle());
 
+        // Set the event location
         TextView tvLocation = view.findViewById(R.id.tv_location_field);
         tvLocation.setText(event.getLocation());
 
+        // Set the event description
+        TextView tvDescription = view.findViewById(R.id.tv_event_description);
+        tvDescription.setText(event.getEventDetails());
+
+        // Set the event poster
+        ShapeableImageView eventImage = view.findViewById(R.id.event_image);
+        String posterURL = event.getPoster();
+        if (posterURL == null || posterURL.isEmpty()) {
+            eventImage.setImageResource(R.drawable.outline_attractions_100);
+        } else {
+            Picasso.get()
+                    .load(posterURL)
+                    .placeholder(R.drawable.outline_attractions_100)
+                    .error(R.drawable.outline_attractions_100)
+                    .fit().centerCrop()
+                    .into(eventImage);
+        }
+
+        // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
         buttonBack.setOnClickListener(v -> {
             if (currentUser.getType().equals("Admin")) {
@@ -181,4 +209,5 @@ public class EventFragment extends Fragment {
         deleteButton = view.findViewById(R.id.EventDeleteButton);
         deleteButton.setOnClickListener(v -> deleteEventFromFirestore(event, navController));
     }
+
 }
