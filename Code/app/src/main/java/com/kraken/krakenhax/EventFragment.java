@@ -175,6 +175,35 @@ public class EventFragment extends Fragment {
             }
         });
 
+        // Set the view event organizer button to show the name of the organizer
+        String organizerID = event.getOrgId();
+        ProfileViewModel profileViewModel = new ProfileViewModel();
+        Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
+        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+            for (Profile profile : profiles) {
+                if (profile.getID().equals(organizerID)) {
+                    String organizerName = profile.getUsername();
+                    buttonEventOrganizer.setText(organizerName);
+
+                    // Go to the page with all the events by that organizer
+                    buttonEventOrganizer.setOnClickListener(v -> {
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("organizer", profile);
+                        navController.navigate(R.id.action_EventFragment_to_OrganizerFragment, bundle);
+                    });
+                    break;
+                }
+            }
+        });
+
+//        String organizerID = event.getOrgId();
+//        // Get the profile for the organizer matching that id from firestore
+//        ProfileViewModel profileViewModel = new ProfileViewModel();
+//        LiveData<ArrayList<Profile>> profileList = profileViewModel.getProfileList();
+//        Log.d("EventFragment", profileList.toString());
+//        Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
+//        buttonEventOrganizer.setText(profileList.toString());
+
         // Update buttons for current user state
         updateButtons(view, event, navController);
 

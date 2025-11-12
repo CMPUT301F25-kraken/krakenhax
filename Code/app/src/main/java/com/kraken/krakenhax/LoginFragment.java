@@ -1,25 +1,25 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast; // Import Toast
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer; // Import Observer
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
 
 /**
  * The login page for the app. This is the First page the user sees when they open the app.
@@ -112,7 +112,7 @@ public class LoginFragment extends Fragment {
         guest.setOnClickListener(v -> {
             MainActivity mainActivity = (MainActivity) getActivity();
             if (mainActivity != null) {
-                mainActivity.currentUser =  new Profile("5", "Guest", "Guest", "Guest", "Guest" + "@gmail.com", "0");
+                mainActivity.currentUser = new Profile("5", "Guest", "Guest", "Guest", "Guest" + "@gmail.com", "0");
                 mainActivity.loggedIn = true; // Make sure to set this for guest too
             }
             navController.navigate(R.id.action_login_to_events);
@@ -131,7 +131,7 @@ public class LoginFragment extends Fragment {
      */
     private void validateLogin(String usernameInput, String passwordInput) {
         // Get the LiveData from the ViewModel INSTANCE
-        LiveData<ArrayList<Profile>> profileListLiveData = profileModel.getProfileList();
+        LiveData<ArrayList<Profile>> profileListLiveData = ProfileViewModel.getProfileList();
 
         // Observe the LiveData to safely access the list of profiles
         profileListLiveData.observe(getViewLifecycleOwner(), new Observer<>() {
@@ -176,5 +176,6 @@ public class LoginFragment extends Fragment {
             }
         });
     }
+
 }
 
