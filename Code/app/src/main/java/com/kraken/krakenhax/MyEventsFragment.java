@@ -35,6 +35,8 @@ public class MyEventsFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
     private Button makeEventButton;
 
+    private Profile currentUser;
+
     /**
      * Required empty public constructor for fragment instantiation.
      */
@@ -60,12 +62,19 @@ public class MyEventsFragment extends Fragment {
 
         RecyclerView recycler_view_event_list2 = view.findViewById(R.id.recycler_view_events_list2);
         recycler_view_event_list2.setLayoutManager(new LinearLayoutManager(requireContext()));
+        MainActivity mainActivity = (MainActivity) getActivity();
+        assert mainActivity != null;
+        currentUser = mainActivity.currentUser;
 
         makeEventButton = view.findViewById(R.id.MakeEventButton);
+        if (Objects.equals(currentUser.getType(), "Entrant")) {
+            makeEventButton.setVisibility(View.GONE);
+        }
 
         makeEventButton.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_CreateEventFragment);
         });
+
 
         events = new ArrayList<>();
 
@@ -87,8 +96,13 @@ public class MyEventsFragment extends Fragment {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_id", clickedEvent);
-            NavHostFragment.findNavController(this).navigate(R.id.action_myEvents_to_MyEventDetailsFragment, bundle);
+            bundle.putParcelable("event_name", clickedEvent);
+            if (Objects.equals(currentUser.getType(), "Organizer")) {
+                NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_MyEventDetailsFragment, bundle);
+            }else if (Objects.equals(currentUser.getType(), "Entrant")){
+                NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_EventFragment, bundle);
+            }
+
         });
 
         return view;
@@ -99,26 +113,25 @@ public class MyEventsFragment extends Fragment {
      * It filters events to show only those created by the current user (organizer).
      */
     private void startFirestoreListener() {
-        eventsRef = db.collection("Events");
+        eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.addSnapshotListener((snap, e) -> {
             if (e != null) {
                 Log.e("Firestore", "Listen failed", e);
                 return;
             }
-            MainActivity mainActivity = (MainActivity) getActivity();
-            Profile currentUser = mainActivity.currentUser;
             if (snap != null && !snap.isEmpty()) {
                 events.clear();
-                for (QueryDocumentSnapshot snapshot : snap) {
-                    String title = snapshot.getString("title");
-                    String id = snapshot.getString("id");
-                    String eventDetails = snapshot.getString("eventDetails");
-                    String location = snapshot.getString("location");
-                    String poster = snapshot.getString("poster");
-                    String orgProfile = snapshot.getString("orgId");
+                for (QueryDocumentSnapshot doc : snap) {
+                    // Use .toObject() for robust deserialization
+                    Event event = doc.toObject(Event.class);
+                    String orgProfile = event.getOrgId();
+                    String eventId = event.getId();
                     if (Objects.equals(orgProfile, currentUser.getID())) {
-                        events.add(new Event(id, title, eventDetails, location, 0, poster));
+                        events.add(event);}
+                    if (currentUser.getMyWaitlist().contains(eventId)) {
+                        events.add(event);
                     }
+
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -126,3 +139,34 @@ public class MyEventsFragment extends Fragment {
     }
 
 }
+        /**eventsRef = db.collection("Events");
+        eventsRef.addSnapshotListener((snap, e) -> {
+            if (e != null) {
+                Log.e("Firestore", "Listen failed", e);
+                return;
+            }
+
+
+            if (snap != null && !snap.isEmpty()) {
+                events.clear();
+                for (QueryDocumentSnapshot snapshot : snap) {
+                    String title = snapshot.getString("title");
+                    String eventId = snapshot.getString("id");
+                    String eventDetails = snapshot.getString("eventDetails");
+                    String location = snapshot.getString("location");
+                    String poster = snapshot.getString("poster");
+                    String orgProfile = snapshot.getString("orgId");
+                    if (Objects.equals(orgProfile, currentUser.getID())) {
+                        events.add(new Event(eventId, title, eventDetails, location, 0, poster));}
+                    if (currentUser.getMyWaitlist().contains(eventId)) {
+                        events.add(new Event(eventId, title, eventDetails, location, 0, poster));
+                    }
+
+
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+}*/

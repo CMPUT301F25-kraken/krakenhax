@@ -80,11 +80,14 @@
 
         <!-- Action to navigate from the Events Fragment to MyEventsDetailFragment -->
         <action
-            android:id="@+id/action_myEvents_to_MyEventDetailsFragment"
+            android:id="@+id/action_MyEventsFragment_to_MyEventDetailsFragment"
             app:destination="@id/MyEventDetailsFragment" />
         <action
             android:id="@+id/action_MyEventsFragment_to_CreateEventFragment"
             app:destination="@id/CreateEventFragment" />
+        <action
+            android:id="@+id/action_MyEventsFragment_to_EventFragment"
+            app:destination="@id/EventFragment" />
     </fragment>
 
     <!-- Destination for MyEventDetailsFragment -->
