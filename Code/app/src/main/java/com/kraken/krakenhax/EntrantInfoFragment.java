@@ -65,8 +65,8 @@ public class EntrantInfoFragment extends Fragment {
         eventTitle.setText(event.getTitle());
         //fake profiles to view lists
 
-        event.addToWaitList(new Profile("test", "test", "test", "test", "test", "test"));
-        event.addToWaitList(new Profile("test2", "test2", "test2", "test2", "test2", "test2"));
+        //event.addToWaitList(new Profile("test", "test", "test", "test", "test", "test"));
+        //event.addToWaitList(new Profile("test2", "test2", "test2", "test2", "test2", "test2"));
         //event.addToWonList(new Profile("test4", "test4", "test4", "test4", "test4", "test4"));
 
         List<String> statuses = Arrays.asList("Waitlisted", "Enrolled", "Cancelled");

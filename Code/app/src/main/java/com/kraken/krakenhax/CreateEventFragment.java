@@ -59,6 +59,8 @@ public class CreateEventFragment extends Fragment {
 
     private NavController navController;
 
+
+
     /**
      * Inflates the layout for this fragment and initializes all the UI view components.
      *
