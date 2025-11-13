@@ -1,6 +1,8 @@
 package com.kraken.krakenhax;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +12,15 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
 
@@ -89,6 +94,24 @@ public class ProfileFragment extends Fragment {
             String id = String.valueOf(profile.getID());
             profileRef.document(id).update("notificationsEnabled", isChecked);
         });
+
+        // Set up upload profile pic button
+        Button uploadButton = view.findViewById(R.id.button_upload_profile_pic);
+        ActivityResultLauncher<String> imagePicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                filePath = uri;
+                try {
+                    Picasso.get().load(uri).fit().centerCrop().into(eventPoster);
+                    if (event != null) {
+                        eventViewModel.uploadPosterForEvent(event, filePath);
+                    } else {
+                        Log.e("ImageLoad", "Event is null");
+                    }
+                } catch (Exception e) {
+                    Log.e("ImageLoad", "Error loading image", e);
+                    new AlertDialog.Builder(requireContext()).setTitle("Error").setMessage("Failed to load image. Please try again.").setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
+                }
+            }
 
         // Handle profile update
         updateButton.setOnClickListener(v -> {
