@@ -4,11 +4,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import androidx.core.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
+
 import java.util.List;
+
 
 /**
  * Handles system and in-app notifications.
@@ -67,4 +69,5 @@ public class NotifyUser {
             sendNotification(entrant, message);
         }
     }
+
 }

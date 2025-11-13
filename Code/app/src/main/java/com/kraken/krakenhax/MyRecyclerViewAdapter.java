@@ -111,6 +111,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
          * @param position The position of the view in the adapter.
          */
         void onItemClick(View view, int position);
+
     }
 
     /**
@@ -146,5 +147,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
                 clickListener.onItemClick(view, getAdapterPosition());
             }
         }
+
     }
+
 }

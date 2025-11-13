@@ -37,7 +37,6 @@ public class MyEventDetailsFragment extends Fragment {
     private ImageView imgPoster;
     private Button btnUploadPoster;
     private Button btnBack;
-
     private Button btnentrantInfo;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
@@ -55,8 +54,8 @@ public class MyEventDetailsFragment extends Fragment {
      * Inflates the layout for this fragment, initializes Firestore and Storage,
      * and sets up listeners for UI components.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
      * @return The View for the fragment's UI.
      */
@@ -120,6 +119,7 @@ public class MyEventDetailsFragment extends Fragment {
     /**
      * Sets up a real-time Firestore snapshot listener for the current event document.
      * This ensures the UI is always displaying the most up-to-date event information.
+     *
      * @param view The root view of the fragment, used to find UI elements to update.
      */
     private void setupFirestoreListener(View view) {
@@ -149,6 +149,7 @@ public class MyEventDetailsFragment extends Fragment {
 
     /**
      * Updates all UI elements in the fragment with the latest data from the event object.
+     *
      * @param view The root view of the fragment, used to find UI elements.
      */
     private void updateUI(View view) {
@@ -202,4 +203,5 @@ public class MyEventDetailsFragment extends Fragment {
             });
         }
     }
+
 }

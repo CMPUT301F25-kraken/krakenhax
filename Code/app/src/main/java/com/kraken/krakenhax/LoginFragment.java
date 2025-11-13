@@ -9,13 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast; // Import Toast
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer; // Import Observer
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -26,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
 
 /**
  * The login page for the app. This is the First page the user sees when they open the app.
@@ -54,16 +55,15 @@ public class LoginFragment extends Fragment {
 
     /**
      * Called to have the fragment instantiate its user interface view.
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
      *
-     * @return
-     * Return the View for the fragment's UI, or null.
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return Return the View for the fragment's UI, or null.
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,9 +81,9 @@ public class LoginFragment extends Fragment {
      * On login click, it gets the info from the edit text and validates it in the validate function.
      * On signup click, it navigates to the type selector page.
      *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     *                           from a previous saved state as given here.
      */
 
     @Override
@@ -132,7 +132,7 @@ public class LoginFragment extends Fragment {
         guest.setOnClickListener(v -> {
             MainActivity mainActivity = (MainActivity) getActivity();
             if (mainActivity != null) {
-                mainActivity.currentUser =  new Profile("5", "Guest", "Guest", "Guest", "Guest" + "@gmail.com", "0");
+                mainActivity.currentUser = new Profile("5", "Guest", "Guest", "Guest", "Guest" + "@gmail.com", "0");
                 mainActivity.loggedIn = true; // Make sure to set this for guest too
             }
             if (eventId != null) {
@@ -146,7 +146,8 @@ public class LoginFragment extends Fragment {
                                 Bundle b = new Bundle();
                                 b.putParcelable("event_name", event);
                                 navController.navigate(R.id.action_LoginFragment_to_EventFragment, b);
-                            } })
+                            }
+                        })
                         .addOnFailureListener(e -> {
                             Log.e("LoginFragment", "Firestore fetch failed", e);
                             Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
@@ -165,12 +166,13 @@ public class LoginFragment extends Fragment {
      * If the user is a organizer, they are navigated to the events page.
      * If the user is an entrant, they are navigated to the events page.
      * If the user is an admin, they are navigated to the admin page.
+     *
      * @param usernameInput
      * @param passwordInput
      */
     private void validateLogin(String usernameInput, String passwordInput) {
         // Get the LiveData from the ViewModel INSTANCE
-        LiveData<ArrayList<Profile>> profileListLiveData = profileModel.getProfileList();
+        LiveData<ArrayList<Profile>> profileListLiveData = ProfileViewModel.getProfileList();
 
         // Observe the LiveData to safely access the list of profiles
         profileListLiveData.observe(getViewLifecycleOwner(), new Observer<>() {
@@ -236,3 +238,4 @@ public class LoginFragment extends Fragment {
         });
     }
 }
+

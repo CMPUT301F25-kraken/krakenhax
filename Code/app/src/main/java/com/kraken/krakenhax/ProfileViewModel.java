@@ -10,6 +10,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
+
 /**
  * ViewModel for the profiles list.
  * Kept up to date with the database.
@@ -17,15 +18,8 @@ import java.util.ArrayList;
  */
 public class ProfileViewModel extends ViewModel {
     private static MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
-    /**
-     * Returns the list of profiles.
-     * @return the list of profiles
-     */
-    public static LiveData<ArrayList<Profile>> getProfileList() {
-        return profileList;
-    }
-
     public CollectionReference profileCollection;
+
     /**
      * Required empty public constructor
      * Initializes the ViewModel and connects to the Firestore database.
@@ -40,8 +34,19 @@ public class ProfileViewModel extends ViewModel {
         // Start listening for real-time updates from Firestore.
         addSnapshotListener();
     }
+
+    /**
+     * Returns the list of profiles.
+     *
+     * @return the list of profiles
+     */
+    public static LiveData<ArrayList<Profile>> getProfileList() {
+        return profileList;
+    }
+
     /**
      * Adds a profile to the list.
+     *
      * @param profile the profile to add
      */
     public void addProfile(Profile profile) {
@@ -80,4 +85,5 @@ public class ProfileViewModel extends ViewModel {
             }
         });
     }
+
 }

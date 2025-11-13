@@ -43,6 +43,7 @@ public class EventViewModel extends ViewModel {
 
     /**
      * Adds an event to the local list and triggers an upload to Firestore.
+     *
      * @param event The event to be added.
      */
     public void addEvent(Event event) {
@@ -59,7 +60,8 @@ public class EventViewModel extends ViewModel {
     /**
      * Uploads a poster image for a given event to Firebase Storage.
      * On success, it updates the event document in Firestore with the new image URL.
-     * @param event The event to which the poster belongs.
+     *
+     * @param event    The event to which the poster belongs.
      * @param filePath The local Uri of the image file to be uploaded.
      */
     public void uploadPosterForEvent(Event event, Uri filePath) {
@@ -91,6 +93,7 @@ public class EventViewModel extends ViewModel {
 
     /**
      * Uploads an event object to the "Events" collection in Firestore.
+     *
      * @param event The event object to be uploaded.
      */
     private void uploadEvent(Event event) {
