@@ -2,6 +2,7 @@ package com.kraken.krakenhax;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -112,5 +113,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Ensure fragments read the latest deep link when the activity is reused
+        setIntent(intent);
+    }
 
 }
