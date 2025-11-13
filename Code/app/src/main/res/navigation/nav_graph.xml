@@ -166,6 +166,12 @@
         <action
             android:id="@+id/action_login_to_admin"
             app:destination="@+id/adminListFragment" />
+
+        <!-- Action to navigate from the Login Chooser Fragment
+         to an Event Fragment (passed with parcelable bundle) -->
+        <action
+            android:id="@+id/action_LoginFragment_to_EventFragment"
+            app:destination="@id/EventFragment" />
     </fragment>
 
     <!-- Destination for Type Chooser Fragment -->
