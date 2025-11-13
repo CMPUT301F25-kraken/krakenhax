@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
@@ -44,6 +47,9 @@ public class EventFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
                     .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
         }
+        DocumentReference profRef = db.collection("Profiles").document(currentUser.getID());
+        profRef.set(currentUser);
+        //profRef.update("myWaitlist", FieldValue.arrayUnion(event.getId()));
     }
 
     private void deleteEventFromFirestore(Event event, NavController navController) {
@@ -88,10 +94,11 @@ public class EventFragment extends Fragment {
         } else if (event.getLostList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You were not selected");
-        } else if (event.getWaitList().contains(currentUser)) {
+        } else if (currentUser.getMyWaitlist().contains(event.getId())) {
             buttonSignup.setText("Withdraw");
             buttonSignup.setOnClickListener(v -> {
                 event.removeFromWaitList(currentUser);
+                currentUser.removeFromMyWaitList(event.getId());
                 updateEventInFirestore(event);
                 updateButtons(view, event, navController);
 
@@ -100,16 +107,21 @@ public class EventFragment extends Fragment {
                 notifyUser.sendNotification(currentUser,
                         "❌ You have withdrawn from " + event.getTitle());
             });
+            //event.getWaitList().contains(currentUser)
         } else {
             buttonSignup.setText("Sign Up");
-            event.addToWaitList(currentUser);
-            updateEventInFirestore(event);
-            updateButtons(view, event, navController);
+            buttonSignup.setOnClickListener(v -> {
+                event.addToWaitList(currentUser);
+                currentUser.addToMyWaitlist(event.getId());
+                updateEventInFirestore(event);
+                updateButtons(view, event, navController);
 
-            // Notify user
-            NotifyUser notifyUser = new NotifyUser(requireContext());
-            notifyUser.sendNotification(currentUser,
-                    "✅ You have successfully signed up for " + event.getTitle());
+                // Notify user
+                NotifyUser notifyUser = new NotifyUser(requireContext());
+                notifyUser.sendNotification(currentUser,
+                        "✅ You have successfully signed up for " + event.getTitle());
+            });
+
         }
     }
 

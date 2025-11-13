@@ -80,13 +80,16 @@
 
         <!-- Action to navigate from the My Events Fragment to MyEventsDetailFragment -->
         <action
-            android:id="@+id/action_myEvents_to_MyEventDetailsFragment"
+            android:id="@+id/action_MyEventsFragment_to_MyEventDetailsFragment"
             app:destination="@id/MyEventDetailsFragment" />
 
         <!-- Action to navigate from the My Events Fragment to Create Event Fragment -->
         <action
             android:id="@+id/action_MyEventsFragment_to_CreateEventFragment"
             app:destination="@id/CreateEventFragment" />
+        <action
+            android:id="@+id/action_MyEventsFragment_to_EventFragment"
+            app:destination="@id/EventFragment" />
     </fragment>
 
     <!-- Destination for MyEventDetailsFragment -->
@@ -168,6 +171,12 @@
         <action
             android:id="@+id/action_login_to_admin"
             app:destination="@+id/adminListFragment" />
+
+        <!-- Action to navigate from the Login Chooser Fragment
+         to an Event Fragment (passed with parcelable bundle) -->
+        <action
+            android:id="@+id/action_LoginFragment_to_EventFragment"
+            app:destination="@id/EventFragment" />
     </fragment>
 
     <!-- Destination for Type Chooser Fragment -->

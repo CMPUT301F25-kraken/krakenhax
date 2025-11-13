@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -25,6 +27,8 @@ public class Profile implements Parcelable {
     private String type; // e.g., "entrant", "organizer", "admin"
     private String phoneNumber;
     private String ID;
+
+    private ArrayList<String> myWaitlist;
     private String pictureURL;
     private boolean notificationsEnabled = true;
     public boolean isNotificationsEnabled() { return notificationsEnabled; }
@@ -57,12 +61,22 @@ public class Profile implements Parcelable {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.ID = ID;
+        this.myWaitlist = new ArrayList<String>();
     }
     /**
      * Constructs a no-argument user profile.
      */
     public Profile(){
         // Empty
+    }
+    public ArrayList<String> getMyWaitlist() {return myWaitlist;}
+
+    public void addToMyWaitlist(String eventId) {
+        myWaitlist.add(eventId);
+    }
+
+    public void removeFromMyWaitList(String event_id) {
+        this.myWaitlist.remove(event_id);
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.kraken.krakenhax;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,10 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -35,6 +41,9 @@ public class LoginFragment extends Fragment {
     private Button guest;
     private ProfileViewModel profileModel;
     private NavController navController;
+
+    private FirebaseFirestore db;
+    private String eventId;
 
     /**
      * Required empty public constructor
@@ -58,6 +67,7 @@ public class LoginFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        db = FirebaseFirestore.getInstance();
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
@@ -83,6 +93,16 @@ public class LoginFragment extends Fragment {
         // --- Initialization ---
         navController = Navigation.findNavController(view);
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+
+        Intent intent = getActivity().getIntent();
+        Uri intentData = intent.getData();
+        if (intentData != null) {
+            eventId = intentData.getLastPathSegment();
+            Log.d("LoginFragment", "Received eventId from intent: " + eventId);
+            intent.setData(null); // Clear intent data after use
+        } else {
+            eventId = null;
+        }
 
         // --- Find Views ---
         signup = view.findViewById(R.id.signup_button);
@@ -115,7 +135,26 @@ public class LoginFragment extends Fragment {
                 mainActivity.currentUser = new Profile("5", "Guest", "Guest", "Guest", "Guest" + "@gmail.com", "0");
                 mainActivity.loggedIn = true; // Make sure to set this for guest too
             }
-            navController.navigate(R.id.action_login_to_events);
+            if (eventId != null) {
+                getEventFromFirebase()
+                        .addOnSuccessListener(event -> {
+                            if (event == null) {
+                                // Event not found or error
+                                navController.navigate(R.id.action_login_to_events);
+                            } else {
+                                // Event found - pass to EventFragment
+                                Bundle b = new Bundle();
+                                b.putParcelable("event_name", event);
+                                navController.navigate(R.id.action_LoginFragment_to_EventFragment, b);
+                            } })
+                        .addOnFailureListener(e -> {
+                            Log.e("LoginFragment", "Firestore fetch failed", e);
+                            Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
+                            navController.navigate(R.id.action_login_to_events);
+                        });
+            } else {
+                navController.navigate(R.id.action_login_to_events);
+            }
         });
     }
 
@@ -179,3 +218,23 @@ public class LoginFragment extends Fragment {
 
 }
 
+    private Task<Event> getEventFromFirebase() {
+        // Return a Task that resolves to the fetched Event, or null on error/not-found.
+        if (eventId == null || eventId.isEmpty()) {
+            return Tasks.forResult(null);
+        }
+
+        return db.collection("Events").document(eventId).get().continueWith(task -> {
+            if (!task.isSuccessful() || task.getResult() == null || !task.getResult().exists()) {
+                // On failure or missing document, return null
+                return null;
+            }
+
+            Event event = task.getResult().toObject(Event.class);
+            if (event != null) {
+                event.setId(task.getResult().getId());
+            }
+            return event;
+        });
+    }
+}
