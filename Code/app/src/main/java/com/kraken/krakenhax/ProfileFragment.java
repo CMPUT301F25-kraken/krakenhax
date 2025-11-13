@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.app.AlertDialog;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +21,13 @@ import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
+
 
 /**
  * Displays and allows editing of the current user's profile.
@@ -39,11 +44,16 @@ public class ProfileFragment extends Fragment {
 
     private FirebaseFirestore db;
     private CollectionReference profileRef;
+    private Uri filePath;
+    private StorageReference storageRef;
+    private FirebaseStorage storage;
+    private ImageView profilePic;
 
     /**
      * Required empty public constructor.
      */
-    public ProfileFragment() {}
+    public ProfileFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +63,8 @@ public class ProfileFragment extends Fragment {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
         profileRef = db.collection("Profiles");
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         // UI bindings
         usernameView = view.findViewById(R.id.UsernameTextView);
@@ -60,7 +72,7 @@ public class ProfileFragment extends Fragment {
         phoneNumberView = view.findViewById(R.id.PhoneNumberTextView);
         updateButton = view.findViewById(R.id.UpdateProfileButton);
         notificationSwitch = view.findViewById(R.id.switch_notifications);
-        ImageView profilePic = view.findViewById(R.id.profile_pic);
+        profilePic = view.findViewById(R.id.profile_pic);
 
         // Load current user profile
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -80,7 +92,10 @@ public class ProfileFragment extends Fragment {
         }
 
         // Set default profile picture
-        profilePic.setImageResource(R.drawable.obama);
+//        profilePic.setImageResource(R.drawable.obama);
+
+        // Load profile picture
+        loadProfilePic();
 
         // Initialize notification switch
         notificationSwitch.setChecked(profile.isNotificationsEnabled());
@@ -97,21 +112,31 @@ public class ProfileFragment extends Fragment {
 
         // Set up upload profile pic button
         Button uploadButton = view.findViewById(R.id.button_upload_profile_pic);
-        ActivityResultLauncher<String> imagePicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+        // Image picker
+        ActivityResultLauncher<String> imagePicker;
+
+        imagePicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
                 filePath = uri;
                 try {
-                    Picasso.get().load(uri).fit().centerCrop().into(eventPoster);
-                    if (event != null) {
-                        eventViewModel.uploadPosterForEvent(event, filePath);
-                    } else {
-                        Log.e("ImageLoad", "Event is null");
-                    }
+                    Picasso.get().load(uri).fit().centerCrop().into(profilePic);
+                    uploadProfilePic();
                 } catch (Exception e) {
                     Log.e("ImageLoad", "Error loading image", e);
                     new AlertDialog.Builder(requireContext()).setTitle("Error").setMessage("Failed to load image. Please try again.").setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
                 }
             }
+        });
+
+        uploadButton.setOnClickListener(v -> imagePicker.launch("image/*"));
+
+        // Set up delete profile pic button
+        Button deleteButton = view.findViewById(R.id.button_delete);
+        deleteButton.setOnClickListener(v -> {
+            profile.setPicture(null);
+            deleteProfilePic();
+            loadProfilePic();
+        });
 
         // Handle profile update
         updateButton.setOnClickListener(v -> {
@@ -152,4 +177,64 @@ public class ProfileFragment extends Fragment {
 
         return view;
     }
+
+    public void uploadProfilePic() {
+        if (filePath != null && profile != null && profile.getID() != null) {
+            // Path in Firebase Storage: /profile_pictures/USER_ID.jpg
+            StorageReference profilePicRef = storageRef.child("profile_pictures/" + profile.getID() + ".jpg");
+
+            UploadTask uploadTask = profilePicRef.putFile(filePath);
+
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                // After the upload is successful, get the public download URL
+                profilePicRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String downloadUrl = uri.toString();
+                    Log.d("Firebase", "Download URL: " + downloadUrl);
+
+                    // Update the local profile object
+                    profile.setPicture(downloadUrl);
+//                    db.collection("ProfilePictures")
+//                            .document(profile.getID())
+//                            .set(profile);
+                    // Get the profile's document ID and update the picture field in profile
+                    String profileID = profile.getID();
+                    db.collection("Profiles").document(profileID)
+                            .update("picture", downloadUrl)
+                            .addOnSuccessListener(aVoid -> Log.d("Firestore", "Profile picture URL updated successfully in firestore"))
+                            .addOnFailureListener(e -> Log.e("Firestore", "Error updating profile picture URL in Firestore", e));
+                }).addOnFailureListener(e -> {
+                    // URL couldn't be retrieved after a successful upload
+                    Log.e("Firebase", "Failed to get download URL", e);
+                });
+            }).addOnFailureListener(e -> {
+                Log.e("Firebase", "Upload failed", e);
+            });
+        }
+    }
+
+    public void deleteProfilePic() {
+        StorageReference profilePicRef = storageRef.child("profile_pictures/" + profile.getID() + ".jpg");
+        profilePicRef.delete().addOnSuccessListener(aVoid -> {
+            // Profile picture deleted successfully
+            Log.d("ProfileFragment", "Profile picture deleted successfully");
+        }).addOnFailureListener(e -> {
+            // Error
+            Log.e("Firebase", "Delete profile picture failed", e);
+        });
+    }
+
+    public void loadProfilePic() {
+        String profilePicURL = profile.getPicture();
+        if (profilePicURL == null || profilePicURL.isEmpty()) {
+            profilePic.setImageResource(R.drawable.obama);
+        } else {
+            Picasso.get()
+                    .load(profilePicURL)
+                    .placeholder(R.drawable.obama)
+                    .error(R.drawable.obama)
+                    .fit().centerCrop()
+                    .into(profilePic);
+        }
+    }
+
 }

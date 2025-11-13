@@ -37,6 +37,7 @@ public class ProfileViewModel extends ViewModel {
 
     /**
      * Returns the list of profiles.
+     *
      * @return the list of profiles
      */
     public static LiveData<ArrayList<Profile>> getProfileList() {
@@ -45,6 +46,7 @@ public class ProfileViewModel extends ViewModel {
 
     /**
      * Adds a profile to the list.
+     *
      * @param profile the profile to add
      */
     public void addProfile(Profile profile) {

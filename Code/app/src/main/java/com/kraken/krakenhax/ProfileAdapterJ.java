@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * profile adapter for the Admin list of profiles.
+ * Profile adapter for the Admin list of profiles.
  */
 public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
@@ -29,6 +29,7 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
     /**
      * Required public constructor
      * Takes context and an arraylist of profiles.
+     *
      * @param context
      * @param profiles
      */
@@ -40,6 +41,7 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
     /**
      * Returns the view for the list item.
+     *
      * @param position
      * @param convertView
      * @param parent
@@ -69,8 +71,10 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
 
         return view;
     }
+
     /**
      * Toggles the selection of a profile.
+     *
      * @param position
      */
     public void toggleSelection(int position) {
@@ -85,8 +89,10 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
             notifyDataSetChanged();
         }
     }
+
     /**
      * Returns the set of selected profile IDs.
+     *
      * @return the set of selected profile IDs.
      */
     public Set<String> getSelectedProfileIds() {

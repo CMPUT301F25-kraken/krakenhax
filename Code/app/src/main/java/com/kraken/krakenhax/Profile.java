@@ -25,6 +25,7 @@ public class Profile implements Parcelable {
     private String type; // e.g., "entrant", "organizer", "admin"
     private String phoneNumber;
     private String ID;
+    private String pictureURL;
     private boolean notificationsEnabled = true;
     public boolean isNotificationsEnabled() { return notificationsEnabled; }
     public void setNotificationsEnabled(boolean enabled) { this.notificationsEnabled = enabled; }
@@ -154,6 +155,14 @@ public class Profile implements Parcelable {
      */
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public void setPicture(String pictureURL) {
+        this.pictureURL = pictureURL;
+    }
+
+    public String getPicture() {
+        return this.pictureURL;
     }
 
 

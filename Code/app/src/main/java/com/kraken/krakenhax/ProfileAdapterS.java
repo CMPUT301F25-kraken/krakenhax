@@ -21,6 +21,7 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
 
     /**
      * Constructor for the ProfileAdapterS.
+     *
      * @param profileList The list of profiles to be displayed.
      */
     public ProfileAdapterS(ArrayList<Profile> profileList) {
@@ -30,7 +31,8 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
 
     /**
      * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent an item.
-     * @param parent The ViewGroup into which the new View will be added.
+     *
+     * @param parent   The ViewGroup into which the new View will be added.
      * @param viewType The view type of the new View.
      * @return A new ViewHolder that holds a View of the given view type.
      */
@@ -44,7 +46,8 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
 
     /**
      * Called by RecyclerView to display the data at the specified position.
-     * @param holder The ViewHolder which should be updated to represent the contents of the item.
+     *
+     * @param holder   The ViewHolder which should be updated to represent the contents of the item.
      * @param position The position of the item within the adapter's data set.
      */
     @Override
@@ -56,6 +59,7 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
 
     /**
      * Returns the total number of items in the data set held by the adapter.
+     *
      * @return The total number of items in this adapter.
      */
     @Override
@@ -71,6 +75,7 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
 
         /**
          * Constructor for the ViewHolder.
+         *
          * @param itemView The view for a single item in the list.
          */
         public ViewHolder(@NonNull View itemView) {
