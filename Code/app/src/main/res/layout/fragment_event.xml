@@ -53,13 +53,26 @@
         android:id="@+id/button_notify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send Demo Notification"
-        android:backgroundTint="@color/LoginButtonColor"
         android:layout_marginTop="3dp"
+        android:backgroundTint="@color/LoginButtonColor"
+        android:text="Send Demo Notification"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_back" />
 
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/event_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="100dp"
+        android:background="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/outline_attractions_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.RoundedImageView" />
 
     <TextView
         android:id="@+id/tv_date_time"
@@ -161,13 +174,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:text="Organized by: "
-        android:visibility="visible"
         android:textSize="20sp"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="@+id/tv_event_description"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/button_event_organizer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"

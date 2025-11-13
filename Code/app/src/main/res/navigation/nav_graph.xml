@@ -78,10 +78,12 @@
             android:id="@+id/action_MyEventsFragment_to_ProfileFragment"
             app:destination="@+id/ProfileFragment" />
 
-        <!-- Action to navigate from the Events Fragment to MyEventsDetailFragment -->
+        <!-- Action to navigate from the My Events Fragment to MyEventsDetailFragment -->
         <action
             android:id="@+id/action_MyEventsFragment_to_MyEventDetailsFragment"
             app:destination="@id/MyEventDetailsFragment" />
+
+        <!-- Action to navigate from the My Events Fragment to Create Event Fragment -->
         <action
             android:id="@+id/action_MyEventsFragment_to_CreateEventFragment"
             app:destination="@id/CreateEventFragment" />
@@ -96,11 +98,13 @@
         android:name="com.kraken.krakenhax.MyEventDetailsFragment"
         android:label="fragment_my_event_details"
         tools:layout="@layout/fragment_my_event_details">
+
         <!-- Action to navigate from the MyEventsDetailFragment to EntrantInfoFragment -->
         <action
             android:id="@+id/action_MyEventDetailsFragment_to_EntrantInfoFragment"
             app:destination="@id/EntrantInfoFragment" />
 
+        <!-- Action to navigate from the MyEventsDetailFragment to Admin List Fragment -->
         <action
             android:id="@+id/action_MyEventDetailsFragment_to_AdminListFragment"
             app:destination="@id/adminListFragment" />
@@ -113,7 +117,6 @@
         android:name="com.kraken.krakenhax.EntrantInfoFragment"
         android:label="fragment_entrant_info"
         tools:layout="@layout/fragment_entrant_info">
-
     </fragment>
 
     <!-- Destination for Profile Fragment -->
@@ -133,6 +136,7 @@
             android:id="@+id/action_ProfileFragment_to_MyEventsFragment"
             app:destination="@+id/MyEventsFragment" />
 
+        <!-- Action to navigate from the Profile Fragment to Admin List Fragment -->
         <action
             android:id="@+id/action_ProfileFragment_to_adminListFragment"
             app:destination="@id/adminListFragment" />
@@ -163,6 +167,7 @@
             app:popUpTo="@id/LoginFragment"
             app:popUpToInclusive="true" />
 
+        <!-- Action to navigate from the Login Fragment to Admin List Fragment -->
         <action
             android:id="@+id/action_login_to_admin"
             app:destination="@+id/adminListFragment" />
@@ -214,34 +219,60 @@
         <action
             android:id="@+id/action_EventFragment_to_EventsFragment"
             app:destination="@+id/EventsFragment" />
+
+        <!-- Action to navigate from the Event Fragment to Admin List Fragment -->
         <action
             android:id="@id/action_MyEventDetailsFragment_to_AdminListFragment"
             app:destination="@id/adminListFragment" />
+
+        <!-- Action to navigate from the Event Fragment to Organizer Fragment -->
+        <action
+            android:id="@+id/action_EventFragment_to_OrganizerFragment"
+            app:destination="@+id/OrganizerFragment" />
     </fragment>
+
+    <!-- Destination for Admin List Fragment -->
     <fragment
         android:id="@+id/adminListFragment"
         android:name="com.kraken.krakenhax.AdminListFragment"
         android:label="AdminListFragment"
         tools:layout="@layout/fragment_admin_list">
 
+        <!-- Action to navigate from the Admin List Fragment to Profile Fragment -->
         <action
             android:id="@+id/action_adminListFragment_to_profileFragment"
             app:destination="@id/ProfileFragment" />
 
+        <!-- Action to navigate from the Admin List Fragment to Event Fragment -->
         <action
             android:id="@+id/action_adminListFragment_to_EventFragment"
             app:destination="@id/EventFragment" />
     </fragment>
 
+    <!-- Destination for Create Event Fragment -->
     <fragment
         android:id="@+id/CreateEventFragment"
         android:name="com.kraken.krakenhax.CreateEventFragment"
         android:label="CreateEventFragment"
         tools:layout="@layout/create_event_fragment">
+
+        <!-- Action to navigate from the Create Event Fragment to My Events Fragment -->
         <action
             android:id="@+id/action_CreateEventFragment_to_MyEventsFragment"
             app:destination="@id/MyEventsFragment" />
     </fragment>
 
+    <!-- Destination for Organizer Fragment -->
+    <fragment
+        android:id="@+id/OrganizerFragment"
+        android:name="com.kraken.krakenhax.OrganizerFragment"
+        android:label="OrganizerFragment"
+        tools:layout="@layout/fragment_organizer">
+
+        <!-- Action to navigate from the Organizer Fragment to Event Fragment -->
+        <action
+            android:id="@+id/action_OrganizerFragment_to_EventFragment"
+            app:destination="@id/EventFragment" />
+    </fragment>
 
 </navigation>

@@ -19,9 +19,6 @@ import androidx.navigation.Navigation;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.Objects;
-
 /**
  * Fragment class to handle the sign-up process.
  * Creates new organizers or Entrants.
@@ -43,15 +40,17 @@ public class SignUpFragment extends Fragment {
     public SignUpFragment() {
         // Required empty public constructor
     }
+
     /**
      * Called to have the fragment instantiate its user interface view.
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     *                           from a previous saved state as given here.
      * @return The View for the fragment's UI, or null.
      */
     @Override
@@ -68,9 +67,9 @@ public class SignUpFragment extends Fragment {
      * On sign up button click, it checks if the username already exists. if it does, it shows a toast.
      * if it doesn't, it sends the username, password, and email to the createNewProfile function.
      *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     *                           from a previous saved state as given here.
      */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -108,7 +107,7 @@ public class SignUpFragment extends Fragment {
             }
 
             // Observe the LiveData to safely check for existing usernames
-            profileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+            ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
                 // This block runs only when `profiles` is not null.
                 boolean usernameExists = false;
                 for (Profile p : profiles) {
@@ -127,7 +126,7 @@ public class SignUpFragment extends Fragment {
 
                 // Important: Remove the observer after use to prevent it from firing again
                 // if the user stays on the screen and the data changes for another reason.
-                profileViewModel.getProfileList().removeObservers(getViewLifecycleOwner());
+                ProfileViewModel.getProfileList().removeObservers(getViewLifecycleOwner());
             });
         });
     }
@@ -138,13 +137,14 @@ public class SignUpFragment extends Fragment {
      * The profile is then added to the ViewModel.
      * Sets the current user in MainActivity.
      * Navigates to the next screen.
+     *
      * @param username
      * @param password
      * @param email
      */
     private void createNewProfile(String username, String password, String email) {
         // Let Firestore generate the ID. The 'id' field in the constructor can be null or empty for now.
-        Profile newProfile = new Profile("0", username, password, userType, email,"0");
+        Profile newProfile = new Profile("0", username, password, userType, email, "0");
 
         profileCollection.add(newProfile)
                 .addOnSuccessListener(documentReference -> {
