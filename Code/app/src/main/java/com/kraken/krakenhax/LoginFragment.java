@@ -104,6 +104,9 @@ public class LoginFragment extends Fragment {
             eventId = null;
         }
 
+        // Attempt silent device-based session restoration
+        getDeviceSessionFlow();
+
         // --- Find Views ---
         signup = view.findViewById(R.id.signup_button);
         login = view.findViewById(R.id.login_button);
@@ -135,27 +138,7 @@ public class LoginFragment extends Fragment {
                 mainActivity.currentUser = new Profile("5", "Guest", "Guest", "Guest", "Guest" + "@gmail.com", "0");
                 mainActivity.loggedIn = true; // Make sure to set this for guest too
             }
-            if (eventId != null) {
-                getEventFromFirebase()
-                        .addOnSuccessListener(event -> {
-                            if (event == null) {
-                                // Event not found or error
-                                navController.navigate(R.id.action_login_to_events);
-                            } else {
-                                // Event found - pass to EventFragment
-                                Bundle b = new Bundle();
-                                b.putParcelable("event_name", event);
-                                navController.navigate(R.id.action_LoginFragment_to_EventFragment, b);
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("LoginFragment", "Firestore fetch failed", e);
-                            Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
-                            navController.navigate(R.id.action_login_to_events);
-                        });
-            } else {
-                navController.navigate(R.id.action_login_to_events);
-            }
+            postSignInFlow();
         });
     }
 
@@ -167,8 +150,8 @@ public class LoginFragment extends Fragment {
      * If the user is an entrant, they are navigated to the events page.
      * If the user is an admin, they are navigated to the admin page.
      *
-     * @param usernameInput
-     * @param passwordInput
+     * @param usernameInput the username entered by the user
+     * @param passwordInput the password entered by the user
      */
     private void validateLogin(String usernameInput, String passwordInput) {
         // Get the LiveData from the ViewModel INSTANCE
@@ -197,15 +180,8 @@ public class LoginFragment extends Fragment {
                         mainActivity.loggedIn = true;
                     }
                     Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
+                    postSignInFlow();
 
-                    // Navigate based on user type
-                    if (Objects.equals(foundUser.getType(), "Organizer")) {
-                        navController.navigate(R.id.action_login_to_events);
-                    } else if (Objects.equals(foundUser.getType(), "Entrant")) {
-                        navController.navigate(R.id.action_login_to_events);
-                    } else if (Objects.equals(foundUser.getType(), "Admin")) { // Includes Admin
-                        navController.navigate(R.id.action_login_to_admin);
-                    }
                 } else {
                     // --- FAILED LOGIN ---
                     Toast.makeText(getContext(), "Invalid Credentials", Toast.LENGTH_SHORT).show();
@@ -218,6 +194,111 @@ public class LoginFragment extends Fragment {
         });
     }
 
+    /**
+     * Try to restore a session using the device's stored linked user ID.
+     * Silent: no toasts on failure/miss; success shows a small toast.
+     */
+    private void getDeviceSessionFlow() {
+        DeviceIdentityManager.fetchLinkedUserId(linkedUserId -> {
+            if (linkedUserId == null) {
+                return; // No linked user; stay on login screen.
+            }
+
+            // Get the LiveData from the ViewModel INSTANCE
+            LiveData<ArrayList<Profile>> profileListLiveData = ProfileViewModel.getProfileList();
+
+            // Observe the LiveData to safely access the list of profiles
+            profileListLiveData.observe(getViewLifecycleOwner(), new Observer<>() {
+                @Override
+                public void onChanged(ArrayList<Profile> profiles) {
+                    // This code runs only when the 'profiles' list is ready.
+                    if (profiles == null) return; // Guard against a null list
+
+                    Profile foundUser = null;
+                    for (Profile user : profiles) {
+                        if (Objects.equals(user.getID(), linkedUserId)) {
+                            foundUser = user;
+                            break; // Found the user, no need to keep looping
+                        }
+                    }
+
+                    if (foundUser != null) {
+                        // --- SUCCESSFUL LOGIN ---
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        if (mainActivity != null) {
+                            mainActivity.currentUser = foundUser;
+                            mainActivity.loggedIn = true;
+                        }
+                        Toast.makeText(getContext(), "Session restored", Toast.LENGTH_SHORT).show();
+                        postSignInFlow();
+
+                    }
+                    // No need for an else case; if no user is found, we just stay on the login screen.
+
+                    // IMPORTANT: Remove the observer so this logic doesn't re-run unexpectedly.
+                    // This makes the observer a "single-event" listener for this login attempt.
+                    profileListLiveData.removeObserver(this);
+                }
+            });
+        });
+    }
+
+    /**
+     * Completes the sign-in flow after a successful login or session restore.
+     * Links this device to the signed-in user, then optionally navigates to a deep-linked event
+     * if an eventId was provided via the Activity intent; otherwise navigates based on user type.
+     */
+    private void postSignInFlow() {
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity == null) return;
+        Profile foundUser = mainActivity.currentUser;
+        if (foundUser == null) return;
+
+        DeviceIdentityManager.updateAccountLink(foundUser.getID());
+
+        if (eventId != null) {
+            getEventFromFirebase()
+                    .addOnSuccessListener(event -> {
+                        if (event == null) {
+                            // Event not found or error
+                            normalNaviagationFlow(foundUser);
+                        } else {
+                            // Event found - pass to EventFragment
+                            Bundle b = new Bundle();
+                            b.putParcelable("event_name", event);
+                            navController.navigate(R.id.action_LoginFragment_to_EventFragment, b);
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("LoginFragment", "Firestore fetch failed", e);
+                        Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
+                        normalNaviagationFlow(foundUser);
+                    });
+        } else {
+            normalNaviagationFlow(foundUser);
+        }
+    }
+
+    /**
+     * Navigate to the appropriate destination based on the user's role.
+     * @param foundUser the authenticated profile used to determine the target screen.
+     */
+    private void normalNaviagationFlow(Profile foundUser) {
+        // Navigate based on user type
+        if (Objects.equals(foundUser.getType(), "Organizer")) {
+            navController.navigate(R.id.action_login_to_events);
+        } else if (Objects.equals(foundUser.getType(), "Entrant")) {
+            navController.navigate(R.id.action_login_to_events);
+        } else if (Objects.equals(foundUser.getType(), "Admin")) { // Includes Admin
+            navController.navigate(R.id.action_login_to_admin);
+        }
+    }
+
+    /**
+     * Fetch the event referenced by the current eventId, if any.
+     * Returns a Task that resolves to the Event object (with its id set) or null if not found.
+     * @return Task resolving to the Event or null when missing or on error.
+     */
     private Task<Event> getEventFromFirebase() {
         // Return a Task that resolves to the fetched Event, or null on error/not-found.
         if (eventId == null || eventId.isEmpty()) {
@@ -238,4 +319,3 @@ public class LoginFragment extends Fragment {
         });
     }
 }
-

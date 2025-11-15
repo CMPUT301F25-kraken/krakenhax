@@ -138,9 +138,9 @@ public class SignUpFragment extends Fragment {
      * Sets the current user in MainActivity.
      * Navigates to the next screen.
      *
-     * @param username
-     * @param password
-     * @param email
+     * @param username the desired username for the new account
+     * @param password the chosen password for the new account
+     * @param email    the email address to associate with the new account
      */
     private void createNewProfile(String username, String password, String email) {
         // Let Firestore generate the ID. The 'id' field in the constructor can be null or empty for now.
@@ -166,7 +166,8 @@ public class SignUpFragment extends Fragment {
                         mainActivity.currentUser = newProfile;
                         mainActivity.loggedIn = true;
                     }
-
+                    // Link device to this new account
+                    DeviceIdentityManager.updateAccountLink(firestoreId);
                     Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
 
                     // Navigate to the next screen

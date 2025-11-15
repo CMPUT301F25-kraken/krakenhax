@@ -55,6 +55,16 @@ public class ProfileFragment extends Fragment {
     public ProfileFragment() {
     }
 
+    /**
+     * Inflates the profile layout and initializes UI bindings, Firestore references,
+     * and event listeners for updating profile details, profile image, notifications,
+     * and sign-out. Also populates the inputs from the current user's profile.
+     *
+     * @param inflater LayoutInflater used to inflate views in the fragment
+     * @param container Optional parent view to attach the fragment UI to
+     * @param savedInstanceState Saved state bundle, if the fragment is being recreated
+     * @return The root view for the fragment's UI
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout
@@ -171,13 +181,40 @@ public class ProfileFragment extends Fragment {
         // Handle sign-out button
         Button signoutButton = view.findViewById(R.id.button_signout);
         signoutButton.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
-            navController.navigate(R.id.action_signout);
+            // Clear local session immediately
+            if (mainActivity != null) {
+                mainActivity.currentUser = null;
+                mainActivity.loggedIn = false;
+            }
+            // Clear device link and then navigate (handles races with auto-restore)
+            DeviceIdentityManager.clearAccountLinkAsync()
+                    .addOnSuccessListener(ignored -> navigateAfterSignout())
+                    .addOnFailureListener(e -> {
+                        Log.w("ProfileFragment", "Device unlink failed, proceeding to signout", e);
+                        navigateAfterSignout();
+                    });
         });
 
         return view;
     }
 
+    /**
+     * Navigates away from the profile screen after the sign-out process completes.
+     * Ensures the fragment is added to its activity before using the NavController.
+     */
+    private void navigateAfterSignout() {
+        if (!isAdded()) return;
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        navController.navigate(R.id.action_signout);
+    }
+
+    /**
+     * Uploads the selected profile picture to Firebase Storage and updates the user's
+     * profile document in Firestore with the resulting download URL. The upload path is
+     * profile_pictures/{userId}.jpg.
+     *
+     * Preconditions: filePath and profile with a non-null ID must be set.
+     */
     public void uploadProfilePic() {
         if (filePath != null && profile != null && profile.getID() != null) {
             // Path in Firebase Storage: /profile_pictures/USER_ID.jpg
@@ -212,6 +249,10 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * Deletes the current user's profile picture from Firebase Storage at
+     * profile_pictures/{userId}.jpg. No-op if the object does not exist.
+     */
     public void deleteProfilePic() {
         StorageReference profilePicRef = storageRef.child("profile_pictures/" + profile.getID() + ".jpg");
         profilePicRef.delete().addOnSuccessListener(aVoid -> {
@@ -223,6 +264,10 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Loads the profile picture into the ImageView. Falls back to a placeholder image
+     * when the stored URL is empty or null.
+     */
     public void loadProfilePic() {
         String profilePicURL = profile.getPicture();
         if (profilePicURL == null || profilePicURL.isEmpty()) {
