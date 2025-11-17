@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,9 +14,8 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
@@ -179,13 +177,7 @@ public class EventFragment extends Fragment {
 
         // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
-        buttonBack.setOnClickListener(v -> {
-            if (currentUser.getType().equals("Admin")) {
-                navController.navigate(R.id.action_MyEventDetailsFragment_to_AdminListFragment);
-            } else {
-                navController.navigate(R.id.action_EventFragment_to_EventsFragment);
-            }
-        });
+        buttonBack.setOnClickListener(v -> navController.popBackStack());
 
         // Set the view event organizer button to show the name of the organizer
         String organizerID = event.getOrgId();
