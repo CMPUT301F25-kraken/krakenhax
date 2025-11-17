@@ -261,7 +261,7 @@ public class LoginFragment extends Fragment {
                     .addOnSuccessListener(event -> {
                         if (event == null) {
                             // Event not found or error
-                            normalNaviagationFlow(foundUser);
+                            normalNavigationFlow(foundUser);
                         } else {
                             // Event found - pass to EventFragment
                             Bundle b = new Bundle();
@@ -272,10 +272,10 @@ public class LoginFragment extends Fragment {
                     .addOnFailureListener(e -> {
                         Log.e("LoginFragment", "Firestore fetch failed", e);
                         Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
-                        normalNaviagationFlow(foundUser);
+                        normalNavigationFlow(foundUser);
                     });
         } else {
-            normalNaviagationFlow(foundUser);
+            normalNavigationFlow(foundUser);
         }
     }
 
@@ -283,7 +283,7 @@ public class LoginFragment extends Fragment {
      * Navigate to the appropriate destination based on the user's role.
      * @param foundUser the authenticated profile used to determine the target screen.
      */
-    private void normalNaviagationFlow(Profile foundUser) {
+    private void normalNavigationFlow(Profile foundUser) {
         // Navigate based on user type
         if (Objects.equals(foundUser.getType(), "Organizer")) {
             navController.navigate(R.id.action_login_to_events);
@@ -291,6 +291,8 @@ public class LoginFragment extends Fragment {
             navController.navigate(R.id.action_login_to_events);
         } else if (Objects.equals(foundUser.getType(), "Admin")) { // Includes Admin
             navController.navigate(R.id.action_login_to_admin);
+        } else if (Objects.equals(foundUser.getType(), "Guest")) {
+            navController.navigate(R.id.action_login_to_events);
         }
     }
 
