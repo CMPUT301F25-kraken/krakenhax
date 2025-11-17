@@ -161,6 +161,17 @@ public class EventFragment extends Fragment {
         TextView tvDescription = view.findViewById(R.id.tv_event_description);
         tvDescription.setText(event.getEventDetails());
 
+        // Set up the waitlist info
+        TextView tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
+        List<Profile> waitlist = event.getWaitList();
+        int numWaitlist = waitlist.size();
+        int maxWaitlist = event.getWaitListCap();
+        if (maxWaitlist != 0) {
+            tvWaitlistEntry.setText(String.format("%d / %d", numWaitlist, maxWaitlist));
+        } else {
+            tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
+        }
+
         // Set the event poster
         ShapeableImageView eventImage = view.findViewById(R.id.event_image);
         String posterURL = event.getPoster();
