@@ -15,12 +15,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -28,11 +31,6 @@ import java.util.List;
  */
 public class EventFragment extends Fragment {
     private Profile currentUser;
-    private Button buttonSignup;
-    private Button buttonAccept;
-    private Button buttonDecline;
-    private Button buttonNotify;
-    private Button deleteButton;
     private FirebaseFirestore db;
 
     public EventFragment() {
@@ -61,11 +59,11 @@ public class EventFragment extends Fragment {
         }
     }
 
-    private void updateButtons(View view, Event event, NavController navController) {
-        buttonAccept = view.findViewById(R.id.button_accept);
-        buttonDecline = view.findViewById(R.id.button_decline);
-        buttonSignup = view.findViewById(R.id.button_signup);
-        deleteButton = view.findViewById(R.id.EventDeleteButton);
+    private void updateButtons(View view, Event event) {
+        Button buttonAccept = view.findViewById(R.id.button_accept);
+        Button buttonDecline = view.findViewById(R.id.button_decline);
+        Button buttonSignup = view.findViewById(R.id.button_signup);
+        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
 
         if (currentUser.getType().equals("Admin")) {
             buttonSignup.setVisibility(View.GONE);
@@ -78,13 +76,13 @@ public class EventFragment extends Fragment {
             buttonAccept.setOnClickListener(v -> {
                 event.addToAcceptList(currentUser);
                 updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateButtons(view, event);
             });
 
             buttonDecline.setOnClickListener(v -> {
                 event.addToCancelList(currentUser);
                 updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateButtons(view, event);
             });
         } else if (event.getCancelList().contains(currentUser)) {
             buttonSignup.setClickable(false);
@@ -98,7 +96,7 @@ public class EventFragment extends Fragment {
                 event.removeFromWaitList(currentUser);
                 currentUser.removeFromMyWaitList(event.getId());
                 updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateButtons(view, event);
 
                 // Notify user
                 NotifyUser notifyUser = new NotifyUser(requireContext());
@@ -112,7 +110,7 @@ public class EventFragment extends Fragment {
                 event.addToWaitList(currentUser);
                 currentUser.addToMyWaitlist(event.getId());
                 updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateButtons(view, event);
 
                 // Notify user
                 NotifyUser notifyUser = new NotifyUser(requireContext());
@@ -190,10 +188,10 @@ public class EventFragment extends Fragment {
         Button buttonBack = view.findViewById(R.id.button_back);
         buttonBack.setOnClickListener(v -> navController.popBackStack());
 
-        // Set the view event organizer button to show the name of the organizer
+        // Set the view event organizer button to show the name of the organizer and navigate to the organizers page
         String organizerID = event.getOrgId();
-        ProfileViewModel profileViewModel = new ProfileViewModel();
         Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
+
         ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             for (Profile profile : profiles) {
                 if (profile.getID().equals(organizerID)) {
@@ -211,6 +209,56 @@ public class EventFragment extends Fragment {
             }
         });
 
+        // Set tvRegistrationInfo to display the deadline for registration
+        TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
+        try {
+            List<Timestamp> timeframe = event.getTimeframe();
+            Timestamp deadline = timeframe.get(1);
+            Timestamp currentTime = Timestamp.now();
+
+            long timeRemaining = deadline.toDate().getTime() - currentTime.toDate().getTime();
+
+            // If deadline has passed
+            if (timeRemaining <= 0) {
+                tvRegistrationInfo.setText("Registration has closed.");
+            } else {
+                long days = timeRemaining / (1000 * 60 * 60 * 24);
+                long hours = (timeRemaining / (1000 * 60 * 60)) % 24;
+                long minutes = (timeRemaining / (1000 * 60)) % 60;
+
+                // Create a string with time remaining nicely formatted
+                StringBuilder remainingText = new StringBuilder("Time remaining: ");
+                if (days > 0) {
+                    remainingText.append(days).append(days == 1 ? " day" : " days");
+                }
+                if (hours > 0) {
+                    if (days > 0) remainingText.append(", ");
+                    remainingText.append(hours).append(hours == 1 ? " hour" : " hours");
+                }
+                if (minutes > 0) {
+                    if (days > 0 || hours > 0) remainingText.append(", ");
+                    remainingText.append(minutes).append(minutes == 1 ? " minute" : " minutes");
+                }
+
+                tvRegistrationInfo.setText(remainingText.toString());
+            }
+            // Throw an exception when the timeframe array for the event is empty
+        } catch (IndexOutOfBoundsException e) {
+            tvRegistrationInfo.setText("ERROR: This event has an invalid or empty timeframe.");
+            //throw new IllegalStateException("The event titled '" + event.getTitle() + "' (ID: " + event.getId() + ") has an invalid or empty timeframe. It must contain at least two timestamps.", e);
+        }
+
+        // Set the tvDateTime to show the date and time of the event
+        TextView tvDateTime = view.findViewById(R.id.tv_date_time);
+        if (event.getDateTime() != null) {
+            Timestamp dateTime = event.getDateTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy, hh:mm a", Locale.getDefault());
+            String formattedDateTime = formatter.format(dateTime.toDate());
+            tvDateTime.setText(formattedDateTime);
+        } else {
+            tvDateTime.setText("ERROR: This event is missing a date and time");
+        }
+
 //        String organizerID = event.getOrgId();
 //        // Get the profile for the organizer matching that id from firestore
 //        ProfileViewModel profileViewModel = new ProfileViewModel();
@@ -220,7 +268,7 @@ public class EventFragment extends Fragment {
 //        buttonEventOrganizer.setText(profileList.toString());
 
         // Update buttons for current user state
-        updateButtons(view, event, navController);
+        updateButtons(view, event);
 
         // 🔔 DEMO NOTIFICATION BUTTON
         Button demoNotifyBtn = view.findViewById(R.id.button_notify);
@@ -234,7 +282,7 @@ public class EventFragment extends Fragment {
         });
 
         // 🔔 REAL ORGANIZER BROADCAST
-        buttonNotify = view.findViewById(R.id.button_notify);
+        Button buttonNotify = view.findViewById(R.id.button_notify);
         if (currentUser.getType().equals("Admin")) {
             buttonNotify.setVisibility(View.GONE);
         }
@@ -250,7 +298,7 @@ public class EventFragment extends Fragment {
         });
 
         // Delete button logic
-        deleteButton = view.findViewById(R.id.EventDeleteButton);
+        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
         deleteButton.setOnClickListener(v -> deleteEventFromFirestore(event, navController));
     }
 

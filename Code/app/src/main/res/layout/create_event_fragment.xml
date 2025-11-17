@@ -41,7 +41,20 @@
         app:layout_constraintVertical_bias="0.726" />
 
     <Button
-        android:id="@+id/ChangeDateTimeButton"
+        android:id="@+id/button_registration_date_time"
+        android:layout_width="118dp"
+        android:layout_height="35dp"
+        android:backgroundTint="@color/white"
+        android:text="Registration Date, Time"
+        android:textColor="@color/gray"
+        android:textSize="7dp"
+        app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/button_event_date_time"
         android:layout_width="118dp"
         android:layout_height="35dp"
         android:backgroundTint="@color/white"
@@ -49,9 +62,7 @@
         android:textColor="@color/gray"
         android:textSize="7dp"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/UploadPosterButton"

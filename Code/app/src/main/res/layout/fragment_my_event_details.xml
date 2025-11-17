@@ -13,14 +13,12 @@ tools:context=".EventFragment">
         android:id="@+id/tv_event_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_marginStart="12dp"
         android:text="Event Name"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/tv_date_time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.067"
-        app:layout_constraintStart_toEndOf="@+id/imgPoster" />
+        app:layout_constraintStart_toEndOf="@+id/imgPoster"
+        app:layout_constraintTop_toTopOf="@+id/imgPoster" />
 
     <Button
         android:id="@+id/btnUploadPoster"
@@ -59,12 +57,10 @@ tools:context=".EventFragment">
         android:id="@+id/tv_date_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="112dp"
+        android:layout_marginTop="20dp"
         android:text="Data and Time"
-        app:layout_constraintBottom_toTopOf="@+id/tv_registration_info"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.077"
-        app:layout_constraintStart_toEndOf="@+id/imgPoster" />
+        app:layout_constraintStart_toStartOf="@+id/tv_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
 
     <TextView
         android:id="@+id/tv_registration_info"
@@ -144,5 +140,24 @@ tools:context=".EventFragment">
         app:layout_constraintBottom_toBottomOf="@+id/tv_location2"
         app:layout_constraintStart_toEndOf="@+id/tv_location2"
         app:layout_constraintTop_toTopOf="@+id/tv_location2" />
+
+    <TextView
+        android:id="@+id/tv_waitlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Waitlist:"
+        app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
+        app:layout_constraintTop_toBottomOf="@+id/tv_location2" />
+
+    <TextView
+        android:id="@+id/tv_waitlist_entry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="on waitlist / waitlist limit"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_waitlist"
+        app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
+        app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

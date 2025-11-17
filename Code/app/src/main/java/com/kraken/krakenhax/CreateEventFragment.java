@@ -26,6 +26,7 @@ import androidx.navigation.Navigation;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
@@ -51,7 +52,8 @@ public class CreateEventFragment extends Fragment {
     private EditText winnerNumber;
     private EditText waitingListCap;
     private Switch geolocationSwitch;
-    private Button dateTimeButton;
+    private Button registrationDateTimeButton;
+    private Button eventDateTimeButton;
     private ActivityResultLauncher<String> imagePicker;
     private FloatingActionButton uploadPosterButton;
     private Uri filePath;
@@ -81,7 +83,8 @@ public class CreateEventFragment extends Fragment {
         winnerNumber = view.findViewById(R.id.WinnerNumberEditText);
         waitingListCap = view.findViewById(R.id.EventCapEditText);
         geolocationSwitch = view.findViewById(R.id.GeolocationSwitch);
-        dateTimeButton = view.findViewById(R.id.ChangeDateTimeButton);
+        registrationDateTimeButton = view.findViewById(R.id.button_registration_date_time);
+        eventDateTimeButton = view.findViewById(R.id.button_event_date_time);
         eventPoster = view.findViewById(R.id.imagePosterView);
         uploadPosterButton = view.findViewById(R.id.UploadPosterButton);
         confirmButton = view.findViewById(R.id.ConfirmEditsButton);
@@ -125,6 +128,7 @@ public class CreateEventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         MainActivity mainActivity = (MainActivity) getActivity();
+        assert mainActivity != null;
         Profile currentUser = mainActivity.currentUser;
         event = new Event();
         event.setId(FirebaseFirestore.getInstance().collection("events").document().getId());
@@ -236,7 +240,7 @@ public class CreateEventFragment extends Fragment {
         uploadPosterButton.setOnClickListener(v -> {
             imagePicker.launch("image/*");
         });
-        dateTimeButton.setOnClickListener(v -> {
+        registrationDateTimeButton.setOnClickListener(v -> {
             MaterialDatePicker<androidx.core.util.Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                     .setTitleText("Select Event Timeframe")
                     .build();
@@ -257,11 +261,67 @@ public class CreateEventFragment extends Fragment {
                 event.setTimeframe(timeframe);
 
                 SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
-                dateTimeButton.setText(String.format("%s - %s", formatter.format(startDate), formatter.format(endDate)));
-                startDate.toString();
-                endDate.toString();
+                registrationDateTimeButton.setText(String.format("%s - %s", formatter.format(startDate), formatter.format(endDate)));
+//                startDate.toString();
+//                endDate.toString();
+            });
+
+        });
+
+        eventDateTimeButton.setOnClickListener(v -> {
+            // --- Step 1: Show Date Picker ---
+            MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select Event Date")
+                    .build();
+
+            datePicker.show(getParentFragmentManager(), "DATE_PICKER");
+
+            // --- Step 2: Listen for when the user picks a date ---
+            datePicker.addOnPositiveButtonClickListener(selectedDate -> {
+                // Now that we have the date, show the Time Picker
+
+                // --- Step 3: Show Time Picker ---
+                MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+                        .setTitleText("Select Event Time")
+                        .build();
+
+                timePicker.show(getParentFragmentManager(), "TIME_PICKER");
+
+                // --- Step 4: Listen for when the user picks a time ---
+                timePicker.addOnPositiveButtonClickListener(dialog -> {
+                    int hour = timePicker.getHour();
+                    int minute = timePicker.getMinute();
+
+                    // --- Step 5: Combine Date and Time into a single Timestamp ---
+                    // The selectedDate is in UTC. We need to combine it with the selected hour and minute.
+                    java.util.Calendar calendar = java.util.Calendar.getInstance();
+                    calendar.setTimeInMillis(selectedDate);
+                    calendar.set(java.util.Calendar.HOUR_OF_DAY, hour);
+                    calendar.set(java.util.Calendar.MINUTE, minute);
+
+                    // Create the final Date and Timestamp objects
+                    Date eventDateTime = calendar.getTime();
+                    Timestamp eventTimestamp = new Timestamp(eventDateTime);
+
+                    event.setDateTime(eventTimestamp);
+
+//                    // Update the event object. Since the timeframe array should have
+//                    // two values (start and end), we should make sure it's initialized correctly.
+//                    if (event.getTimeframe() == null || event.getTimeframe().size() < 2) {
+//                        ArrayList<Timestamp> newTimeframe = new ArrayList<>();
+//                        newTimeframe.add(null); // Placeholder for start/registration time
+//                        newTimeframe.add(null); // Placeholder for end/event time
+//                        event.setTimeframe(newTimeframe);
+//                    }
+//                    event.getTimeframe().set(1, eventTimestamp); // Set the end time (index 1)
+
+                    // Update the button text to show the selected date and time
+                    SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy, hh:mm a", Locale.getDefault());
+                    eventDateTimeButton.setText(formatter.format(eventDateTime));
+                });
             });
         });
+
 
         confirmButton.setOnClickListener(v -> {
             if (event != null) {
