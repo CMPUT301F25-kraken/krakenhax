@@ -117,6 +117,9 @@
         android:name="com.kraken.krakenhax.EntrantInfoFragment"
         android:label="fragment_entrant_info"
         tools:layout="@layout/fragment_entrant_info">
+        <action
+            android:id="@+id/action_EntrantInfoFragment_to_OrganizerMapFragment"
+            app:destination="@id/OrganizerMapFragment" />
     </fragment>
 
     <!-- Destination for Profile Fragment -->
@@ -274,5 +277,14 @@
             android:id="@+id/action_OrganizerFragment_to_EventFragment"
             app:destination="@id/EventFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/OrganizerMapFragment"
+        android:name="com.kraken.krakenhax.OrganizerMapFragment"
+        android:label="OrganizerMapFragment"
+        tools:layout="@layout/fragment_organizer_map">
+
+    </fragment>
+
 
 </navigation>

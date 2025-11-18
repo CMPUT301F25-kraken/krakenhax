@@ -3,11 +3,13 @@ plugins {
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.secrets.gradle.plugin)
 }
 
 android {
     namespace = "com.kraken.krakenhax"
     compileSdk = 36
+
 
     defaultConfig {
         applicationId = "com.kraken.krakenhax"
@@ -26,6 +28,21 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
+    }
+    buildFeatures {
+        buildConfig = true
+
+    }
+    secrets {
+        // To add your Maps API key to this project:
+        // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+        // 2. Add this line, where YOUR_API_KEY is your API key:
+        //        MAPS_API_KEY=YOUR_API_KEY
+        propertiesFileName = "secrets.properties"
+
+        // A properties file containing default secret values. This file can be
+        // checked in version control.
+        defaultPropertiesFileName = "local.defaults.properties"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -62,4 +79,7 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.picasso)
 
+    // For Maps
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
 }

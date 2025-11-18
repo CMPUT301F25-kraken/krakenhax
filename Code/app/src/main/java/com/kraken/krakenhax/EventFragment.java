@@ -1,6 +1,13 @@
 package com.kraken.krakenhax;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +16,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -23,6 +34,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+
+import android.location.Location;
+import android.widget.Toast;
 
 
 /**
@@ -36,6 +53,9 @@ public class EventFragment extends Fragment {
     private Button buttonNotify;
     private Button deleteButton;
     private FirebaseFirestore db;
+
+    private ActivityResultLauncher<String[]> locationPermissionRequest;
+
 
     public EventFragment() {
         // Required empty public constructor
@@ -61,6 +81,47 @@ public class EventFragment extends Fragment {
                     })
                     .addOnFailureListener(e -> Log.w("Firestore", "Error deleting event", e));
         }
+    }
+    private void requestLocationPermissions() {
+        locationPermissionRequest.launch(new String[] {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        });
+    }
+    private void getLocationAndJoinWaitlist(View view, Event event, NavController navController) {
+        FusedLocationProviderClient fused = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+        fused.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null) {
+
+                double lat = location.getLatitude();
+                double lng = location.getLongitude();
+
+                // Save to profile
+                currentUser.setLatitude(lat);
+                currentUser.setLongitude(lng);
+
+                FirebaseFirestore.getInstance()
+                        .collection("Profiles")
+                        .document(currentUser.getID())
+                        .update("latitude", lat, "longitude", lng);
+
+                Toast.makeText(requireContext(),
+                        "Location saved: " + lat + ", " + lng,
+                        Toast.LENGTH_SHORT).show();
+                joinWaitlist(view,event,navController);
+
+            } else {
+                Toast.makeText(requireContext(),
+                        "Could not get location. Not added to WaitList Try again.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void updateButtons(View view, Event event, NavController navController) {
@@ -111,18 +172,37 @@ public class EventFragment extends Fragment {
         } else {
             buttonSignup.setText("Sign Up");
             buttonSignup.setOnClickListener(v -> {
-                event.addToWaitList(currentUser);
-                currentUser.addToMyWaitlist(event.getId());
-                updateEventInFirestore(event);
-                updateButtons(view, event, navController);
 
-                // Notify user
-                NotifyUser notifyUser = new NotifyUser(requireContext());
-                notifyUser.sendNotification(currentUser,
-                        "✅ You have successfully signed up for " + event.getTitle());
+                if (event.getUseGeolocation()) {
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                        // User denied once normally → you can ask again
+                        new AlertDialog.Builder(requireContext())
+                                .setTitle("Location Required")
+                                .setMessage("We need your location to join this event. Please allow it.")
+                                .setPositiveButton("OK", (d, w) -> requestLocationPermissions())
+                                .setNegativeButton("Cancel", null)
+                                .show();
+                    } else {
+                        // First time → ask directly
+                        requestLocationPermissions();
+                    }
+                } else {
+                    joinWaitlist(view, event, navController);
+                }
+
             });
 
         }
+    }
+    private void joinWaitlist(View view, Event event, NavController navController) {
+        event.addToWaitList(currentUser);
+        currentUser.addToMyWaitlist(event.getId());
+        updateEventInFirestore(event);
+        updateButtons(view, event, navController);
+        // Notify user
+        NotifyUser notifyUser = new NotifyUser(requireContext());
+        notifyUser.sendNotification(currentUser,
+                "✅ You have successfully signed up for " + event.getTitle());
     }
 
     @Override
@@ -133,6 +213,12 @@ public class EventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Get the object for the event
+        assert getArguments() != null;
+        Event event = getArguments().getParcelable("event_name");
+
+        // Set up the nav controller
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
@@ -143,12 +229,49 @@ public class EventFragment extends Fragment {
             currentUser = mainActivity.currentUser;
         }
 
-        // Get the object for the event
-        assert getArguments() != null;
-        Event event = getArguments().getParcelable("event_name");
+        // Location permission
+        locationPermissionRequest = registerForActivityResult(
+                new ActivityResultContracts.RequestMultiplePermissions(),
+                result -> {
+                    boolean hasLocationPermission =
+                            Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION)) || Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_COARSE_LOCATION));
 
-        // Set up the nav controller
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+                    if (hasLocationPermission) {
+                        // User allowed at least one location permission
+                        getLocationAndJoinWaitlist(view, event, navController);
+                    } else {
+                        // Permission denied
+                        boolean showRationaleFine =
+                                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION);
+                        boolean showRationaleCoarse =
+                                shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION);
+
+                        if (!showRationaleFine && !showRationaleCoarse) {
+                            // User denied location twice
+                            new AlertDialog.Builder(requireContext())
+                                    .setTitle("Location Permission Needed")
+                                    .setMessage("To join events that require geolocation, please enable location " +
+                                            "permission for this app in Settings.")
+                                    .setPositiveButton("Open Settings", (dialog, which) -> {
+                                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                        Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+                                        intent.setData(uri);
+                                        startActivity(intent);
+                                    })
+                                    .setNegativeButton("Cancel", null)
+                                    .show();
+                        } else {
+                            //
+                            Toast.makeText(requireContext(),
+                                    "This event needs location, please try again and allow location",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+
+        );
+
 
         // Set the event name
         TextView tvEventName = view.findViewById(R.id.tv_event_name);
@@ -164,7 +287,7 @@ public class EventFragment extends Fragment {
         tvDescription.setText(event.getEventDetails());
 
         // Set the event poster
-        ShapeableImageView eventImage = view.findViewById(R.id.event_image);
+        ImageView eventImage = view.findViewById(R.id.eventIV);
         String posterURL = event.getPoster();
         if (posterURL == null || posterURL.isEmpty()) {
             eventImage.setImageResource(R.drawable.outline_attractions_100);
@@ -183,7 +306,7 @@ public class EventFragment extends Fragment {
             if (currentUser.getType().equals("Admin")) {
                 navController.navigate(R.id.action_MyEventDetailsFragment_to_AdminListFragment);
             } else {
-                navController.navigate(R.id.action_EventFragment_to_EventsFragment);
+                navController.popBackStack();
             }
         });
 
