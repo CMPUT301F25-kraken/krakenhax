@@ -34,14 +34,12 @@ import java.util.Objects;
  * Supports updating username, email, phone number, and notification preferences.
  */
 public class ProfileFragment extends Fragment {
-
     private EditText usernameView;
     private EditText emailView;
     private EditText phoneNumberView;
     private Button updateButton;
     private Switch notificationSwitch;
     private Profile profile;
-
     private FirebaseFirestore db;
     private CollectionReference profileRef;
     private Uri filePath;
@@ -60,8 +58,8 @@ public class ProfileFragment extends Fragment {
      * and event listeners for updating profile details, profile image, notifications,
      * and sign-out. Also populates the inputs from the current user's profile.
      *
-     * @param inflater LayoutInflater used to inflate views in the fragment
-     * @param container Optional parent view to attach the fragment UI to
+     * @param inflater           LayoutInflater used to inflate views in the fragment
+     * @param container          Optional parent view to attach the fragment UI to
      * @param savedInstanceState Saved state bundle, if the fragment is being recreated
      * @return The root view for the fragment's UI
      */
@@ -190,7 +188,7 @@ public class ProfileFragment extends Fragment {
             DeviceIdentityManager.clearAccountLinkAsync()
                     .addOnSuccessListener(ignored -> navigateAfterSignout())
                     .addOnFailureListener(e -> {
-                        Log.w("ProfileFragment", "Device unlink failed, proceeding to signout", e);
+                        Log.w("ProfileFragment", "Device unlink failed, proceeding to sign out", e);
                         navigateAfterSignout();
                     });
         });
@@ -212,7 +210,7 @@ public class ProfileFragment extends Fragment {
      * Uploads the selected profile picture to Firebase Storage and updates the user's
      * profile document in Firestore with the resulting download URL. The upload path is
      * profile_pictures/{userId}.jpg.
-     *
+     * <p>
      * Preconditions: filePath and profile with a non-null ID must be set.
      */
     public void uploadProfilePic() {

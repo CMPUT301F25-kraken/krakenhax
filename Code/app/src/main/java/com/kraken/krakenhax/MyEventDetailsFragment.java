@@ -44,8 +44,8 @@ public class MyEventDetailsFragment extends Fragment {
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
+    //private Profile currentUser;
 
-    private Profile currentUser;
     /**
      * Required empty public constructor for fragment instantiation.
      */
@@ -78,16 +78,16 @@ public class MyEventDetailsFragment extends Fragment {
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
         btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
-        /**
-        MainActivity mainActivity = (MainActivity) getActivity();
-        assert mainActivity != null;
-        currentUser = mainActivity.currentUser;
-
-        if (Objects.equals(currentUser.getType(), "Entrant")) {
-            btnentrantInfo.setVisibility(View.GONE);
-            btnUploadPoster.setVisibility(View.GONE);
-        }
-        */
+//
+//         MainActivity mainActivity = (MainActivity) getActivity();
+//         assert mainActivity != null;
+//         currentUser = mainActivity.currentUser;
+//
+//         if (Objects.equals(currentUser.getType(), "Entrant")) {
+//         btnentrantInfo.setVisibility(View.GONE);
+//         btnUploadPoster.setVisibility(View.GONE);
+//         }
+//
         // Set up a real-time listener for the event
         setupFirestoreListener(view);
 

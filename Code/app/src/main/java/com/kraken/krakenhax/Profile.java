@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -20,7 +19,6 @@ import java.util.Objects;
  * @version 1.2
  */
 public class Profile implements Parcelable {
-
     private String username;
     private String password;
     private String email;

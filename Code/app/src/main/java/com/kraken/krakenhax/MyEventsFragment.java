@@ -26,15 +26,11 @@ import java.util.Objects;
  * For an entrant, it should show events they have signed up for (current implementation is for organizers).
  */
 public class MyEventsFragment extends Fragment {
-
     private FirebaseFirestore db;
-
     private ArrayList<Event> events;
-
     private CollectionReference eventsRef;
     private MyRecyclerViewAdapter adapter;
     private Button makeEventButton;
-
     private Profile currentUser;
 
     /**

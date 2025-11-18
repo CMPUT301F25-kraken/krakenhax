@@ -59,16 +59,14 @@ public class CreateEventFragment extends Fragment {
     private Uri filePath;
     private ImageView eventPoster;
     private Button confirmButton;
-
     private NavController navController;
-
 
 
     /**
      * Inflates the layout for this fragment and initializes all the UI view components.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
      * @return The View for the fragment's UI.
      */
@@ -122,7 +120,7 @@ public class CreateEventFragment extends Fragment {
      * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has returned.
      * This is where a new event object is created and all listeners for the UI components are set up.
      *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
@@ -262,8 +260,6 @@ public class CreateEventFragment extends Fragment {
 
                 SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
                 registrationDateTimeButton.setText(String.format("%s - %s", formatter.format(startDate), formatter.format(endDate)));
-//                startDate.toString();
-//                endDate.toString();
             });
 
         });

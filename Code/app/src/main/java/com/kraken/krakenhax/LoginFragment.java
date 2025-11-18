@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -40,9 +39,8 @@ public class LoginFragment extends Fragment {
     private EditText unText;
     private EditText pwdText;
     private Button guest;
-    private ProfileViewModel profileModel;
+    //private ProfileViewModel profileModel;
     private NavController navController;
-
     private FirebaseFirestore db;
     private String eventId;
 
@@ -92,9 +90,9 @@ public class LoginFragment extends Fragment {
 
         // --- Initialization ---
         navController = Navigation.findNavController(view);
-        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+        //profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
-        Intent intent = getActivity().getIntent();
+        Intent intent = Objects.requireNonNull(getActivity()).getIntent();
         Uri intentData = intent.getData();
         if (intentData != null) {
             eventId = intentData.getLastPathSegment();
@@ -128,9 +126,7 @@ public class LoginFragment extends Fragment {
             validateLogin(usernameInput, passwordInput);
         });
 
-        signup.setOnClickListener(v -> {
-            navController.navigate(R.id.action_login_to_typeSelector);
-        });
+        signup.setOnClickListener(v -> navController.navigate(R.id.action_login_to_typeSelector));
 
         guest.setOnClickListener(v -> {
             MainActivity mainActivity = (MainActivity) getActivity();
