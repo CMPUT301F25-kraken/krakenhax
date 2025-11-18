@@ -108,7 +108,7 @@
         android:id="@+id/UpdateProfileButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="20dp"
         android:text="Update Profile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -153,5 +153,16 @@
         android:text="Delete"
         app:layout_constraintEnd_toEndOf="@+id/profile_pic"
         app:layout_constraintTop_toBottomOf="@+id/profile_pic" />
+
+    <Button
+        android:id="@+id/button_delete_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:text="DELETE ACCOUNT"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

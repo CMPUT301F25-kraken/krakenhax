@@ -178,19 +178,32 @@ public class ProfileFragment extends Fragment {
 
         // Handle sign-out button
         Button signoutButton = view.findViewById(R.id.button_signout);
-        signoutButton.setOnClickListener(v -> {
-            // Clear local session immediately
-            if (mainActivity != null) {
-                mainActivity.currentUser = null;
-                mainActivity.loggedIn = false;
-            }
-            // Clear device link and then navigate (handles races with auto-restore)
-            DeviceIdentityManager.clearAccountLinkAsync()
-                    .addOnSuccessListener(ignored -> navigateAfterSignout())
-                    .addOnFailureListener(e -> {
-                        Log.w("ProfileFragment", "Device unlink failed, proceeding to sign out", e);
-                        navigateAfterSignout();
+        signoutButton.setOnClickListener(v -> signOut(mainActivity));
+
+        // Set up delete account button
+        Button buttonDeleteAccount = view.findViewById(R.id.button_delete_account);
+        buttonDeleteAccount.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setMessage("Are you sure you want to delete your account?");
+            builder.setCancelable(true);
+
+            builder.setPositiveButton(
+                    "Yes, I want to delete my account.",
+                    (dialog, which) -> {
+                        deleteAccount();
+                        Log.d("ProfileFragment", "Account deleted");
+                        dialog.cancel();
+                        signOut(mainActivity);
                     });
+
+            builder.setNegativeButton(
+                    "Nooooo!",
+                    (dialog, which) -> {
+                        dialog.cancel();
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         });
 
         return view;
@@ -278,6 +291,36 @@ public class ProfileFragment extends Fragment {
                     .fit().centerCrop()
                     .into(profilePic);
         }
+    }
+
+    public void deleteAccount() {
+        profileRef = db.collection("Profiles");
+        profileRef.document(profile.getID()).delete()
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firebase", "Profile with id: " + profile.getID() + " successfully deleted.");
+                    Toast.makeText(requireContext(), "Account deleted", Toast.LENGTH_SHORT).show();
+
+                })
+                .addOnFailureListener(aVoid -> {
+                    Log.d("Firebase", "Delete profile with id: " + profile.getID() + " failed.");
+                });
+    }
+
+    public void signOut(MainActivity mainActivity) {
+        // Clear local session immediately
+        if (mainActivity != null) {
+            mainActivity.currentUser = null;
+            mainActivity.loggedIn = false;
+        }
+        // Clear device link and then navigate (handles races with auto-restore)
+        DeviceIdentityManager.clearAccountLinkAsync()
+                .addOnSuccessListener(ignored -> navigateAfterSignout())
+                .addOnFailureListener(e -> {
+                    Log.w("ProfileFragment", "Device unlink failed, proceeding to sign out", e);
+                    navigateAfterSignout();
+                });
+
+        Toast.makeText(requireContext(), "Signed out", Toast.LENGTH_SHORT).show();
     }
 
 }
