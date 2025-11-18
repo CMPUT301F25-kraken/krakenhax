@@ -26,7 +26,6 @@ public class ProfileViewModel extends ViewModel {
      * Calls the addSnapshotListener method to start listening for real-time updates.
      */
     public ProfileViewModel() {
-        //profileList = new MutableLiveData<>();
         // Initialize the Firestore database and get the "Profiles" collection reference.
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         profileCollection = db.collection("Profiles");

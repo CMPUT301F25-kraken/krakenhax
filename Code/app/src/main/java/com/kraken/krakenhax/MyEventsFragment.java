@@ -74,15 +74,6 @@ public class MyEventsFragment extends Fragment {
 
         events = new ArrayList<>();
 
-
-//         events.add(new Event(
-//         "event-004",
-//         "Evening Yoga",
-//         "Relaxing Vinyasa yoga for all ages. Bring your own mat.",
-//         "Wellness Center Room B",
-//         0
-//         ));
-//
         adapter = new MyRecyclerViewAdapter(events);
         recycler_view_event_list2.setAdapter(adapter);
 
@@ -138,34 +129,3 @@ public class MyEventsFragment extends Fragment {
     }
 
 }
-//        eventsRef = db.collection("Events");
-//        eventsRef.addSnapshotListener((snap, e) -> {
-//            if (e != null) {
-//                Log.e("Firestore", "Listen failed", e);
-//                return;
-//            }
-//
-//
-//            if (snap != null && !snap.isEmpty()) {
-//                events.clear();
-//                for (QueryDocumentSnapshot snapshot : snap) {
-//                    String title = snapshot.getString("title");
-//                    String eventId = snapshot.getString("id");
-//                    String eventDetails = snapshot.getString("eventDetails");
-//                    String location = snapshot.getString("location");
-//                    String poster = snapshot.getString("poster");
-//                    String orgProfile = snapshot.getString("orgId");
-//                    if (Objects.equals(orgProfile, currentUser.getID())) {
-//                        events.add(new Event(eventId, title, eventDetails, location, 0, poster));}
-//                    if (currentUser.getMyWaitlist().contains(eventId)) {
-//                        events.add(new Event(eventId, title, eventDetails, location, 0, poster));
-//                    }
-//
-//
-//                }
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
-//    }
-//
-//}

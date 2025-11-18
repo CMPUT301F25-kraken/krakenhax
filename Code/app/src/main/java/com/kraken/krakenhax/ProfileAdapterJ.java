@@ -21,8 +21,6 @@ import java.util.Set;
  */
 public class ProfileAdapterJ extends ArrayAdapter<Profile> {
     private final ArrayList<Profile> profiles;
-    //private final Context context;
-
     private final Set<String> selectedProfileIds = new HashSet<>();
 
     /**
@@ -35,7 +33,6 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
     public ProfileAdapterJ(Context context, ArrayList<Profile> profiles) {
         super(context, 0, profiles);
         this.profiles = profiles;
-        //this.context = context;
     }
 
     /**

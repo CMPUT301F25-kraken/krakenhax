@@ -61,7 +61,6 @@ public class CreateEventFragment extends Fragment {
     private Button confirmButton;
     private NavController navController;
 
-
     /**
      * Inflates the layout for this fragment and initializes all the UI view components.
      *
@@ -300,16 +299,6 @@ public class CreateEventFragment extends Fragment {
                     Timestamp eventTimestamp = new Timestamp(eventDateTime);
 
                     event.setDateTime(eventTimestamp);
-
-//                    // Update the event object. Since the timeframe array should have
-//                    // two values (start and end), we should make sure it's initialized correctly.
-//                    if (event.getTimeframe() == null || event.getTimeframe().size() < 2) {
-//                        ArrayList<Timestamp> newTimeframe = new ArrayList<>();
-//                        newTimeframe.add(null); // Placeholder for start/registration time
-//                        newTimeframe.add(null); // Placeholder for end/event time
-//                        event.setTimeframe(newTimeframe);
-//                    }
-//                    event.getTimeframe().set(1, eventTimestamp); // Set the end time (index 1)
 
                     // Update the button text to show the selected date and time
                     SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy, hh:mm a", Locale.getDefault());

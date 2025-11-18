@@ -93,7 +93,7 @@ public class LoginFragment extends Fragment {
         navController = Navigation.findNavController(view);
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
-        Intent intent = Objects.requireNonNull(getActivity()).getIntent();
+        Intent intent = requireActivity().getIntent();
         Uri intentData = intent.getData();
         if (intentData != null) {
             eventId = intentData.getLastPathSegment();

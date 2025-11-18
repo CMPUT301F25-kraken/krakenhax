@@ -163,23 +163,27 @@ public class SignUpFragment extends Fragment {
                     newProfile.setID(firestoreId);
 
                     // Now, update the document in Firestore to include its own ID
-                    profileCollection.document(firestoreId).update("id", firestoreId);
+                    profileCollection.document(firestoreId).update("id", firestoreId)
+                            .addOnSuccessListener(aVoid -> {
+                                // Add the complete profile to the local ViewModel
+                                profileViewModel.addProfile(newProfile);
 
-                    // Add the complete profile to the local ViewModel
-                    profileViewModel.addProfile(newProfile);
+                                // Set the current user in MainActivity
+                                MainActivity mainActivity = (MainActivity) getActivity();
+                                if (mainActivity != null) {
+                                    mainActivity.currentUser = newProfile;
+                                    mainActivity.loggedIn = true;
+                                }
+                                // Link device to this new account
+                                DeviceIdentityManager.updateAccountLink(firestoreId);
+                                Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
 
-                    // Set the current user in MainActivity
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    if (mainActivity != null) {
-                        mainActivity.currentUser = newProfile;
-                        mainActivity.loggedIn = true;
-                    }
-                    // Link device to this new account
-                    DeviceIdentityManager.updateAccountLink(firestoreId);
-                    Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
-
-                    // Navigate to the next screen
-                    navController.navigate(R.id.action_SignUp_to_Events);
+                                // Navigate to the next screen
+                                navController.navigate(R.id.action_SignUp_to_Events);
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Sign up failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            });
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Sign up failed: " + e.getMessage(), Toast.LENGTH_LONG).show();

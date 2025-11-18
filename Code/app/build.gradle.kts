@@ -60,6 +60,5 @@ dependencies {
     implementation(libs.picasso)
 
     // For splash screen
-    implementation("androidx.core:core-splashscreen:1.0.1")
-
+    implementation(libs.core.splashscreen)
 }
