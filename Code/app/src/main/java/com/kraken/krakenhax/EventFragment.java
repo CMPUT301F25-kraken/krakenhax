@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -32,6 +33,7 @@ import java.util.Locale;
 public class EventFragment extends Fragment {
     private Profile currentUser;
     private FirebaseFirestore db;
+    private ProfileViewModel profileModel;
 
     public EventFragment() {
         // Required empty public constructor
@@ -139,6 +141,8 @@ public class EventFragment extends Fragment {
             currentUser = mainActivity.currentUser;
         }
 
+        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+
         // Get the object for the event
         assert getArguments() != null;
         Event event = getArguments().getParcelable("event_name");
@@ -192,7 +196,7 @@ public class EventFragment extends Fragment {
         String organizerID = event.getOrgId();
         Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
 
-        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             for (Profile profile : profiles) {
                 if (profile.getID().equals(organizerID)) {
                     String organizerName = profile.getUsername();

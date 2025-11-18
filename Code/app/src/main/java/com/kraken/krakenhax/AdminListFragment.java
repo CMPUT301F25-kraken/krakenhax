@@ -214,7 +214,7 @@ public class AdminListFragment extends Fragment {
     }
 
     public void getEntrants() {
-        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {
@@ -233,7 +233,7 @@ public class AdminListFragment extends Fragment {
     }
 
     public void getOrganizers() {
-        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {

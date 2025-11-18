@@ -12,12 +12,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 /**
  * Fragment class to handle the sign-up process.
@@ -107,26 +110,31 @@ public class SignUpFragment extends Fragment {
             }
 
             // Observe the LiveData to safely check for existing usernames
-            ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
-                // This block runs only when `profiles` is not null.
-                boolean usernameExists = false;
-                for (Profile p : profiles) {
-                    if (p.getUsername().equalsIgnoreCase(username)) {
-                        usernameExists = true;
-                        break;
+            profileViewModel.getProfileList().observe(getViewLifecycleOwner(), new Observer<ArrayList<Profile>>() {
+                @Override
+                public void onChanged(ArrayList<Profile> profiles) {
+                    // This block runs only when `profiles` is not null.
+                    boolean usernameExists = false;
+                    if (profiles != null) {
+                        for (Profile p : profiles) {
+                            if (p.getUsername().equalsIgnoreCase(username)) {
+                                usernameExists = true;
+                                break;
+                            }
+                        }
                     }
-                }
 
-                if (usernameExists) {
-                    Toast.makeText(getContext(), "Username already exists. Please choose another.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Username is unique, proceed with creating the profile
-                    createNewProfile(username, password, email);
-                }
+                    if (usernameExists) {
+                        Toast.makeText(getContext(), "Username already exists. Please choose another.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Username is unique, proceed with creating the profile
+                        createNewProfile(username, password, email);
+                    }
 
-                // Important: Remove the observer after use to prevent it from firing again
-                // if the user stays on the screen and the data changes for another reason.
-                ProfileViewModel.getProfileList().removeObservers(getViewLifecycleOwner());
+                    // Important: Remove the observer after use to prevent it from firing again
+                    // if the user stays on the screen and the data changes for another reason.
+                    profileViewModel.getProfileList().removeObserver(this);
+                }
             });
         });
     }
