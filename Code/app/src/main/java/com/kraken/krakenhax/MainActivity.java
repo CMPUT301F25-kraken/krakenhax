@@ -33,9 +33,9 @@ public class MainActivity extends AppCompatActivity {
     public BottomNavigationView admin_navigation_bar;
     public Profile currentUser;
     public boolean loggedIn;
+    public boolean admin;
     //public ProfileViewModel profileModel;
     private FirebaseFirestore db;
-    public boolean admin;
     //private CollectionReference ProfileRef;
 
     /**
@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Set up splash screen
+        androidx.core.splashscreen.SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);

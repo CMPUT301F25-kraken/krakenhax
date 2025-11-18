@@ -59,4 +59,7 @@ dependencies {
     implementation(libs.firebase.installations)
     implementation(libs.picasso)
 
+    // For splash screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
 }
