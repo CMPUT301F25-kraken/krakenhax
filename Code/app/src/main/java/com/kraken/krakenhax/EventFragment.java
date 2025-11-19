@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -124,7 +125,7 @@ public class EventFragment extends Fragment {
         });
     }
 
-    private void updateButtons(View view, Event event) {
+    private void updateButtons(View view, Event event, NavController navController) {
         Button buttonAccept = view.findViewById(R.id.button_accept);
         Button buttonDecline = view.findViewById(R.id.button_decline);
         Button buttonSignup = view.findViewById(R.id.button_signup);
@@ -141,13 +142,13 @@ public class EventFragment extends Fragment {
             buttonAccept.setOnClickListener(v -> {
                 event.addToAcceptList(currentUser);
                 updateEventInFirestore(event);
-                updateButtons(view, event);
+                updateButtons(view, event, navController);
             });
 
             buttonDecline.setOnClickListener(v -> {
                 event.addToCancelList(currentUser);
                 updateEventInFirestore(event);
-                updateButtons(view, event);
+                updateButtons(view, event, navController);
             });
         } else if (event.getCancelList().contains(currentUser)) {
             buttonSignup.setClickable(false);
@@ -161,7 +162,7 @@ public class EventFragment extends Fragment {
                 event.removeFromWaitList(currentUser);
                 currentUser.removeFromMyWaitList(event.getId());
                 updateEventInFirestore(event);
-                updateButtons(view, event);
+                updateButtons(view, event, navController);
 
                 // Notify user
                 NotifyUser notifyUser = new NotifyUser(requireContext());
@@ -175,7 +176,7 @@ public class EventFragment extends Fragment {
                 event.addToWaitList(currentUser);
                 currentUser.addToMyWaitlist(event.getId());
                 updateEventInFirestore(event);
-                updateButtons(view, event);
+                updateButtons(view, event, navController);
 
                 if (event.getUseGeolocation()) {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -235,9 +236,7 @@ public class EventFragment extends Fragment {
 
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
-        // Get the object for the event
-        assert getArguments() != null;
-        Event event = getArguments().getParcelable("event_name");
+
         // Location permission
         locationPermissionRequest = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
@@ -307,7 +306,7 @@ public class EventFragment extends Fragment {
         }
 
         // Set the event poster
-        ImageView eventImage = view.findViewById(R.id.eventIV);
+        ImageView eventImage = view.findViewById(R.id.event_image);
         String posterURL = event.getPoster();
         if (posterURL == null || posterURL.isEmpty()) {
             eventImage.setImageResource(R.drawable.outline_attractions_100);
@@ -404,7 +403,7 @@ public class EventFragment extends Fragment {
 //        buttonEventOrganizer.setText(profileList.toString());
 
         // Update buttons for current user state
-        updateButtons(view, event);
+        updateButtons(view, event, navController);
 
         // 🔔 DEMO NOTIFICATION BUTTON
         Button demoNotifyBtn = view.findViewById(R.id.button_notify);

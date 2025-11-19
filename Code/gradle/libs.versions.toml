@@ -22,6 +22,7 @@ googleGmsGoogleServices = "4.4.4"
 secrets = "2.0.1"
 firebaseInstallations = "19.0.1"
 coreSplashscreen = "1.0.1"
+kotlin = "2.2.21"
 
 [libraries]
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
@@ -48,6 +49,7 @@ core-splashscreen = { group = "androidx.core", name = "core-splashscreen", versi
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs", version.ref = "navigation" }
 google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 secrets-gradle-plugin = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secrets" }
