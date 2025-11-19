@@ -25,6 +25,10 @@ public class Profile implements Parcelable {
     private String type; // e.g., "entrant", "organizer", "admin"
     private String phoneNumber;
     private String ID;
+
+    private double latitude;
+    private double longitude;
+
     private ArrayList<String> myWaitlist;
     private String pictureURL;
     private boolean notificationsEnabled = true;
@@ -66,6 +70,22 @@ public class Profile implements Parcelable {
     }
 
     public ArrayList<String> getMyWaitlist() {return myWaitlist;}
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
 
     public void addToMyWaitlist(String eventId) {
         myWaitlist.add(eventId);

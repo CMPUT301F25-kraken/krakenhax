@@ -26,6 +26,9 @@ import java.util.List;
 public class EntrantInfoFragment extends Fragment {
     private Event event;
     private Button backBtn;
+
+    private Button mapBtn;
+
     private Spinner spinner_list;
     private TextView entrantType;
     private TextView eventTitle;
@@ -50,6 +53,7 @@ public class EntrantInfoFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_entrant_info, container, false);
         backBtn = view.findViewById(R.id.backBtn);
+        mapBtn = view.findViewById(R.id.btn_map);
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
         spinner_list = view.findViewById(R.id.spinner_list);
@@ -94,6 +98,12 @@ public class EntrantInfoFragment extends Fragment {
 
         backBtn.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigateUp();
+        });
+        mapBtn.setOnClickListener(view1 -> {
+            Bundle bundle = new Bundle();
+            // Pass the most up-to-date event object
+            bundle.putParcelable("event", event);
+            NavHostFragment.findNavController(this).navigate(R.id.action_EntrantInfoFragment_to_OrganizerMapFragment, bundle);
         });
 
         return view;
