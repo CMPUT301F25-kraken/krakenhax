@@ -50,6 +50,7 @@ public class OrganizerFragment extends Fragment {
 
         // Set up the text view
         TextView tvOrganizer = view.findViewById(R.id.tv_organizer_fragment);
+        assert organizer != null;
         String organizerUsername = organizer.getUsername();
         String organizerID = organizer.getID();
         tvOrganizer.setText(String.format("This is the organizer page for organizer: %s with ID: %s", organizerUsername, organizerID));

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/AdminListFragment"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/AdminListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/loginBackground"
-    >
+    android:background="@color/loginBackground">
 
     <TextView
         android:id="@+id/textView"
@@ -42,16 +40,16 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_admin_lists"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <ListView
             android:id="@+id/list_view_admin_lists"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
             android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

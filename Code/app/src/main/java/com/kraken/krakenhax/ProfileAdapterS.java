@@ -16,7 +16,6 @@ import java.util.ArrayList;
  * Used to populate a RecyclerView with profile names and emails.
  */
 public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHolder> {
-
     private final ArrayList<Profile> profileList;
 
     /**

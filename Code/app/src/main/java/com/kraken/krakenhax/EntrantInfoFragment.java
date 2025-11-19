@@ -24,19 +24,14 @@ import java.util.List;
  * It allows viewing entrants who are waitlisted, enrolled, or have cancelled.
  */
 public class EntrantInfoFragment extends Fragment {
-
     private Event event;
-
     private Button backBtn;
 
     private Button mapBtn;
 
     private Spinner spinner_list;
-
     private TextView entrantType;
-
     private TextView eventTitle;
-
     private ProfileAdapterS adapter;
 
     public EntrantInfoFragment() {
@@ -47,8 +42,8 @@ public class EntrantInfoFragment extends Fragment {
      * Inflates the layout for this fragment, initializes UI components,
      * and sets up listeners for the spinner and back button.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
      * @return The View for the fragment's UI.
      */
@@ -66,11 +61,6 @@ public class EntrantInfoFragment extends Fragment {
         eventTitle = view.findViewById(R.id.event_title);
 
         eventTitle.setText(event.getTitle());
-        //fake profiles to view lists
-
-        //event.addToWaitList(new Profile("test", "test", "test", "test", "test", "test"));
-        //event.addToWaitList(new Profile("test2", "test2", "test2", "test2", "test2", "test2"));
-        //event.addToWonList(new Profile("test4", "test4", "test4", "test4", "test4", "test4"));
 
         List<String> statuses = Arrays.asList("Waitlisted", "Enrolled", "Cancelled");
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(

@@ -33,12 +33,12 @@
         android:id="@+id/tv_event_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="12dp"
         android:text="Event Name"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/eventIV"
-        app:layout_constraintTop_toBottomOf="@+id/button_notify" />
+        app:layout_constraintStart_toEndOf="@+id/event_image"
+        app:layout_constraintTop_toTopOf="@+id/event_image" />
 
     <Button
         android:id="@+id/button_back"
@@ -48,17 +48,6 @@
         android:text="Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button_notify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:backgroundTint="@color/LoginButtonColor"
-        android:text="Send Demo Notification"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_back" />
 
 
 
@@ -85,7 +74,6 @@
         android:id="@+id/button_accept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
         android:layout_marginTop="28dp"
         android:outlineAmbientShadowColor="@color/acceptButton"
         android:outlineSpotShadowColor="@color/acceptButton"
@@ -95,7 +83,6 @@
         android:textColorHint="@color/acceptButton"
         android:textColorLink="@color/acceptButton"
         android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@+id/eventIV"
         app:layout_constraintTop_toBottomOf="@+id/tv_date_time" />
 
     <Button
@@ -160,12 +147,12 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="28dp"
         android:text="Organized by: "
         android:textSize="20sp"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="@+id/tv_event_description"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_waitlist" />
 
     <Button
         android:id="@+id/button_event_organizer"
@@ -188,14 +175,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
 
-    <ImageView
-        android:id="@+id/eventIV"
-        android:layout_width="137dp"
-        android:layout_height="134dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/outline_attractions_100"
+    <Button
+        android:id="@+id/button_notify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:backgroundTint="@color/LoginButtonColor"
+        android:text="Send Demo Notification"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_notify" />
+        app:layout_constraintTop_toBottomOf="@id/button_back" />
+
+    <TextView
+        android:id="@+id/tv_waitlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Waitlist:"
+        app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
+        app:layout_constraintTop_toBottomOf="@+id/tv_location" />
+
+    <TextView
+        android:id="@+id/tv_waitlist_entry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="on waitlist / waitlist limit"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_waitlist"
+        app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
+        app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

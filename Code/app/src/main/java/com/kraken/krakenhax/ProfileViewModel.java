@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * Contains a list of profiles.
  */
 public class ProfileViewModel extends ViewModel {
-    private static MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
+    private MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
     public CollectionReference profileCollection;
 
     /**
@@ -26,7 +26,6 @@ public class ProfileViewModel extends ViewModel {
      * Calls the addSnapshotListener method to start listening for real-time updates.
      */
     public ProfileViewModel() {
-        profileList = new MutableLiveData<>();
         // Initialize the Firestore database and get the "Profiles" collection reference.
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         profileCollection = db.collection("Profiles");
@@ -40,7 +39,7 @@ public class ProfileViewModel extends ViewModel {
      *
      * @return the list of profiles
      */
-    public static LiveData<ArrayList<Profile>> getProfileList() {
+    public LiveData<ArrayList<Profile>> getProfileList() {
         return profileList;
     }
 

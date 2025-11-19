@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -20,7 +19,6 @@ import java.util.Objects;
  * @version 1.2
  */
 public class Profile implements Parcelable {
-
     private String username;
     private String password;
     private String email;
@@ -34,8 +32,6 @@ public class Profile implements Parcelable {
     private ArrayList<String> myWaitlist;
     private String pictureURL;
     private boolean notificationsEnabled = true;
-    public boolean isNotificationsEnabled() { return notificationsEnabled; }
-    public void setNotificationsEnabled(boolean enabled) { this.notificationsEnabled = enabled; }
 
     /**
      * Constructs a new user profile with the given details.
@@ -45,7 +41,6 @@ public class Profile implements Parcelable {
      * @param email the user's email address
      * @throws IllegalArgumentException if any parameter is null or empty
      */
-
     public Profile(String ID, String username, String password, String type, String email, String phoneNumber) {
         if (ID == null || ID.trim().isEmpty())
             throw new IllegalArgumentException("ID cannot be null or empty.");
@@ -66,12 +61,14 @@ public class Profile implements Parcelable {
         this.ID = ID;
         this.myWaitlist = new ArrayList<String>();
     }
+
     /**
      * Constructs a no-argument user profile.
      */
-    public Profile(){
+    public Profile() {
         // Empty
     }
+
     public ArrayList<String> getMyWaitlist() {return myWaitlist;}
 
     public double getLatitude() {
@@ -198,6 +195,13 @@ public class Profile implements Parcelable {
         return this.pictureURL;
     }
 
+    public boolean isNotificationsEnabled() {
+        return notificationsEnabled;
+    }
+
+    public void setNotificationsEnabled(boolean enabled) {
+        this.notificationsEnabled = enabled;
+    }
 
     /**
      * Checks if the given object is equal to this profile.

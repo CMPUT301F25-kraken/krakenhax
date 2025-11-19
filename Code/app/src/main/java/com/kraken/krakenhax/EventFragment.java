@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -22,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -29,11 +29,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -47,12 +51,8 @@ import android.widget.Toast;
  */
 public class EventFragment extends Fragment {
     private Profile currentUser;
-    private Button buttonSignup;
-    private Button buttonAccept;
-    private Button buttonDecline;
-    private Button buttonNotify;
-    private Button deleteButton;
     private FirebaseFirestore db;
+    private ProfileViewModel profileModel;
 
     private ActivityResultLauncher<String[]> locationPermissionRequest;
 
@@ -124,11 +124,11 @@ public class EventFragment extends Fragment {
         });
     }
 
-    private void updateButtons(View view, Event event, NavController navController) {
-        buttonAccept = view.findViewById(R.id.button_accept);
-        buttonDecline = view.findViewById(R.id.button_decline);
-        buttonSignup = view.findViewById(R.id.button_signup);
-        deleteButton = view.findViewById(R.id.EventDeleteButton);
+    private void updateButtons(View view, Event event) {
+        Button buttonAccept = view.findViewById(R.id.button_accept);
+        Button buttonDecline = view.findViewById(R.id.button_decline);
+        Button buttonSignup = view.findViewById(R.id.button_signup);
+        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
 
         if (currentUser.getType().equals("Admin")) {
             buttonSignup.setVisibility(View.GONE);
@@ -141,13 +141,13 @@ public class EventFragment extends Fragment {
             buttonAccept.setOnClickListener(v -> {
                 event.addToAcceptList(currentUser);
                 updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateButtons(view, event);
             });
 
             buttonDecline.setOnClickListener(v -> {
                 event.addToCancelList(currentUser);
                 updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateButtons(view, event);
             });
         } else if (event.getCancelList().contains(currentUser)) {
             buttonSignup.setClickable(false);
@@ -161,7 +161,7 @@ public class EventFragment extends Fragment {
                 event.removeFromWaitList(currentUser);
                 currentUser.removeFromMyWaitList(event.getId());
                 updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateButtons(view, event);
 
                 // Notify user
                 NotifyUser notifyUser = new NotifyUser(requireContext());
@@ -172,6 +172,10 @@ public class EventFragment extends Fragment {
         } else {
             buttonSignup.setText("Sign Up");
             buttonSignup.setOnClickListener(v -> {
+                event.addToWaitList(currentUser);
+                currentUser.addToMyWaitlist(event.getId());
+                updateEventInFirestore(event);
+                updateButtons(view, event);
 
                 if (event.getUseGeolocation()) {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -229,6 +233,11 @@ public class EventFragment extends Fragment {
             currentUser = mainActivity.currentUser;
         }
 
+        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+
+        // Get the object for the event
+        assert getArguments() != null;
+        Event event = getArguments().getParcelable("event_name");
         // Location permission
         locationPermissionRequest = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
@@ -286,6 +295,17 @@ public class EventFragment extends Fragment {
         TextView tvDescription = view.findViewById(R.id.tv_event_description);
         tvDescription.setText(event.getEventDetails());
 
+        // Set up the waitlist info
+        TextView tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
+        List<Profile> waitlist = event.getWaitList();
+        int numWaitlist = waitlist.size();
+        int maxWaitlist = event.getWaitListCap();
+        if (maxWaitlist != 0) {
+            tvWaitlistEntry.setText(String.format("%d / %d", numWaitlist, maxWaitlist));
+        } else {
+            tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
+        }
+
         // Set the event poster
         ImageView eventImage = view.findViewById(R.id.eventIV);
         String posterURL = event.getPoster();
@@ -302,19 +322,13 @@ public class EventFragment extends Fragment {
 
         // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
-        buttonBack.setOnClickListener(v -> {
-            if (currentUser.getType().equals("Admin")) {
-                navController.navigate(R.id.action_MyEventDetailsFragment_to_AdminListFragment);
-            } else {
-                navController.popBackStack();
-            }
-        });
+        buttonBack.setOnClickListener(v -> navController.popBackStack());
 
-        // Set the view event organizer button to show the name of the organizer
+        // Set the view event organizer button to show the name of the organizer and navigate to the organizers page
         String organizerID = event.getOrgId();
-        ProfileViewModel profileViewModel = new ProfileViewModel();
         Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
-        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             for (Profile profile : profiles) {
                 if (profile.getID().equals(organizerID)) {
                     String organizerName = profile.getUsername();
@@ -331,6 +345,56 @@ public class EventFragment extends Fragment {
             }
         });
 
+        // Set tvRegistrationInfo to display the deadline for registration
+        TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
+        try {
+            List<Timestamp> timeframe = event.getTimeframe();
+            Timestamp deadline = timeframe.get(1);
+            Timestamp currentTime = Timestamp.now();
+
+            long timeRemaining = deadline.toDate().getTime() - currentTime.toDate().getTime();
+
+            // If deadline has passed
+            if (timeRemaining <= 0) {
+                tvRegistrationInfo.setText("Registration has closed.");
+            } else {
+                long days = timeRemaining / (1000 * 60 * 60 * 24);
+                long hours = (timeRemaining / (1000 * 60 * 60)) % 24;
+                long minutes = (timeRemaining / (1000 * 60)) % 60;
+
+                // Create a string with time remaining nicely formatted
+                StringBuilder remainingText = new StringBuilder("Time remaining: ");
+                if (days > 0) {
+                    remainingText.append(days).append(days == 1 ? " day" : " days");
+                }
+                if (hours > 0) {
+                    if (days > 0) remainingText.append(", ");
+                    remainingText.append(hours).append(hours == 1 ? " hour" : " hours");
+                }
+                if (minutes > 0) {
+                    if (days > 0 || hours > 0) remainingText.append(", ");
+                    remainingText.append(minutes).append(minutes == 1 ? " minute" : " minutes");
+                }
+
+                tvRegistrationInfo.setText(remainingText.toString());
+            }
+            // Throw an exception when the timeframe array for the event is empty
+        } catch (IndexOutOfBoundsException e) {
+            tvRegistrationInfo.setText("ERROR: This event has an invalid or empty timeframe.");
+            //throw new IllegalStateException("The event titled '" + event.getTitle() + "' (ID: " + event.getId() + ") has an invalid or empty timeframe. It must contain at least two timestamps.", e);
+        }
+
+        // Set the tvDateTime to show the date and time of the event
+        TextView tvDateTime = view.findViewById(R.id.tv_date_time);
+        if (event.getDateTime() != null) {
+            Timestamp dateTime = event.getDateTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy, hh:mm a", Locale.getDefault());
+            String formattedDateTime = formatter.format(dateTime.toDate());
+            tvDateTime.setText(formattedDateTime);
+        } else {
+            tvDateTime.setText("ERROR: This event is missing a date and time");
+        }
+
 //        String organizerID = event.getOrgId();
 //        // Get the profile for the organizer matching that id from firestore
 //        ProfileViewModel profileViewModel = new ProfileViewModel();
@@ -340,7 +404,7 @@ public class EventFragment extends Fragment {
 //        buttonEventOrganizer.setText(profileList.toString());
 
         // Update buttons for current user state
-        updateButtons(view, event, navController);
+        updateButtons(view, event);
 
         // 🔔 DEMO NOTIFICATION BUTTON
         Button demoNotifyBtn = view.findViewById(R.id.button_notify);
@@ -354,7 +418,7 @@ public class EventFragment extends Fragment {
         });
 
         // 🔔 REAL ORGANIZER BROADCAST
-        buttonNotify = view.findViewById(R.id.button_notify);
+        Button buttonNotify = view.findViewById(R.id.button_notify);
         if (currentUser.getType().equals("Admin")) {
             buttonNotify.setVisibility(View.GONE);
         }
@@ -370,7 +434,7 @@ public class EventFragment extends Fragment {
         });
 
         // Delete button logic
-        deleteButton = view.findViewById(R.id.EventDeleteButton);
+        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
         deleteButton.setOnClickListener(v -> deleteEventFromFirestore(event, navController));
     }
 

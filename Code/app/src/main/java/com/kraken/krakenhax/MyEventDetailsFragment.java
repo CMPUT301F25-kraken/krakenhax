@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -23,7 +24,9 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -41,8 +44,8 @@ public class MyEventDetailsFragment extends Fragment {
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
+    //private Profile currentUser;
 
-    private Profile currentUser;
     /**
      * Required empty public constructor for fragment instantiation.
      */
@@ -75,16 +78,16 @@ public class MyEventDetailsFragment extends Fragment {
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
         btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
-        /**
-        MainActivity mainActivity = (MainActivity) getActivity();
-        assert mainActivity != null;
-        currentUser = mainActivity.currentUser;
-
-        if (Objects.equals(currentUser.getType(), "Entrant")) {
-            btnentrantInfo.setVisibility(View.GONE);
-            btnUploadPoster.setVisibility(View.GONE);
-        }
-        */
+//
+//         MainActivity mainActivity = (MainActivity) getActivity();
+//         assert mainActivity != null;
+//         currentUser = mainActivity.currentUser;
+//
+//         if (Objects.equals(currentUser.getType(), "Entrant")) {
+//         btnentrantInfo.setVisibility(View.GONE);
+//         btnUploadPoster.setVisibility(View.GONE);
+//         }
+//
         // Set up a real-time listener for the event
         setupFirestoreListener(view);
 
@@ -176,6 +179,67 @@ public class MyEventDetailsFragment extends Fragment {
                     .error(R.drawable.outline_attractions_100)
                     .fit().centerCrop()
                     .into(imgPoster);
+        }
+
+        // Set up the waitlist info
+        TextView tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
+        List<Profile> waitlist = event.getWaitList();
+        int numWaitlist = waitlist.size();
+        int maxWaitlist = event.getWaitListCap();
+        if (maxWaitlist != 0) {
+            tvWaitlistEntry.setText(String.format("%d / %d", numWaitlist, maxWaitlist));
+        } else {
+            tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
+        }
+
+        // Set tvRegistrationInfo to display the deadline for registration
+        TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
+        try {
+            List<Timestamp> timeframe = event.getTimeframe();
+            Timestamp deadline = timeframe.get(1);
+            Timestamp currentTime = Timestamp.now();
+
+            long timeRemaining = deadline.toDate().getTime() - currentTime.toDate().getTime();
+
+            // If deadline has passed
+            if (timeRemaining <= 0) {
+                tvRegistrationInfo.setText("Registration has closed.");
+            } else {
+                long days = timeRemaining / (1000 * 60 * 60 * 24);
+                long hours = (timeRemaining / (1000 * 60 * 60)) % 24;
+                long minutes = (timeRemaining / (1000 * 60)) % 60;
+
+                // Create a string with time remaining nicely formatted
+                StringBuilder remainingText = new StringBuilder("Time remaining: ");
+                if (days > 0) {
+                    remainingText.append(days).append(days == 1 ? " day" : " days");
+                }
+                if (hours > 0) {
+                    if (days > 0) remainingText.append(", ");
+                    remainingText.append(hours).append(hours == 1 ? " hour" : " hours");
+                }
+                if (minutes > 0) {
+                    if (days > 0 || hours > 0) remainingText.append(", ");
+                    remainingText.append(minutes).append(minutes == 1 ? " minute" : " minutes");
+                }
+
+                tvRegistrationInfo.setText(remainingText.toString());
+            }
+            // Throw an exception when the timeframe array for the event is empty
+        } catch (IndexOutOfBoundsException e) {
+            tvRegistrationInfo.setText("ERROR: This event has an invalid or empty timeframe.");
+            //throw new IllegalStateException("The event titled '" + event.getTitle() + "' (ID: " + event.getId() + ") has an invalid or empty timeframe. It must contain at least two timestamps.", e);
+        }
+
+        // Set the tvDateTime to show the date and time of the event
+        TextView tvDateTime = view.findViewById(R.id.tv_date_time);
+        if (event.getDateTime() != null) {
+            Timestamp dateTime = event.getDateTime();
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy, hh:mm a", Locale.getDefault());
+            String formattedDateTime = formatter.format(dateTime.toDate());
+            tvDateTime.setText(formattedDateTime);
+        } else {
+            tvDateTime.setText("ERROR: This event is missing a date and time");
         }
     }
 

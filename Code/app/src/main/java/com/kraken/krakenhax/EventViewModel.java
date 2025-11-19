@@ -22,7 +22,6 @@ import java.util.ArrayList;
  */
 public class EventViewModel extends ViewModel {
     private static MutableLiveData<ArrayList<Event>> eventList;
-
     private final FirebaseFirestore db;
     private final CollectionReference eventCollection;
     private final StorageReference storageRef;

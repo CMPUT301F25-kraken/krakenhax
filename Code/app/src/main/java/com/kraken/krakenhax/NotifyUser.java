@@ -16,7 +16,6 @@ import java.util.List;
  * Handles system and in-app notifications.
  */
 public class NotifyUser {
-
     private final Context context;
 
     public NotifyUser(Context context) {

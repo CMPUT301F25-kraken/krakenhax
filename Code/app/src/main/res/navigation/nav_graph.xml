@@ -176,7 +176,7 @@
             app:destination="@+id/adminListFragment" />
 
         <!-- Action to navigate from the Login Chooser Fragment
-         to an Event Fragment (passed with parcelable bundle) -->
+        to an Event Fragment (passed with parcelable bundle) -->
         <action
             android:id="@+id/action_LoginFragment_to_EventFragment"
             app:destination="@id/EventFragment" />
@@ -257,7 +257,7 @@
         android:id="@+id/CreateEventFragment"
         android:name="com.kraken.krakenhax.CreateEventFragment"
         android:label="CreateEventFragment"
-        tools:layout="@layout/create_event_fragment">
+        tools:layout="@layout/fragment_create_event">
 
         <!-- Action to navigate from the Create Event Fragment to My Events Fragment -->
         <action

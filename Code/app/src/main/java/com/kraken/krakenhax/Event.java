@@ -39,6 +39,7 @@ public class Event implements Parcelable {
     private int WinnerNumber;
     private boolean useGeolocation;
     private String orgId;
+    private Timestamp dateTime;
 
 
     /**
@@ -517,5 +518,13 @@ public class Event implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeInt(Radius);
         }
+    }
+
+    public Timestamp getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Timestamp dateTime) {
+        this.dateTime = dateTime;
     }
 }

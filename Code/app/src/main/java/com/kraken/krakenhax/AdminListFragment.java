@@ -33,14 +33,12 @@ import java.util.Set;
  * Will later display images and notifications.
  * Allows the admin to delete profiles.
  */
-
 public class AdminListFragment extends Fragment {
     private final ArrayList<Profile> EntrantList = new ArrayList<>();
     public ProfileViewModel profileModel;
-    private MyRecyclerViewAdapter adapter;
     public FirebaseFirestore db;
     public ProfileAdapterJ profileAdapterJ;
-
+    private MyRecyclerViewAdapter adapter;
     private ArrayList<Event> events;
     private RecyclerView recyclerView;
     private ListView profileListView;
@@ -48,9 +46,6 @@ public class AdminListFragment extends Fragment {
     private CheckBox checkBox;
     private CollectionReference profileRef;
     private CollectionReference eventsRef;
-
-    //private ListView profileListView;
-
 
     /**
      * Required empty public constructor
@@ -62,14 +57,14 @@ public class AdminListFragment extends Fragment {
 
     /**
      * Called to have the fragment instantiate its user interface view.
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
      *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
      * @return The View for the fragment's UI, or null.
      */
     @Override
@@ -85,9 +80,10 @@ public class AdminListFragment extends Fragment {
      * Sets up the spinner and the lists displayed by the spinner.
      * Sets up the adapter for the list view.
      * Sets up the listener for the list view.
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     *                           from a previous saved state as given here.
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -168,12 +164,14 @@ public class AdminListFragment extends Fragment {
 
         });
     }
+
     /**
      * Gets the events from the database.
+     *
      * @param view
      * @param navController
      */
-    public void getEvents(View view, NavController navController){
+    public void getEvents(View view, NavController navController) {
 
 
         events = new ArrayList<>();
@@ -195,6 +193,7 @@ public class AdminListFragment extends Fragment {
 
         recyclerView.setAdapter(adapter);
     }
+
     private void startFirestoreListener() {
         eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.addSnapshotListener((snap, e) -> {
@@ -213,8 +212,9 @@ public class AdminListFragment extends Fragment {
             }
         });
     }
+
     public void getEntrants() {
-        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {
@@ -233,7 +233,7 @@ public class AdminListFragment extends Fragment {
     }
 
     public void getOrganizers() {
-        ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
             EntrantList.clear();
 
             for (Profile profile : profiles) {

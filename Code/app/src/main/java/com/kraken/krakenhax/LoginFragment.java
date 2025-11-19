@@ -42,7 +42,6 @@ public class LoginFragment extends Fragment {
     private Button guest;
     private ProfileViewModel profileModel;
     private NavController navController;
-
     private FirebaseFirestore db;
     private String eventId;
 
@@ -94,7 +93,7 @@ public class LoginFragment extends Fragment {
         navController = Navigation.findNavController(view);
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
-        Intent intent = getActivity().getIntent();
+        Intent intent = requireActivity().getIntent();
         Uri intentData = intent.getData();
         if (intentData != null) {
             eventId = intentData.getLastPathSegment();
@@ -128,9 +127,7 @@ public class LoginFragment extends Fragment {
             validateLogin(usernameInput, passwordInput);
         });
 
-        signup.setOnClickListener(v -> {
-            navController.navigate(R.id.action_login_to_typeSelector);
-        });
+        signup.setOnClickListener(v -> navController.navigate(R.id.action_login_to_typeSelector));
 
         guest.setOnClickListener(v -> {
             MainActivity mainActivity = (MainActivity) getActivity();
@@ -155,7 +152,7 @@ public class LoginFragment extends Fragment {
      */
     private void validateLogin(String usernameInput, String passwordInput) {
         // Get the LiveData from the ViewModel INSTANCE
-        LiveData<ArrayList<Profile>> profileListLiveData = ProfileViewModel.getProfileList();
+        LiveData<ArrayList<Profile>> profileListLiveData = profileModel.getProfileList();
 
         // Observe the LiveData to safely access the list of profiles
         profileListLiveData.observe(getViewLifecycleOwner(), new Observer<>() {
@@ -205,7 +202,7 @@ public class LoginFragment extends Fragment {
             }
 
             // Get the LiveData from the ViewModel INSTANCE
-            LiveData<ArrayList<Profile>> profileListLiveData = ProfileViewModel.getProfileList();
+            LiveData<ArrayList<Profile>> profileListLiveData = profileModel.getProfileList();
 
             // Observe the LiveData to safely access the list of profiles
             profileListLiveData.observe(getViewLifecycleOwner(), new Observer<>() {

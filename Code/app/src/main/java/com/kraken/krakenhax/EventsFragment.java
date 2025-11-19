@@ -25,7 +25,6 @@ import java.util.ArrayList;
  * The home page for the app. Shows a list of events.
  */
 public class EventsFragment extends Fragment {
-
     private MyRecyclerViewAdapter adapter;
     private FirebaseFirestore db;
     private ArrayList<Event> events;
@@ -41,8 +40,8 @@ public class EventsFragment extends Fragment {
     /**
      * Inflates the layout for this fragment.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      * @return The View for the fragment's UI, or null.
      */
@@ -57,7 +56,7 @@ public class EventsFragment extends Fragment {
      * but before any saved state has been restored in to the view.
      * This is where UI components are initialized and listeners are set up.
      *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
      */
     @Override

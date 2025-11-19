@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
     <EditText
         android:id="@+id/EventAddressEditText"
@@ -30,18 +30,30 @@
 
     <EditText
         android:id="@+id/EventNameEditText"
-        android:layout_width="128dp"
+        android:layout_width="150dp"
         android:layout_height="70dp"
-        android:text="Event Name"
+        android:layout_marginTop="5dp"
+        android:hint="Event Name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imagePosterView" />
+
+    <Button
+        android:id="@+id/button_registration_date_time"
+        android:layout_width="118dp"
+        android:layout_height="35dp"
+        android:backgroundTint="@color/white"
+        android:text="Registration Date, Time"
+        android:textColor="@color/gray"
+        android:textSize="7dp"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.726" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/ChangeDateTimeButton"
+        android:id="@+id/button_event_date_time"
         android:layout_width="118dp"
         android:layout_height="35dp"
         android:backgroundTint="@color/white"
@@ -49,9 +61,7 @@
         android:textColor="@color/gray"
         android:textSize="7dp"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/UploadPosterButton"
@@ -89,14 +99,13 @@
         android:id="@+id/EventDescriptionEditText"
         android:layout_width="389dp"
         android:layout_height="180dp"
+        android:layout_marginTop="5dp"
         android:gravity="top|start"
         android:hint="Event Description"
         android:inputType="textMultiLine"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imagePosterView"
-        app:layout_constraintVertical_bias="0.033" />
+        app:layout_constraintTop_toBottomOf="@+id/EventNameEditText" />
 
     <EditText
         android:id="@+id/WinnerNumberEditText"
@@ -145,12 +154,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GeolocationSwitch" />
 
-    <CalendarView
-        android:id="@+id/timeFrameCalendarView"
+    <Button
+        android:id="@+id/BackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/gray"
-        tools:layout_editor_absoluteX="30dp"
-        tools:layout_editor_absoluteY="210dp" />
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="@color/loginTextColor"
+        android:text="Back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
