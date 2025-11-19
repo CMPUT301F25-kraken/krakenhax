@@ -12,12 +12,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
 
 /**
  * Fragment class to handle the sign-up process.
@@ -107,26 +110,31 @@ public class SignUpFragment extends Fragment {
             }
 
             // Observe the LiveData to safely check for existing usernames
-            ProfileViewModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
-                // This block runs only when `profiles` is not null.
-                boolean usernameExists = false;
-                for (Profile p : profiles) {
-                    if (p.getUsername().equalsIgnoreCase(username)) {
-                        usernameExists = true;
-                        break;
+            profileViewModel.getProfileList().observe(getViewLifecycleOwner(), new Observer<ArrayList<Profile>>() {
+                @Override
+                public void onChanged(ArrayList<Profile> profiles) {
+                    // This block runs only when `profiles` is not null.
+                    boolean usernameExists = false;
+                    if (profiles != null) {
+                        for (Profile p : profiles) {
+                            if (p.getUsername().equalsIgnoreCase(username)) {
+                                usernameExists = true;
+                                break;
+                            }
+                        }
                     }
-                }
 
-                if (usernameExists) {
-                    Toast.makeText(getContext(), "Username already exists. Please choose another.", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Username is unique, proceed with creating the profile
-                    createNewProfile(username, password, email);
-                }
+                    if (usernameExists) {
+                        Toast.makeText(getContext(), "Username already exists. Please choose another.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Username is unique, proceed with creating the profile
+                        createNewProfile(username, password, email);
+                    }
 
-                // Important: Remove the observer after use to prevent it from firing again
-                // if the user stays on the screen and the data changes for another reason.
-                ProfileViewModel.getProfileList().removeObservers(getViewLifecycleOwner());
+                    // Important: Remove the observer after use to prevent it from firing again
+                    // if the user stays on the screen and the data changes for another reason.
+                    profileViewModel.getProfileList().removeObserver(this);
+                }
             });
         });
     }
@@ -138,9 +146,9 @@ public class SignUpFragment extends Fragment {
      * Sets the current user in MainActivity.
      * Navigates to the next screen.
      *
-     * @param username
-     * @param password
-     * @param email
+     * @param username the desired username for the new account
+     * @param password the chosen password for the new account
+     * @param email    the email address to associate with the new account
      */
     private void createNewProfile(String username, String password, String email) {
         // Let Firestore generate the ID. The 'id' field in the constructor can be null or empty for now.
@@ -155,22 +163,27 @@ public class SignUpFragment extends Fragment {
                     newProfile.setID(firestoreId);
 
                     // Now, update the document in Firestore to include its own ID
-                    profileCollection.document(firestoreId).update("id", firestoreId);
+                    profileCollection.document(firestoreId).update("id", firestoreId)
+                            .addOnSuccessListener(aVoid -> {
+                                // Add the complete profile to the local ViewModel
+                                profileViewModel.addProfile(newProfile);
 
-                    // Add the complete profile to the local ViewModel
-                    profileViewModel.addProfile(newProfile);
+                                // Set the current user in MainActivity
+                                MainActivity mainActivity = (MainActivity) getActivity();
+                                if (mainActivity != null) {
+                                    mainActivity.currentUser = newProfile;
+                                    mainActivity.loggedIn = true;
+                                }
+                                // Link device to this new account
+                                DeviceIdentityManager.updateAccountLink(firestoreId);
+                                Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
 
-                    // Set the current user in MainActivity
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    if (mainActivity != null) {
-                        mainActivity.currentUser = newProfile;
-                        mainActivity.loggedIn = true;
-                    }
-
-                    Toast.makeText(getContext(), "Sign up successful!", Toast.LENGTH_SHORT).show();
-
-                    // Navigate to the next screen
-                    navController.navigate(R.id.action_SignUp_to_Events);
+                                // Navigate to the next screen
+                                navController.navigate(R.id.action_SignUp_to_Events);
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getContext(), "Sign up failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            });
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Sign up failed: " + e.getMessage(), Toast.LENGTH_LONG).show();

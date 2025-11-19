@@ -38,14 +38,14 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/MakeEventButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="32dp"
-        android:text="Make Event"
-        app:layout_constraintStart_toEndOf="@+id/tv_my_events"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_margin="16dp"
+        android:text="Create Event"
+        app:icon="@android:drawable/ic_input_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

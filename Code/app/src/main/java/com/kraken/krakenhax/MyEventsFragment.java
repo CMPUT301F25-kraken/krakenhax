@@ -26,15 +26,11 @@ import java.util.Objects;
  * For an entrant, it should show events they have signed up for (current implementation is for organizers).
  */
 public class MyEventsFragment extends Fragment {
-
     private FirebaseFirestore db;
-
     private ArrayList<Event> events;
-
     private CollectionReference eventsRef;
     private MyRecyclerViewAdapter adapter;
     private Button makeEventButton;
-
     private Profile currentUser;
 
     /**
@@ -48,8 +44,8 @@ public class MyEventsFragment extends Fragment {
      * Inflates the layout for this fragment, initializes UI components and Firestore,
      * and sets up listeners for user interactions.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
      * @return The View for the fragment's UI.
      */
@@ -78,15 +74,6 @@ public class MyEventsFragment extends Fragment {
 
         events = new ArrayList<>();
 
-        /**
-         events.add(new Event(
-         "event-004",
-         "Evening Yoga",
-         "Relaxing Vinyasa yoga for all ages. Bring your own mat.",
-         "Wellness Center Room B",
-         0
-         ));
-         */
         adapter = new MyRecyclerViewAdapter(events);
         recycler_view_event_list2.setAdapter(adapter);
 
@@ -99,7 +86,9 @@ public class MyEventsFragment extends Fragment {
             bundle.putParcelable("event_name", clickedEvent);
             if (Objects.equals(currentUser.getType(), "Organizer")) {
                 NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_MyEventDetailsFragment, bundle);
-            }else if (Objects.equals(currentUser.getType(), "Entrant")){
+            } else if (Objects.equals(currentUser.getType(), "Entrant")) {
+                NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_EventFragment, bundle);
+            } else if (Objects.equals(currentUser.getType(), "Guest")) {
                 NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_EventFragment, bundle);
             }
 
@@ -127,7 +116,8 @@ public class MyEventsFragment extends Fragment {
                     String orgProfile = event.getOrgId();
                     String eventId = event.getId();
                     if (Objects.equals(orgProfile, currentUser.getID())) {
-                        events.add(event);}
+                        events.add(event);
+                    }
                     if (currentUser.getMyWaitlist().contains(eventId)) {
                         events.add(event);
                     }
@@ -139,34 +129,3 @@ public class MyEventsFragment extends Fragment {
     }
 
 }
-        /**eventsRef = db.collection("Events");
-        eventsRef.addSnapshotListener((snap, e) -> {
-            if (e != null) {
-                Log.e("Firestore", "Listen failed", e);
-                return;
-            }
-
-
-            if (snap != null && !snap.isEmpty()) {
-                events.clear();
-                for (QueryDocumentSnapshot snapshot : snap) {
-                    String title = snapshot.getString("title");
-                    String eventId = snapshot.getString("id");
-                    String eventDetails = snapshot.getString("eventDetails");
-                    String location = snapshot.getString("location");
-                    String poster = snapshot.getString("poster");
-                    String orgProfile = snapshot.getString("orgId");
-                    if (Objects.equals(orgProfile, currentUser.getID())) {
-                        events.add(new Event(eventId, title, eventDetails, location, 0, poster));}
-                    if (currentUser.getMyWaitlist().contains(eventId)) {
-                        events.add(new Event(eventId, title, eventDetails, location, 0, poster));
-                    }
-
-
-                }
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-}*/

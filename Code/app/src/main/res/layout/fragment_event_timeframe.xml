@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white">
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/EventAddressEditText"
@@ -32,7 +32,7 @@
         android:id="@+id/EventNameEditText"
         android:layout_width="128dp"
         android:layout_height="70dp"
-        android:hint="Event Name"
+        android:text="Event Name"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -41,7 +41,7 @@
         app:layout_constraintVertical_bias="0.726" />
 
     <Button
-        android:id="@+id/ChangeDateTimeButton"
+        android:id="@+id/button_registration_date_time"
         android:layout_width="118dp"
         android:layout_height="35dp"
         android:backgroundTint="@color/white"
@@ -145,15 +145,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/GeolocationSwitch" />
 
-    <Button
-        android:id="@+id/BackButton"
+    <CalendarView
+        android:id="@+id/timeFrameCalendarView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="240dp"
-        android:layout_marginBottom="28dp"
-        android:backgroundTint="@color/loginTextColor"
-        android:text="Back"
-        app:layout_constraintBottom_toTopOf="@+id/EventNameEditText"
-        app:layout_constraintEnd_toStartOf="@+id/UploadPosterButton" />
+        android:background="@color/gray"
+        tools:layout_editor_absoluteX="30dp"
+        tools:layout_editor_absoluteY="210dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

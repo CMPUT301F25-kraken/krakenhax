@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -19,7 +20,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -33,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
     public BottomNavigationView admin_navigation_bar;
     public Profile currentUser;
     public boolean loggedIn;
-    public ProfileViewModel profileModel;
-    private FirebaseFirestore db;
     public boolean admin;
-    private CollectionReference ProfileRef;
+    //public ProfileViewModel profileModel;
+    private FirebaseFirestore db;
+    //private CollectionReference ProfileRef;
 
     /**
      * Called when the activity is first created. This is where you should do all of your normal static set up:
@@ -65,8 +65,12 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Set up splash screen
+        androidx.core.splashscreen.SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         admin = false;
         loggedIn = false;
         db = FirebaseFirestore.getInstance();
-        ProfileRef = db.collection("Profiles");
+        //ProfileRef = db.collection("Profiles");
 
         // Set up the navigation bar
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
+    protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         // Ensure fragments read the latest deep link when the activity is reused
         setIntent(intent);

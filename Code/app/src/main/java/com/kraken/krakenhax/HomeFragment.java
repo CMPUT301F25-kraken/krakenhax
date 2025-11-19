@@ -23,8 +23,8 @@ public class HomeFragment extends Fragment {
     /**
      * Inflates the layout for this fragment.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container If non-null, this is the parent view that the fragment's UI should be attached to.
+     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state as given here.
      * @return The View for the fragment's UI, or null.
      */
