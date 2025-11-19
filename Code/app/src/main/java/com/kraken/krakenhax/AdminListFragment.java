@@ -1,5 +1,7 @@
 package com.kraken.krakenhax;
 
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,9 +23,12 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -34,7 +39,8 @@ import java.util.Set;
  * Allows the admin to delete profiles.
  */
 public class AdminListFragment extends Fragment {
-    private final ArrayList<Profile> EntrantList = new ArrayList<>();
+    private final ArrayList<Profile> profileList = new ArrayList<>();
+    private final ArrayList<Image> ImageList = new ArrayList<>();
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
     public ProfileAdapterJ profileAdapterJ;
@@ -46,6 +52,9 @@ public class AdminListFragment extends Fragment {
     private CheckBox checkBox;
     private CollectionReference profileRef;
     private CollectionReference eventsRef;
+    private StorageReference storageRef;
+    private FirebaseStorage storage;
+
 
     /**
      * Required empty public constructor
@@ -89,13 +98,16 @@ public class AdminListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
         Spinner spinner = view.findViewById(R.id.spinner_admin_lists);
-        String[] spinnerList = {"Entrants", "Organizers", "Events"};
+        String[] spinnerList = {"Entrants", "Organizers", "Events", "Images", "Notifications"};
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
         db = FirebaseFirestore.getInstance();
         profileRef = db.collection("Profiles");
         recyclerView = view.findViewById(R.id.recycler_view_admin_lists);
         profileListView = view.findViewById(R.id.list_view_admin_lists);
         DelSelButton = view.findViewById(R.id.DelSelButton);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         ArrayAdapter<String> SpinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, spinnerList);
@@ -124,6 +136,21 @@ public class AdminListFragment extends Fragment {
                         recyclerView.setVisibility(View.VISIBLE);
                         getEvents(view, navController);
                         break;
+                    case "Images":
+                        DelSelButton.setVisibility(View.GONE);
+                        profileListView.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                        getImages();
+                        break;
+                    case "Notifications":
+                        DelSelButton.setVisibility(View.GONE);
+                        profileListView.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.GONE);
+                        getNotifications();
+                        break;
+                    default:
+                        break;
+
                 }
 
             }
@@ -146,7 +173,7 @@ public class AdminListFragment extends Fragment {
             }
 
             ArrayList<Profile> profilesToDel = new ArrayList<>();
-            for (Profile profile : EntrantList) {
+            for (Profile profile : profileList) {
                 if (profile.getID() != null && selectedIds.contains(profile.getID())) {
                     profilesToDel.add(profile);
                 }
@@ -154,7 +181,7 @@ public class AdminListFragment extends Fragment {
 
             for (Profile profile : profilesToDel) {
                 profileRef.document(profile.getID()).delete();
-                EntrantList.remove(profile);
+                profileList.remove(profile);
             }
 
             profileAdapterJ.clearSelection();
@@ -215,15 +242,15 @@ public class AdminListFragment extends Fragment {
 
     public void getEntrants() {
         profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
-            EntrantList.clear();
+            profileList.clear();
 
             for (Profile profile : profiles) {
                 if (profile.getType().equals("Entrant")) {
-                    EntrantList.add(profile);
+                    profileList.add(profile);
                 }
             }
 
-            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
+            profileAdapterJ = new ProfileAdapterJ(requireContext(), profileList);
             profileListView.setAdapter(profileAdapterJ);
 
             profileListView.setOnItemClickListener((parent, view, position, id) -> {
@@ -234,21 +261,43 @@ public class AdminListFragment extends Fragment {
 
     public void getOrganizers() {
         profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
-            EntrantList.clear();
+            profileList.clear();
 
             for (Profile profile : profiles) {
                 if (profile.getType().equals("Organizer")) {
-                    EntrantList.add(profile);
+                    profileList.add(profile);
                 }
             }
 
-            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
+            profileAdapterJ = new ProfileAdapterJ(requireContext(), profileList);
             profileListView.setAdapter(profileAdapterJ);
 
             profileListView.setOnItemClickListener((parent, view, position, id) -> {
                 profileAdapterJ.toggleSelection(position);
             });
         });
+    }
+
+    public void getImages() {
+        // Get images from Firebase Storage
+        StorageReference profImagesRef = storageRef.child("profile_pictures/");
+        StorageReference EventImagesRef = storageRef.child("event_posters/");
+        ImageList.clear();
+        profImagesRef.listAll().addOnSuccessListener(listResult -> {
+            for (StorageReference item : listResult.getItems()) {
+                Task<Uri> itemURL = item.getDownloadUrl();
+                //Image image = itemURL.openStream();
+                //ImageList.add(itemURL);
+            }
+
+        });
+
+
+
+    }
+
+    public void getNotifications() {
+        // Get notifications from Firebase Firestore
     }
 
 }
