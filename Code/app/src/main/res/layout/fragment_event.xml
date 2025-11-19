@@ -40,6 +40,19 @@
         app:layout_constraintStart_toEndOf="@+id/event_image"
         app:layout_constraintTop_toTopOf="@+id/event_image" />
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/event_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="100dp"
+        android:background="@color/white"
+        android:scaleType="centerCrop"
+        android:src="@drawable/outline_attractions_100"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.RoundedImageView" />
+
     <Button
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
@@ -74,6 +87,7 @@
         android:id="@+id/button_accept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
         android:layout_marginTop="28dp"
         android:outlineAmbientShadowColor="@color/acceptButton"
         android:outlineSpotShadowColor="@color/acceptButton"
@@ -83,6 +97,7 @@
         android:textColorHint="@color/acceptButton"
         android:textColorLink="@color/acceptButton"
         android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@+id/button_signup"
         app:layout_constraintTop_toBottomOf="@+id/tv_date_time" />
 
     <Button
@@ -204,5 +219,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_waitlist"
         app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
         app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
