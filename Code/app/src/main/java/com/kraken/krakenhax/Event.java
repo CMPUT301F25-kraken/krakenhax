@@ -370,7 +370,7 @@ public class Event implements Parcelable {
         if (this.waitListCap <= 0) {
             this.waitList.add(profile);
         } else {
-            if (this.waitList.size() < this.waitListCap) {
+            if (this.waitList.size() < this.waitListCap && !this.waitList.contains(profile)) {
                 this.waitList.add(profile);
             } else {
                 throw new IllegalArgumentException("Waitlist is full");
@@ -425,10 +425,16 @@ public class Event implements Parcelable {
         ArrayList<Profile> shuffled = (ArrayList<Profile>) entrantPool.clone();
         Collections.shuffle(shuffled);
 
-        for (int i = 0; i < numberOfWinners && i < shuffled.size(); i++) {
+        int newWinnersAdded = 0;
+        int i = 0;
+        while (newWinnersAdded < numberOfWinners && i < shuffled.size()) {
             Profile winner = shuffled.get(i);
-            winners.add(winner);
-            losers.remove(winner);
+            if (!winners.contains(winner)) {
+                winners.add(winner);
+                losers.remove(winner);
+                newWinnersAdded++;
+            }
+            i++;
         }
 
         this.lostList = losers;
