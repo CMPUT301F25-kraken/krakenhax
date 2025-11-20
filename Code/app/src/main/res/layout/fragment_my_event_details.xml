@@ -13,7 +13,7 @@
         android:id="@+id/tv_event_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="10dp"
         android:text="Event Name"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -32,9 +32,23 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_entrant_info" />
 
     <Button
+        android:id="@+id/btnLottery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Trigger Lottery"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_waitlist" />
+
+    <Button
         android:id="@+id/btnBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:text="Back"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,11 +69,15 @@
 
     <TextView
         android:id="@+id/tv_date_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_width="215dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="10dp"
         android:text="Data and Time"
-        app:layout_constraintStart_toStartOf="@+id/tv_event_name"
+        app:layout_constraintBottom_toTopOf="@+id/button_signup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imgPoster"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
 
     <TextView
@@ -78,18 +96,22 @@
 
     <TextView
         android:id="@+id/tv_event_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_width="352dp"
+        android:layout_height="129dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="28dp"
         android:text="Event Description"
-        app:layout_constraintEnd_toEndOf="@+id/tv_registration_info"
-        app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
 
     <CheckBox
         android:id="@+id/cb_bookmark"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
         android:outlineAmbientShadowColor="@color/LoginButtonColor"
         android:outlineSpotShadowColor="@color/LoginButtonColor"
         android:shadowColor="@color/LoginButtonColor"
@@ -104,12 +126,12 @@
         android:id="@+id/btn_entrant_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="132dp"
         android:backgroundTint="@color/LoginButtonColor"
         android:text="Entrant Information"
+        app:layout_constraintBottom_toTopOf="@+id/btnUploadPoster"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLottery" />
 
     <Button
         android:id="@+id/button"
@@ -126,7 +148,7 @@
         android:id="@+id/tv_location2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="20dp"
         android:text="Location:"
         app:layout_constraintStart_toStartOf="@+id/tv_event_description"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />

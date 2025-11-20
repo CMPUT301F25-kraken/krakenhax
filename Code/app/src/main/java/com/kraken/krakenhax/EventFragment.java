@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -26,12 +25,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
@@ -43,7 +38,6 @@ import java.util.Locale;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import android.location.Location;
 import android.widget.Toast;
 
 
@@ -134,7 +128,9 @@ public class EventFragment extends Fragment {
         if (currentUser.getType().equals("Admin")) {
             buttonSignup.setVisibility(View.GONE);
             deleteButton.setVisibility(View.VISIBLE);
-        } else if (event.getWonList().contains(currentUser)) {
+        }
+
+        if (event.getWonList().contains(currentUser)) {
             buttonSignup.setVisibility(View.GONE);
             buttonAccept.setVisibility(View.VISIBLE);
             buttonDecline.setVisibility(View.VISIBLE);
@@ -153,6 +149,11 @@ public class EventFragment extends Fragment {
         } else if (event.getCancelList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You cancelled your entry");
+
+        } else if (event.getAcceptList().contains(currentUser)) {
+            buttonSignup.setClickable(false);
+            buttonSignup.setText("You accepted your entry");
+
         } else if (event.getLostList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You were not selected");
@@ -173,10 +174,10 @@ public class EventFragment extends Fragment {
         } else {
             buttonSignup.setText("Sign Up");
             buttonSignup.setOnClickListener(v -> {
-                event.addToWaitList(currentUser);
-                currentUser.addToMyWaitlist(event.getId());
-                updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                //event.addToWaitList(currentUser);
+                //currentUser.addToMyWaitlist(event.getId());
+                //updateEventInFirestore(event);
+                //updateButtons(view, event, navController);
 
                 if (event.getUseGeolocation()) {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -404,33 +405,6 @@ public class EventFragment extends Fragment {
 
         // Update buttons for current user state
         updateButtons(view, event, navController);
-
-        // 🔔 DEMO NOTIFICATION BUTTON
-        Button demoNotifyBtn = view.findViewById(R.id.button_notify);
-        demoNotifyBtn.setOnClickListener(v -> {
-            Profile mockProfile = new Profile();
-            mockProfile.setUsername("Amaan");
-            mockProfile.setNotificationsEnabled(true);
-
-            NotifyUser notifyUser = new NotifyUser(requireContext());
-            notifyUser.sendNotification(mockProfile, "This is a demo notification from KrakenHax!");
-        });
-
-        // 🔔 REAL ORGANIZER BROADCAST
-        Button buttonNotify = view.findViewById(R.id.button_notify);
-        if (currentUser.getType().equals("Admin")) {
-            buttonNotify.setVisibility(View.GONE);
-        }
-        buttonNotify.setOnClickListener(v -> {
-            NotifyUser notifyUser = new NotifyUser(requireContext());
-            List<Profile> allUsers = new ArrayList<>();
-            allUsers.addAll(event.getWaitList());
-            allUsers.addAll(event.getWonList());
-            allUsers.addAll(event.getLostList());
-            allUsers.addAll(event.getCancelList());
-
-            notifyUser.sendBroadcast(allUsers, "📢 Update: " + event.getTitle() + " has new updates!");
-        });
 
         // Delete button logic
         Button deleteButton = view.findViewById(R.id.EventDeleteButton);

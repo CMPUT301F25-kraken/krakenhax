@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -34,6 +35,7 @@ import java.util.Locale;
  * It allows the organizer to upload a poster, view entrant information, and displays event details in real-time.
  */
 public class MyEventDetailsFragment extends Fragment {
+    private Profile currentUser;
     private FirebaseStorage storage;
     private FirebaseFirestore db;
     private StorageReference storageRef;
@@ -41,6 +43,7 @@ public class MyEventDetailsFragment extends Fragment {
     private Button btnUploadPoster;
     private Button btnBack;
     private Button btnentrantInfo;
+    private Button btnLottery;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
@@ -70,6 +73,11 @@ public class MyEventDetailsFragment extends Fragment {
         // Get the initial (potentially stale) event object from the arguments
         event = getArguments().getParcelable("event_name");
 
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            currentUser = mainActivity.currentUser;
+        }
+
         storage = FirebaseStorage.getInstance();
         db = FirebaseFirestore.getInstance();
         storageRef = storage.getReference();
@@ -78,6 +86,7 @@ public class MyEventDetailsFragment extends Fragment {
         btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         btnBack = view.findViewById(R.id.btnBack);
         btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
+        btnLottery = view.findViewById(R.id.btnLottery);
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
 //         assert mainActivity != null;
@@ -103,6 +112,15 @@ public class MyEventDetailsFragment extends Fragment {
                     new AlertDialog.Builder(requireContext()).setTitle("Error").setMessage("Failed to load image. Please try again.").setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).show();
                 }
             }
+        });
+
+        btnLottery.setOnClickListener(v -> {
+            if (event.getLostList().isEmpty()) {
+                event.drawLottery(event.getWaitList(), event.getWinnerNumber());
+            } else {
+                event.drawLottery(event.getLostList(), event.getWinnerNumber() - event.getWonList().size());
+            }
+            updateEventInFirestore(event);
         });
 
         btnUploadPoster.setOnClickListener(v -> imagePicker.launch("image/*"));
@@ -268,4 +286,12 @@ public class MyEventDetailsFragment extends Fragment {
         }
     }
 
+
+    private void updateEventInFirestore(Event event) {
+        if (event != null && event.getId() != null) {
+            db.collection("Events").document(event.getId()).set(event)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
+        }
+    }
 }

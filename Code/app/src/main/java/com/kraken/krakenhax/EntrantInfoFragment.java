@@ -62,7 +62,7 @@ public class EntrantInfoFragment extends Fragment {
 
         eventTitle.setText(event.getTitle());
 
-        List<String> statuses = Arrays.asList("Waitlisted", "Enrolled", "Cancelled");
+        List<String> statuses = Arrays.asList("Waitlisted", "Won", "Lost", "Accepted", "Cancelled");
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
@@ -80,8 +80,17 @@ public class EntrantInfoFragment extends Fragment {
                 if (selectedItem.equals("Waitlisted")) {
                     adapter = new ProfileAdapterS(event.getWaitList());
                     profileRecycler.setAdapter(adapter);
-                } else if (selectedItem.equals("Enrolled")) {
+
+                } else if (selectedItem.equals("Won")) {
                     adapter = new ProfileAdapterS(event.getWonList());
+                    profileRecycler.setAdapter(adapter);
+
+                } else if (selectedItem.equals("Lost")) {
+                    adapter = new ProfileAdapterS(event.getLostList());
+                    profileRecycler.setAdapter(adapter);
+
+                } else if (selectedItem.equals("Accepted")) {
+                    adapter = new ProfileAdapterS(event.getAcceptList());
                     profileRecycler.setAdapter(adapter);
 
                 } else if (selectedItem.equals("Cancelled")) {
