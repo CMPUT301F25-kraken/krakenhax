@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -26,6 +27,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
@@ -357,6 +360,8 @@ public class EventFragment extends Fragment {
             // If deadline has passed
             if (timeRemaining <= 0) {
                 tvRegistrationInfo.setText("Registration has closed.");
+                Button signupButton = view.findViewById(R.id.button_signup);
+                signupButton.setVisibility(View.GONE);
             } else {
                 long days = timeRemaining / (1000 * 60 * 60 * 24);
                 long hours = (timeRemaining / (1000 * 60 * 60)) % 24;
