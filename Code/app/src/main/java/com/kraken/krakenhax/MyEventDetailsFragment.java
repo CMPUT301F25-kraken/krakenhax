@@ -121,6 +121,7 @@ public class MyEventDetailsFragment extends Fragment {
                 event.drawLottery(event.getLostList(), event.getWinnerNumber() - event.getWonList().size());
             }
             updateEventInFirestore(event);
+            Toast.makeText(requireContext(), "Lottery drawn successfully!", Toast.LENGTH_SHORT).show();
         });
 
         btnUploadPoster.setOnClickListener(v -> imagePicker.launch("image/*"));
