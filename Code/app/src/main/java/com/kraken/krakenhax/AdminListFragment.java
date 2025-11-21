@@ -38,7 +38,7 @@ public class AdminListFragment extends Fragment {
     private final ArrayList<Profile> EntrantList = new ArrayList<>();
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
-    public ProfileAdapterJ profileAdapterJ;
+    public AdminProfileAdapter adminProfileAdapter;
     private MyRecyclerViewAdapter adapter;
     private ArrayList<Event> events;
     private RecyclerView recyclerView;
@@ -136,9 +136,9 @@ public class AdminListFragment extends Fragment {
 
         DelSelButton.setOnClickListener(v -> {
 
-            if (profileAdapterJ == null) return;
+            if (adminProfileAdapter == null) return;
 
-            Set<String> selectedIds = profileAdapterJ.getSelectedProfileIds();
+            Set<String> selectedIds = adminProfileAdapter.getSelectedProfileIds();
 
             if (selectedIds.isEmpty()) {
                 Toast.makeText(requireContext(), "No profiles selected", Toast.LENGTH_SHORT).show();
@@ -157,8 +157,8 @@ public class AdminListFragment extends Fragment {
                 EntrantList.remove(profile);
             }
 
-            profileAdapterJ.clearSelection();
-            profileAdapterJ.notifyDataSetChanged();
+            adminProfileAdapter.clearSelection();
+            adminProfileAdapter.notifyDataSetChanged();
 
             Toast.makeText(requireContext(), "Delete Selected", Toast.LENGTH_SHORT).show();
 
@@ -223,12 +223,12 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
-            profileListView.setAdapter(profileAdapterJ);
+            adminProfileAdapter = new AdminProfileAdapter(requireContext(), EntrantList);
+            profileListView.setAdapter(adminProfileAdapter);
 
-            profileListView.setOnItemClickListener((parent, view, position, id) -> {
-                profileAdapterJ.toggleSelection(position);
-            });
+            profileListView.setOnItemClickListener((parent, view, position, id) ->
+                    adminProfileAdapter.toggleSelection(position)
+            );
         });
     }
 
@@ -242,12 +242,12 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
-            profileListView.setAdapter(profileAdapterJ);
+            adminProfileAdapter = new AdminProfileAdapter(requireContext(), EntrantList);
+            profileListView.setAdapter(adminProfileAdapter);
 
-            profileListView.setOnItemClickListener((parent, view, position, id) -> {
-                profileAdapterJ.toggleSelection(position);
-            });
+            profileListView.setOnItemClickListener((parent, view, position, id) ->
+                    adminProfileAdapter.toggleSelection(position)
+            );
         });
     }
 

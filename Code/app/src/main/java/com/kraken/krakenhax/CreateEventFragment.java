@@ -240,9 +240,9 @@ public class CreateEventFragment extends Fragment {
             }
         });
 
-        uploadPosterButton.setOnClickListener(v -> {
-            imagePicker.launch("image/*");
-        });
+        uploadPosterButton.setOnClickListener(v ->
+                imagePicker.launch("image/*")
+        );
 
         registrationDateTimeButton.setOnClickListener(v -> {
             MaterialDatePicker<androidx.core.util.Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()

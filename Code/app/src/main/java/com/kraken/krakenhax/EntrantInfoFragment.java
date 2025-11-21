@@ -62,7 +62,7 @@ public class EntrantInfoFragment extends Fragment {
                 break;
         }
 
-        ProfileAdapterS adapter = new ProfileAdapterS(targetList);
+        ProfileAdapter adapter = new ProfileAdapter(targetList);
         profileRecycler.setAdapter(adapter);
     }
 

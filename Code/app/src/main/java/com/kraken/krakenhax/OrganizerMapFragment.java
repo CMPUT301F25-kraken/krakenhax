@@ -96,9 +96,9 @@ public class OrganizerMapFragment extends Fragment {
         }
         backBtn = view.findViewById(R.id.goBack);
 
-        backBtn.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).popBackStack();
-        });
+        backBtn.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).popBackStack()
+        );
 
     }
 }

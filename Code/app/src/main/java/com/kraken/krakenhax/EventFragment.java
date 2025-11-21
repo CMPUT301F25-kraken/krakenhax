@@ -46,6 +46,12 @@ public class EventFragment extends Fragment {
     private FirebaseFirestore db;
     private ProfileViewModel profileModel;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
+    private NavController navController;
+    private Event event;
+    private TextView tvWaitlistEntry;
+    private android.os.Handler timerHandler = new android.os.Handler();
+    private Runnable waitlistRunnable;
+    private Runnable deadlineRunnable;
 
     public EventFragment() {
         // Required empty public constructor
@@ -54,7 +60,7 @@ public class EventFragment extends Fragment {
     /**
      * Updates an event in Firestore.
      */
-    private void updateEventInFirestore(Event event) {
+    private void updateEventInFirestore() {
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).set(event)
                     .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
@@ -68,7 +74,7 @@ public class EventFragment extends Fragment {
     /**
      * Deletes an event from Firestore.
      */
-    private void deleteEventFromFirestore(Event event, NavController navController) {
+    private void deleteEventFromFirestore() {
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).delete()
                     .addOnSuccessListener(aVoid -> {
@@ -92,7 +98,11 @@ public class EventFragment extends Fragment {
     /**
      * Gets the entrants location and adds them to the waitlist for the event.
      */
-    private void getLocationAndJoinWaitlist(View view, Event event, NavController navController) {
+    private void getLocationAndJoinWaitlist() {
+        // Get view
+        View view = getView();
+        if (view == null) return;
+
         FusedLocationProviderClient fused = LocationServices.getFusedLocationProviderClient(requireActivity());
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -118,7 +128,7 @@ public class EventFragment extends Fragment {
                 Toast.makeText(requireContext(),
                         "Location saved: " + lat + ", " + lng,
                         Toast.LENGTH_SHORT).show();
-                joinWaitlist(view, event, navController);
+                joinWaitlist();
 
             } else {
                 Toast.makeText(requireContext(),
@@ -131,7 +141,12 @@ public class EventFragment extends Fragment {
     /**
      * Updates the accept, decline, signup, and delete buttons for an event depending on the state.
      */
-    private void updateButtons(View view, Event event, NavController navController) {
+    private void updateButtons() {
+        // Get view
+        View view = getView();
+        if (view == null) return;
+
+        // Initialize buttons
         Button buttonAccept = view.findViewById(R.id.button_accept);
         Button buttonDecline = view.findViewById(R.id.button_decline);
         Button buttonSignup = view.findViewById(R.id.button_signup);
@@ -149,14 +164,20 @@ public class EventFragment extends Fragment {
 
             buttonAccept.setOnClickListener(v -> {
                 event.addToAcceptList(currentUser);
-                updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateEventInFirestore();
+                buttonAccept.setVisibility(View.GONE);
+                buttonDecline.setVisibility(View.GONE);
+                buttonSignup.setVisibility(View.VISIBLE);
+                updateButtons();
             });
 
             buttonDecline.setOnClickListener(v -> {
                 event.addToCancelList(currentUser);
-                updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateEventInFirestore();
+                buttonAccept.setVisibility(View.GONE);
+                buttonDecline.setVisibility(View.GONE);
+                buttonSignup.setVisibility(View.VISIBLE);
+                updateButtons();
             });
 
         } else if (event.getCancelList().contains(currentUser)) {
@@ -175,8 +196,8 @@ public class EventFragment extends Fragment {
             buttonSignup.setOnClickListener(v -> {
                 event.removeFromWaitList(currentUser);
                 currentUser.removeFromMyWaitList(event.getId());
-                updateEventInFirestore(event);
-                updateButtons(view, event, navController);
+                updateEventInFirestore();
+                updateButtons();
 
                 // Notify user
                 NotifyUser notifyUser = new NotifyUser(requireContext());
@@ -206,20 +227,28 @@ public class EventFragment extends Fragment {
                         requestLocationPermissions();
                     }
                 } else {
-                    joinWaitlist(view, event, navController);
+                    joinWaitlist();
                 }
+                updateButtons();
             });
         }
+
+        // Update the waitlist info
+        setWaitlistInfo();
     }
 
     /**
      * Adds the entrant to the waitlist for an event.
      */
-    private void joinWaitlist(View view, Event event, NavController navController) {
+    private void joinWaitlist() {
+        // Get view
+        View view = getView();
+        if (view == null) return;
+
         event.addToWaitList(currentUser);
         currentUser.addToMyWaitlist(event.getId());
-        updateEventInFirestore(event);
-        updateButtons(view, event, navController);
+        updateEventInFirestore();
+        updateButtons();
         // Notify user
         NotifyUser notifyUser = new NotifyUser(requireContext());
         notifyUser.sendNotification(currentUser,
@@ -229,7 +258,11 @@ public class EventFragment extends Fragment {
     /**
      * Returns a location permission request object.
      */
-    private ActivityResultLauncher<String[]> requestLocationPermission(View view, Event event, NavController navController) {
+    private ActivityResultLauncher<String[]> requestLocationPermission() {
+        // Get view
+        View view = getView();
+        assert view != null;
+
         locationPermissionRequest = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
@@ -238,7 +271,7 @@ public class EventFragment extends Fragment {
 
                     if (hasLocationPermission) {
                         // User allowed at least one location permission
-                        getLocationAndJoinWaitlist(view, event, navController);
+                        getLocationAndJoinWaitlist();
                     } else {
                         // Permission denied
                         boolean showRationaleFine =
@@ -275,21 +308,40 @@ public class EventFragment extends Fragment {
     /**
      * Sets the count of how many people are on the waitlist.
      */
-    private void setWaitlistInfo(TextView tvWaitlistEntry, Event event) {
-        List<Profile> waitlist = event.getWaitList();
-        int numWaitlist = waitlist.size();
-        int maxWaitlist = event.getWaitListCap();
-        if (maxWaitlist != 0) {
-            tvWaitlistEntry.setText(String.format("%d / %d", numWaitlist, maxWaitlist));
-        } else {
-            tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
-        }
+    private void setWaitlistInfo() {
+        // Use a timer to update the text live
+        waitlistRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Check if the view is no longer valid from the fragment being destroyed
+                if (getView() == null) {
+                    timerHandler.removeCallbacks(this);
+                    return;
+                }
+
+                List<Profile> waitlist = event.getWaitList();
+                int numWaitlist = waitlist.size();
+                int maxWaitlist = event.getWaitListCap();
+                if (maxWaitlist != 0) {
+                    tvWaitlistEntry.setText(String.format("%d / %d", numWaitlist, maxWaitlist));
+                } else {
+                    tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
+                }
+
+                // Set the timer to repeat this code every 10 seconds
+                timerHandler.postDelayed(this, 10000);
+
+            }
+        };
+
+        // Start the timer
+        timerHandler.post(waitlistRunnable);
     }
 
     /**
      * Sets the event poster.
      */
-    private void setEventPoster(ImageView eventImage, Event event) {
+    private void setEventPoster(ImageView eventImage) {
         String posterURL = event.getPoster();
         if (posterURL == null || posterURL.isEmpty()) {
             eventImage.setImageResource(R.drawable.outline_attractions_100);
@@ -307,7 +359,7 @@ public class EventFragment extends Fragment {
      * Sets the organizer button to display the name of the organizer and navigate to the organizers
      * page when pressed.
      */
-    private void setOrganizerButton(Button buttonEventOrganizer, Event event, NavController navController) {
+    private void setOrganizerButton(Button buttonEventOrganizer) {
         String organizerID = event.getOrgId();
 
         profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
@@ -331,51 +383,73 @@ public class EventFragment extends Fragment {
     /**
      * Displays a countdown of the time remaining until the registration deadline for an event closes.
      */
-    private void setRegistrationDeadline(TextView tvRegistrationInfo, View view, Event event) {
-        try {
-            List<Timestamp> timeframe = event.getTimeframe();
-            Timestamp deadline = timeframe.get(1);
-            Timestamp currentTime = Timestamp.now();
+    private void setRegistrationDeadline(TextView tvRegistrationInfo) {
+        // Get view
+        View view = getView();
+        if (view == null) return;
 
-            long timeRemaining = deadline.toDate().getTime() - currentTime.toDate().getTime();
-
-            // If deadline has passed
-            if (timeRemaining <= 0) {
-                tvRegistrationInfo.setText("Registration has closed.");
-                Button signupButton = view.findViewById(R.id.button_signup);
-                signupButton.setVisibility(View.GONE);
-            } else {
-                long days = timeRemaining / (1000 * 60 * 60 * 24);
-                long hours = (timeRemaining / (1000 * 60 * 60)) % 24;
-                long minutes = (timeRemaining / (1000 * 60)) % 60;
-
-                // Create a string with time remaining nicely formatted
-                StringBuilder remainingText = new StringBuilder("Time remaining: ");
-                if (days > 0) {
-                    remainingText.append(days).append(days == 1 ? " day" : " days");
-                }
-                if (hours > 0) {
-                    if (days > 0) remainingText.append(", ");
-                    remainingText.append(hours).append(hours == 1 ? " hour" : " hours");
-                }
-                if (minutes > 0) {
-                    if (days > 0 || hours > 0) remainingText.append(", ");
-                    remainingText.append(minutes).append(minutes == 1 ? " minute" : " minutes");
+        // Use runnable to update the textview live
+        deadlineRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Check if the view is no longer valid from the fragment being destroyed
+                if (getView() == null) {
+                    timerHandler.removeCallbacks(this);
+                    return;
                 }
 
-                tvRegistrationInfo.setText(remainingText.toString());
+                try {
+                    List<Timestamp> timeframe = event.getTimeframe();
+                    Timestamp deadline = timeframe.get(1);
+                    Timestamp currentTime = Timestamp.now();
+
+                    long timeRemaining = deadline.toDate().getTime() - currentTime.toDate().getTime();
+
+                    // If deadline has passed
+                    if (timeRemaining <= 0) {
+                        tvRegistrationInfo.setText("Registration has closed.");
+                        Button signupButton = view.findViewById(R.id.button_signup);
+                        signupButton.setVisibility(View.GONE);
+                    } else {
+                        long days = timeRemaining / (1000 * 60 * 60 * 24);
+                        long hours = (timeRemaining / (1000 * 60 * 60)) % 24;
+                        long minutes = (timeRemaining / (1000 * 60)) % 60;
+
+                        // Create a string with time remaining nicely formatted
+                        StringBuilder remainingText = new StringBuilder("Time remaining: ");
+                        if (days > 0) {
+                            remainingText.append(days).append(days == 1 ? " day" : " days");
+                        }
+                        if (hours > 0) {
+                            if (days > 0) remainingText.append(", ");
+                            remainingText.append(hours).append(hours == 1 ? " hour" : " hours");
+                        }
+                        if (minutes > 0) {
+                            if (days > 0 || hours > 0) remainingText.append(", ");
+                            remainingText.append(minutes).append(minutes == 1 ? " minute" : " minutes");
+                        }
+
+                        tvRegistrationInfo.setText(remainingText.toString());
+
+                        // Set the timer to repeat this code every 10 seconds
+                        timerHandler.postDelayed(this, 10000);
+                    }
+                    // Throw an exception when the timeframe array for the event is empty
+                } catch (IndexOutOfBoundsException e) {
+                    tvRegistrationInfo.setText("ERROR: This event has an invalid or empty timeframe.");
+                    //throw new IllegalStateException("The event titled '" + event.getTitle() + "' (ID: " + event.getId() + ") has an invalid or empty timeframe. It must contain at least two timestamps.", e);
+                }
             }
-            // Throw an exception when the timeframe array for the event is empty
-        } catch (IndexOutOfBoundsException e) {
-            tvRegistrationInfo.setText("ERROR: This event has an invalid or empty timeframe.");
-            //throw new IllegalStateException("The event titled '" + event.getTitle() + "' (ID: " + event.getId() + ") has an invalid or empty timeframe. It must contain at least two timestamps.", e);
-        }
+        };
+
+        // Start the timer
+        timerHandler.post(deadlineRunnable);
     }
 
     /**
      * Sets the datetime field to display the date and time an event will take place.
      */
-    private void setEventDate(TextView tvDateTime, Event event) {
+    private void setEventDate(TextView tvDateTime) {
         if (event.getDateTime() != null) {
             Timestamp dateTime = event.getDateTime();
             SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy, hh:mm a", Locale.getDefault());
@@ -387,7 +461,8 @@ public class EventFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
+            savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
@@ -397,11 +472,11 @@ public class EventFragment extends Fragment {
 
         // Get the object for the event
         assert getArguments() != null;
-        Event event = getArguments().getParcelable("event_name");
+        event = getArguments().getParcelable("event_name");
         assert event != null;
 
         // Set up the nav controller
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
@@ -416,7 +491,7 @@ public class EventFragment extends Fragment {
         profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
 
         // Location permission
-        locationPermissionRequest = requestLocationPermission(view, event, navController);
+        locationPermissionRequest = requestLocationPermission();
 
         // Set the event name
         TextView tvEventName = view.findViewById(R.id.tv_event_name);
@@ -431,12 +506,12 @@ public class EventFragment extends Fragment {
         tvDescription.setText(event.getEventDetails());
 
         // Set up the waitlist info
-        TextView tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
-        setWaitlistInfo(tvWaitlistEntry, event);
+        tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
+        setWaitlistInfo();
 
         // Set the event poster
         ImageView eventImage = view.findViewById(R.id.event_image);
-        setEventPoster(eventImage, event);
+        setEventPoster(eventImage);
 
         // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
@@ -444,22 +519,32 @@ public class EventFragment extends Fragment {
 
         // Set the view event organizer button to show the name of the organizer and navigate to the organizers page
         Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
-        setOrganizerButton(buttonEventOrganizer, event, navController);
+        setOrganizerButton(buttonEventOrganizer);
 
         // Set tvRegistrationInfo to display the deadline for registration
         TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
-        setRegistrationDeadline(tvRegistrationInfo, view, event);
+        setRegistrationDeadline(tvRegistrationInfo);
 
         // Set the tvDateTime to show the date and time of the event
         TextView tvDateTime = view.findViewById(R.id.tv_date_time);
-        setEventDate(tvDateTime, event);
+        setEventDate(tvDateTime);
 
         // Update buttons for current user state
-        updateButtons(view, event, navController);
+        updateButtons();
 
         // Delete button logic
         Button deleteButton = view.findViewById(R.id.EventDeleteButton);
-        deleteButton.setOnClickListener(v -> deleteEventFromFirestore(event, navController));
+        deleteButton.setOnClickListener(v -> deleteEventFromFirestore());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Stop the timer to prevent memory leaks or crashing
+        if (timerHandler != null) {
+            timerHandler.removeCallbacks(waitlistRunnable);
+            timerHandler.removeCallbacks(deadlineRunnable);
+        }
     }
 
 }
