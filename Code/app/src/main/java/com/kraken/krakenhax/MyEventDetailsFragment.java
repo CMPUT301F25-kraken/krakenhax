@@ -69,8 +69,8 @@ public class MyEventDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_event_details, container, false);
 
-        assert getArguments() != null;
         // Get the initial (potentially stale) event object from the arguments
+        assert getArguments() != null;
         event = getArguments().getParcelable("event_name");
 
         MainActivity mainActivity = (MainActivity) getActivity();

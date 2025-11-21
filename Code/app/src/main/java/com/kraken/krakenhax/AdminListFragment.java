@@ -28,6 +28,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Set;
 
+
 /**
  * Admin fragment to display the lists of entrants, organizers, and events.
  * Will later display images and notifications.
@@ -53,7 +54,6 @@ public class AdminListFragment extends Fragment {
     public AdminListFragment() {
         // Required empty public constructor
     }
-
 
     /**
      * Called to have the fragment instantiate its user interface view.

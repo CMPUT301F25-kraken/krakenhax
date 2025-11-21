@@ -1,6 +1,5 @@
 package com.kraken.krakenhax;
 
-import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -30,8 +29,6 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -146,9 +143,9 @@ public class EventViewModel extends ViewModel {
                                     Log.e("Firebase", "Error uploading QR code URL", e));
                 }).addOnFailureListener(e ->
                         Log.e("Firebase", "QR code URL upload failed: could not get URL", e))
-        ).addOnFailureListener(e -> {
-            Log.e("Firebase", "QR code upload failed", e);
-        });
+        ).addOnFailureListener(e ->
+                Log.e("Firebase", "QR code upload failed", e)
+        );
     }
 
     /**
