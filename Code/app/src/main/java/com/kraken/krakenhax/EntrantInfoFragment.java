@@ -15,27 +15,55 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
 /**
- * A {@link Fragment} that displays lists of entrants for a specific event.
+ * A fragment that displays lists of entrants for a specific event.
  * It allows viewing entrants who are waitlisted, enrolled, or have cancelled.
  */
 public class EntrantInfoFragment extends Fragment {
     private Event event;
-    private Button backBtn;
-
-    private Button mapBtn;
-
-    private Spinner spinner_list;
     private TextView entrantType;
-    private TextView eventTitle;
-    private ProfileAdapterS adapter;
+    private RecyclerView profileRecycler;
 
     public EntrantInfoFragment() {
         // Required empty public constructor
+    }
+
+    /**
+     * Sets the recycler view to display the selected event list.
+     */
+    private void updateRecyclerList(String status) {
+        entrantType.setText("Entrant " + status);
+
+        // Retrieve the selected list from the event
+        ArrayList<Profile> targetList;
+        switch (status) {
+            case "Waitlisted":
+                targetList = event.getWaitList();
+                break;
+            case "Won":
+                targetList = event.getWonList();
+                break;
+            case "Lost":
+                targetList = event.getLostList();
+                break;
+            case "Accepted":
+                targetList = event.getAcceptList();
+                break;
+            case "Cancelled":
+                targetList = event.getCancelList();
+                break;
+            default:
+                targetList = new ArrayList<>();
+                break;
+        }
+
+        ProfileAdapterS adapter = new ProfileAdapterS(targetList);
+        profileRecycler.setAdapter(adapter);
     }
 
     /**
@@ -52,15 +80,18 @@ public class EntrantInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_entrant_info, container, false);
-        backBtn = view.findViewById(R.id.backBtn);
-        mapBtn = view.findViewById(R.id.btn_map);
+
+        // Get the event object
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
-        spinner_list = view.findViewById(R.id.spinner_list);
-        entrantType = view.findViewById(R.id.entrant_type);
-        eventTitle = view.findViewById(R.id.event_title);
 
+        // Set the event title
+        TextView eventTitle = view.findViewById(R.id.event_title);
         eventTitle.setText(event.getTitle());
+
+        // Set the spinner to display the event lists
+        Spinner spinner_list = view.findViewById(R.id.spinner_list);
+        entrantType = view.findViewById(R.id.entrant_type);
 
         List<String> statuses = Arrays.asList("Waitlisted", "Won", "Lost", "Accepted", "Cancelled");
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(
@@ -68,35 +99,19 @@ public class EntrantInfoFragment extends Fragment {
                 android.R.layout.simple_spinner_item,
                 statuses
         );
+
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_list.setAdapter(spinAdapter);
-        RecyclerView profileRecycler = view.findViewById(R.id.profile_recycler);
+
+        profileRecycler = view.findViewById(R.id.profile_recycler);
         profileRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        // Update the spinner when a different event list is selected
         spinner_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
-                entrantType.setText("Entrant " + selectedItem);
-                if (selectedItem.equals("Waitlisted")) {
-                    adapter = new ProfileAdapterS(event.getWaitList());
-                    profileRecycler.setAdapter(adapter);
-
-                } else if (selectedItem.equals("Won")) {
-                    adapter = new ProfileAdapterS(event.getWonList());
-                    profileRecycler.setAdapter(adapter);
-
-                } else if (selectedItem.equals("Lost")) {
-                    adapter = new ProfileAdapterS(event.getLostList());
-                    profileRecycler.setAdapter(adapter);
-
-                } else if (selectedItem.equals("Accepted")) {
-                    adapter = new ProfileAdapterS(event.getAcceptList());
-                    profileRecycler.setAdapter(adapter);
-
-                } else if (selectedItem.equals("Cancelled")) {
-                    adapter = new ProfileAdapterS(event.getCancelList());
-                    profileRecycler.setAdapter(adapter);
-                }
+                updateRecyclerList(selectedItem);
             }
 
             @Override
@@ -105,9 +120,14 @@ public class EntrantInfoFragment extends Fragment {
             }
         });
 
-        backBtn.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigateUp();
-        });
+        // Set up the back button
+        Button backBtn = view.findViewById(R.id.backBtn);
+        backBtn.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigateUp()
+        );
+
+        // Button to view the map with entrant locations
+        Button mapBtn = view.findViewById(R.id.btn_map);
         mapBtn.setOnClickListener(view1 -> {
             Bundle bundle = new Bundle();
             // Pass the most up-to-date event object
@@ -116,7 +136,6 @@ public class EntrantInfoFragment extends Fragment {
         });
 
         return view;
-
     }
 
 }
