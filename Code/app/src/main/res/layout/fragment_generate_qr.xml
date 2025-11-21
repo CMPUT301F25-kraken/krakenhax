@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <Button
+        android:id="@+id/save_qr_button"
+        android:layout_width="168dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="276dp"
+        android:text="Save QR code"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.065"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/come_back_button"
+        android:layout_width="169dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="224dp"
+        android:layout_marginTop="160dp"
+        android:text="Come back later"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qr_code_text" />
+
+    <TextView
+        android:id="@+id/qr_code_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Your event has a QR code! You can save it to your camera roll now, or come back to it later."
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/qr_display_imageview"
+        android:layout_width="293dp"
+        android:layout_height="293dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="216dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/qr_code_text"
+        app:srcCompat="@drawable/outline_beach_access_100" />
+</androidx.constraintlayout.widget.ConstraintLayout>

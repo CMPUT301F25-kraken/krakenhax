@@ -40,6 +40,7 @@ public class Event implements Parcelable {
     private boolean useGeolocation;
     private String orgId;
     private Timestamp dateTime;
+    private String qrCodeURL;
 
 
     /**
@@ -526,6 +527,14 @@ public class Event implements Parcelable {
         }
     }
 
+    public void setQrCodeURL(String qrCodeURL) {
+        this.qrCodeURL = qrCodeURL;
+    }
+
+    public String getQrCodeURL() {
+        return qrCodeURL;
+    }
+
     public Timestamp getDateTime() {
         return dateTime;
     }
@@ -534,3 +543,4 @@ public class Event implements Parcelable {
         this.dateTime = dateTime;
     }
 }
+
