@@ -1,5 +1,6 @@
 package com.kraken.krakenhax;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.util.Log;
 
@@ -12,6 +13,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
 
@@ -88,6 +94,14 @@ public class EventViewModel extends ViewModel {
         } else {
             Log.e("Firebase", "Event or file path is null");
         }
+    }
+
+    public Bitmap generateQR(String eventId) throws WriterException {
+        MultiFormatWriter writer = new MultiFormatWriter();
+        // The try-catch is now handled by the caller (QrCodeFragment), which is better practice.
+        BitMatrix matrix = writer.encode(eventId, BarcodeFormat.QR_CODE, 400, 400); // Increased size for clarity
+        BarcodeEncoder encoder = new BarcodeEncoder();
+        return encoder.createBitmap(matrix);
     }
 
     /**

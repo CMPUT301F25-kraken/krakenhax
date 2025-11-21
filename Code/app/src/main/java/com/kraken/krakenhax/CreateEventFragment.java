@@ -60,6 +60,7 @@ public class CreateEventFragment extends Fragment {
     private ImageView eventPoster;
     private Button confirmButton;
     private NavController navController;
+    private Button qrButton;
 
     /**
      * Inflates the layout for this fragment and initializes all the UI view components.
@@ -85,6 +86,7 @@ public class CreateEventFragment extends Fragment {
         eventPoster = view.findViewById(R.id.imagePosterView);
         uploadPosterButton = view.findViewById(R.id.UploadPosterButton);
         confirmButton = view.findViewById(R.id.ConfirmEditsButton);
+        qrButton = view.findViewById(R.id.test_qr_button);
         return view;
     }
 
@@ -305,6 +307,12 @@ public class CreateEventFragment extends Fragment {
                     eventDateTimeButton.setText(formatter.format(eventDateTime));
                 });
             });
+        });
+
+        qrButton.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("event", event);
+            navController.navigate(R.id.action_CreateEventFragment_to_QrCodeFragment, bundle);
         });
 
 

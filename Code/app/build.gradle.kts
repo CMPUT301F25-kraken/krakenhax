@@ -82,4 +82,5 @@ dependencies {
     // For Maps
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }
