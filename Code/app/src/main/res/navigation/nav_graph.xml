@@ -298,6 +298,10 @@
         <action
             android:id="@+id/action_QrCodeFragment_to_CreateEventFragment"
             app:destination="@id/CreateEventFragment" />
+        <action
+            android:id="@+id/action_QrCodeFragment_to_MyEventsFragment"
+            app:destination="@id/MyEventsFragment" />
+"
     </fragment>
 
 
