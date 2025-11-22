@@ -69,8 +69,8 @@ public class MyEventDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_event_details, container, false);
 
-        assert getArguments() != null;
         // Get the initial (potentially stale) event object from the arguments
+        assert getArguments() != null;
         event = getArguments().getParcelable("event_name");
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -271,7 +271,7 @@ public class MyEventDetailsFragment extends Fragment {
 
             UploadTask uploadTask = eventPosterRef.putFile(filePath);
 
-            uploadTask.addOnSuccessListener(taskSnapshot -> {
+            uploadTask.addOnSuccessListener(taskSnapshot ->
                 eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String downloadUrl = uri.toString();
                     Log.d("Firebase", "Download URL: " + downloadUrl);
@@ -280,10 +280,10 @@ public class MyEventDetailsFragment extends Fragment {
                     db.collection("Events")
                             .document(event.getId())
                             .set(event);
-                });
-            }).addOnFailureListener(e -> {
-                Log.e("Firebase", "Upload failed", e);
-            });
+                })
+            ).addOnFailureListener(e ->
+                    Log.e("Firebase", "Upload failed", e)
+            );
         }
     }
 

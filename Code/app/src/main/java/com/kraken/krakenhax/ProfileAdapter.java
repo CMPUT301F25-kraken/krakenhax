@@ -15,15 +15,15 @@ import java.util.ArrayList;
  * RecyclerView adapter for displaying a simple list of profiles.
  * Used to populate a RecyclerView with profile names and emails.
  */
-public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHolder> {
+public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
     private final ArrayList<Profile> profileList;
 
     /**
-     * Constructor for the ProfileAdapterS.
+     * Constructor for the ProfileAdapter.
      *
      * @param profileList The list of profiles to be displayed.
      */
-    public ProfileAdapterS(ArrayList<Profile> profileList) {
+    public ProfileAdapter(ArrayList<Profile> profileList) {
 
         this.profileList = profileList;
     }
@@ -40,7 +40,7 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.profile_item, parent, false);
-        return new ProfileAdapterS.ViewHolder(view);
+        return new ProfileAdapter.ViewHolder(view);
     }
 
     /**

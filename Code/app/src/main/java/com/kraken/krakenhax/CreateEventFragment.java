@@ -194,6 +194,7 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         });
+
         winnerNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -231,14 +232,17 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         });
+
         geolocationSwitch.setOnClickListener(v -> {
             if (event != null) {
                 event.setUseGeolocation(geolocationSwitch.isChecked());
             }
         });
-        uploadPosterButton.setOnClickListener(v -> {
-            imagePicker.launch("image/*");
-        });
+
+        uploadPosterButton.setOnClickListener(v ->
+                imagePicker.launch("image/*")
+        );
+
         registrationDateTimeButton.setOnClickListener(v -> {
             MaterialDatePicker<androidx.core.util.Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                     .setTitleText("Select Event Timeframe")

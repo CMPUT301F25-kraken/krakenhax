@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * Profile adapter for the Admin list of profiles.
  */
-public class ProfileAdapterJ extends ArrayAdapter<Profile> {
+public class AdminProfileAdapter extends ArrayAdapter<Profile> {
     private final ArrayList<Profile> profiles;
     private final Set<String> selectedProfileIds = new HashSet<>();
 
@@ -30,7 +30,7 @@ public class ProfileAdapterJ extends ArrayAdapter<Profile> {
      * @param context
      * @param profiles
      */
-    public ProfileAdapterJ(Context context, ArrayList<Profile> profiles) {
+    public AdminProfileAdapter(Context context, ArrayList<Profile> profiles) {
         super(context, 0, profiles);
         this.profiles = profiles;
     }
