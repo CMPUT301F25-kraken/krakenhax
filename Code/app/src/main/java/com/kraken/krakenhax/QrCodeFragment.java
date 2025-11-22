@@ -52,6 +52,8 @@ public class QrCodeFragment extends Fragment {
         comeBackButton = view.findViewById(R.id.come_back_button);
         displayQrImageView = view.findViewById(R.id.qr_display_imageview);
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+        navController = NavHostFragment.findNavController(this);
+
         if (event != null && event.getId() != null) {
             try {
                 Bitmap qrCodeBitmap = eventViewModel.generateQR(event.getId());
@@ -78,6 +80,10 @@ public class QrCodeFragment extends Fragment {
                 Boolean isSaved = eventViewModel.saveImage(requireContext(), displayQrImageView);
                 if (isSaved) {
                     Toast.makeText(getContext(), "QR code saved to gallery", Toast.LENGTH_SHORT).show();
+                    saveQrButton.setBackgroundColor(getResources().getColor(R.color.gray, null));
+                    saveQrButton.setText("Saved");
+                    v.setEnabled(false);
+                    navController.navigate(R.id.action_QrCodeFragment_to_MyEventsFragment);
                 } else {
                     Toast.makeText(getContext(), "Failed to save QR code", Toast.LENGTH_SHORT).show();
                 }
