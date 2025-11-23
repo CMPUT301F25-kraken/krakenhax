@@ -20,7 +20,6 @@ import java.util.Collections;
  *
  * <p>Used by organizers to create and manage events, and by entrants to view and join them.</p>
  */
-
 public class Event implements Parcelable {
     private String title;
     private ArrayList<String> categories;
@@ -41,6 +40,7 @@ public class Event implements Parcelable {
     private String orgId;
     private Timestamp dateTime;
     private String qrCodeURL;
+    private Timestamp dateCreated;
 
 
     /**
@@ -62,6 +62,7 @@ public class Event implements Parcelable {
         this.waitListCap = 0;
         this.WinnerNumber = 0;
         this.useGeolocation = false;
+        this.dateCreated = Timestamp.now();
     }
 
     /**
@@ -80,7 +81,12 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
+        this.waitListCap = 0;
+        this.WinnerNumber = 0;
+        this.useGeolocation = false;
+        this.dateCreated = Timestamp.now();
     }
+
     /** Lightweight constructor for fake/local events */
     public Event(String id,
                  String title,
@@ -105,7 +111,12 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
+        this.waitListCap = 0;
+        this.WinnerNumber = 0;
+        this.useGeolocation = false;
+        this.dateCreated = Timestamp.now();
     }
+
     /**
      * Returns the title of the event.
      * @return
@@ -186,7 +197,6 @@ public class Event implements Parcelable {
         }
     }
 
-
     /**
      * Returns the timeframe of the event.
      * @return
@@ -195,7 +205,6 @@ public class Event implements Parcelable {
     public ArrayList<Timestamp> getTimeframe() {
         return timeframe;
     }
-
 
     /**
      * Sets the timeframe of the event.
@@ -206,7 +215,6 @@ public class Event implements Parcelable {
         this.timeframe = timeframe;
     }
 
-
     /**
      * Returns the details of the event.
      * @return
@@ -216,7 +224,6 @@ public class Event implements Parcelable {
         return eventDetails;
     }
 
-
     /**
      * Sets the details of the event.
      * @param eventDetails
@@ -225,7 +232,6 @@ public class Event implements Parcelable {
     public void setEventDetails(String eventDetails) {
         this.eventDetails = eventDetails;
     }
-
 
     /**
      * Returns the address of the event.
@@ -444,33 +450,59 @@ public class Event implements Parcelable {
     public void setWaitListCap(int cap) {
         this.waitListCap = cap;
     }
+
     public int getWaitListCap() {
         return this.waitListCap;
     }
+
     public void setWinnerNumber(int num) {
         this.WinnerNumber = num;
     }
+
     public int getWinnerNumber() {
         return this.WinnerNumber;
     }
+
     public void setUseGeolocation(boolean use) {
         this.useGeolocation = use;
     }
+
     public boolean getUseGeolocation() {
         return this.useGeolocation;
     }
-    public String getOrgId() {
-        return this.orgId;
-    }
+
     public void setOrgId(String orgId) {
         this.orgId = orgId;
     }
 
+    public String getOrgId() {
+        return this.orgId;
+    }
+
+    public void setQrCodeURL(String qrCodeURL) {
+        this.qrCodeURL = qrCodeURL;
+    }
+
+    public String getQrCodeURL() {
+        return qrCodeURL;
+    }
+
+    public void setDateTime(Timestamp dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public Timestamp getDateTime() {
+        return dateTime;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
 
     /**
      * Flatten this object in to a Parcel.
      *
-     * @param in  The Parcel in which the object should be written.
+     * @param in The Parcel in which the object should be written.
      */
 
     protected Event(Parcel in) {
@@ -527,20 +559,5 @@ public class Event implements Parcelable {
         }
     }
 
-    public void setQrCodeURL(String qrCodeURL) {
-        this.qrCodeURL = qrCodeURL;
-    }
-
-    public String getQrCodeURL() {
-        return qrCodeURL;
-    }
-
-    public Timestamp getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(Timestamp dateTime) {
-        this.dateTime = dateTime;
-    }
 }
 

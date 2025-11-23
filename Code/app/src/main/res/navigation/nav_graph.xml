@@ -232,6 +232,7 @@
         <action
             android:id="@+id/action_EventFragment_to_OrganizerFragment"
             app:destination="@+id/OrganizerFragment" />
+
     </fragment>
 
     <!-- Destination for Admin List Fragment -->
@@ -301,8 +302,6 @@
         <action
             android:id="@+id/action_QrCodeFragment_to_MyEventsFragment"
             app:destination="@id/MyEventsFragment" />
-"
     </fragment>
-
 
 </navigation>

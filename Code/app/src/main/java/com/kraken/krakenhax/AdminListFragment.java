@@ -28,6 +28,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.Set;
 
+
 /**
  * Admin fragment to display the lists of entrants, organizers, and events.
  * Will later display images and notifications.
@@ -37,7 +38,7 @@ public class AdminListFragment extends Fragment {
     private final ArrayList<Profile> EntrantList = new ArrayList<>();
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
-    public ProfileAdapterJ profileAdapterJ;
+    public AdminProfileAdapter adminProfileAdapter;
     private MyRecyclerViewAdapter adapter;
     private ArrayList<Event> events;
     private RecyclerView recyclerView;
@@ -53,7 +54,6 @@ public class AdminListFragment extends Fragment {
     public AdminListFragment() {
         // Required empty public constructor
     }
-
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -136,9 +136,9 @@ public class AdminListFragment extends Fragment {
 
         DelSelButton.setOnClickListener(v -> {
 
-            if (profileAdapterJ == null) return;
+            if (adminProfileAdapter == null) return;
 
-            Set<String> selectedIds = profileAdapterJ.getSelectedProfileIds();
+            Set<String> selectedIds = adminProfileAdapter.getSelectedProfileIds();
 
             if (selectedIds.isEmpty()) {
                 Toast.makeText(requireContext(), "No profiles selected", Toast.LENGTH_SHORT).show();
@@ -157,8 +157,8 @@ public class AdminListFragment extends Fragment {
                 EntrantList.remove(profile);
             }
 
-            profileAdapterJ.clearSelection();
-            profileAdapterJ.notifyDataSetChanged();
+            adminProfileAdapter.clearSelection();
+            adminProfileAdapter.notifyDataSetChanged();
 
             Toast.makeText(requireContext(), "Delete Selected", Toast.LENGTH_SHORT).show();
 
@@ -172,8 +172,6 @@ public class AdminListFragment extends Fragment {
      * @param navController
      */
     public void getEvents(View view, NavController navController) {
-
-
         events = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         adapter = new MyRecyclerViewAdapter(events);
@@ -186,7 +184,7 @@ public class AdminListFragment extends Fragment {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_name", clickedEvent);
+            bundle.putParcelable("event", clickedEvent);
 
             navController.navigate(R.id.action_adminListFragment_to_EventFragment, bundle);
         });
@@ -223,12 +221,12 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
-            profileListView.setAdapter(profileAdapterJ);
+            adminProfileAdapter = new AdminProfileAdapter(requireContext(), EntrantList);
+            profileListView.setAdapter(adminProfileAdapter);
 
-            profileListView.setOnItemClickListener((parent, view, position, id) -> {
-                profileAdapterJ.toggleSelection(position);
-            });
+            profileListView.setOnItemClickListener((parent, view, position, id) ->
+                    adminProfileAdapter.toggleSelection(position)
+            );
         });
     }
 
@@ -242,12 +240,12 @@ public class AdminListFragment extends Fragment {
                 }
             }
 
-            profileAdapterJ = new ProfileAdapterJ(requireContext(), EntrantList);
-            profileListView.setAdapter(profileAdapterJ);
+            adminProfileAdapter = new AdminProfileAdapter(requireContext(), EntrantList);
+            profileListView.setAdapter(adminProfileAdapter);
 
-            profileListView.setOnItemClickListener((parent, view, position, id) -> {
-                profileAdapterJ.toggleSelection(position);
-            });
+            profileListView.setOnItemClickListener((parent, view, position, id) ->
+                    adminProfileAdapter.toggleSelection(position)
+            );
         });
     }
 

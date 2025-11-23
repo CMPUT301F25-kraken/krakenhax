@@ -262,7 +262,7 @@ public class LoginFragment extends Fragment {
                         } else {
                             // Event found - pass to EventFragment
                             Bundle b = new Bundle();
-                            b.putParcelable("event_name", event);
+                            b.putParcelable("event", event);
                             navController.navigate(R.id.action_LoginFragment_to_EventFragment, b);
                         }
                     })
