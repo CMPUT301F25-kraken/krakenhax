@@ -172,8 +172,6 @@ public class AdminListFragment extends Fragment {
      * @param navController
      */
     public void getEvents(View view, NavController navController) {
-
-
         events = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         adapter = new MyRecyclerViewAdapter(events);
@@ -186,7 +184,7 @@ public class AdminListFragment extends Fragment {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_name", clickedEvent);
+            bundle.putParcelable("event", clickedEvent);
 
             navController.navigate(R.id.action_adminListFragment_to_EventFragment, bundle);
         });

@@ -513,7 +513,7 @@ public class EventFragment extends Fragment {
 
         // Get the object for the event
         assert getArguments() != null;
-        event = getArguments().getParcelable("event_name");
+        event = getArguments().getParcelable("event");
         assert event != null;
 
         // Set up the nav controller

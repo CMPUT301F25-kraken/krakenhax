@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 
 /**
@@ -84,7 +85,7 @@ public class OrganizerFragment extends Fragment {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_name", clickedEvent);
+            bundle.putParcelable("event", clickedEvent);
             navController.navigate(R.id.action_OrganizerFragment_to_EventFragment, bundle);
         });
     }
@@ -112,6 +113,9 @@ public class OrganizerFragment extends Fragment {
                     }
 
                 }
+                // Sort the events from newest to oldest
+                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+
                 adapter.notifyDataSetChanged();
             }
         });

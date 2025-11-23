@@ -26,7 +26,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
      * @param profileList The list of profiles to be displayed.
      */
     public ProfileAdapter(ArrayList<Profile> profileList) {
-
         this.profileList = profileList;
     }
 

@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Objects;
 
 
@@ -84,7 +85,7 @@ public class MyEventsFragment extends Fragment {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_name", clickedEvent);
+            bundle.putParcelable("event", clickedEvent);
 
             // Navigate to the correct event details fragment depending on the account type
             if (Objects.equals(currentUser.getType(), "Organizer")) {
@@ -137,6 +138,9 @@ public class MyEventsFragment extends Fragment {
                     }
 
                 }
+                // Sort the events from newest to oldest
+                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+
                 adapter.notifyDataSetChanged();
             }
         });

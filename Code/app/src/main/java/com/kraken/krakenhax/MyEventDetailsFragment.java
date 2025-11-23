@@ -66,7 +66,7 @@ public class MyEventDetailsFragment extends Fragment {
 
         // Get the initial (potentially stale) event object from the arguments
         assert getArguments() != null;
-        event = getArguments().getParcelable("event_name");
+        event = getArguments().getParcelable("event");
 
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {

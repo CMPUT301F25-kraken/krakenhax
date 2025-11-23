@@ -40,6 +40,7 @@ public class Event implements Parcelable {
     private String orgId;
     private Timestamp dateTime;
     private String qrCodeURL;
+    private Timestamp dateCreated;
 
 
     /**
@@ -61,6 +62,7 @@ public class Event implements Parcelable {
         this.waitListCap = 0;
         this.WinnerNumber = 0;
         this.useGeolocation = false;
+        this.dateCreated = Timestamp.now();
     }
 
     /**
@@ -79,6 +81,10 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
+        this.waitListCap = 0;
+        this.WinnerNumber = 0;
+        this.useGeolocation = false;
+        this.dateCreated = Timestamp.now();
     }
 
     /** Lightweight constructor for fake/local events */
@@ -105,6 +111,10 @@ public class Event implements Parcelable {
         this.lostList = new ArrayList<Profile>();
         this.wonList = new ArrayList<Profile>();
         this.acceptList = new ArrayList<Profile>();
+        this.waitListCap = 0;
+        this.WinnerNumber = 0;
+        this.useGeolocation = false;
+        this.dateCreated = Timestamp.now();
     }
 
     /**
@@ -483,6 +493,10 @@ public class Event implements Parcelable {
 
     public Timestamp getDateTime() {
         return dateTime;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
     }
 
     /**
