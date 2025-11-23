@@ -49,9 +49,8 @@ public class MyEventDetailsFragment extends Fragment {
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
-    private ImageView qrImageView;
-    private Button saveQrImageButton;
-    EventViewModel eventViewModel;
+    private EventViewModel eventViewModel;
+    private ImageView qrCodeImage;
     //private Profile currentUser;
 
     /**
@@ -92,14 +91,7 @@ public class MyEventDetailsFragment extends Fragment {
         btnBack = view.findViewById(R.id.btnBack);
         btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
         btnLottery = view.findViewById(R.id.btnLottery);
-        qrImageView = view.findViewById(R.id.qr_imageView);
-        saveQrImageButton = view.findViewById(R.id.save_qr_image_button);
-        if (!(currentUser.getID()).equals(event.getOrgId())) {
-            saveQrImageButton.setVisibility(View.GONE);
-        }
-        if (event.getQrCodeURL().isEmpty()) {
-            saveQrImageButton.setVisibility(View.GONE);
-        }
+        qrCodeImage = view.findViewById(R.id.qr_code_imageview);
         eventViewModel = new EventViewModel();
 
 //
@@ -150,30 +142,6 @@ public class MyEventDetailsFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_EntrantInfoFragment, bundle);
         });
 
-        if (event.getQrCodeURL().isEmpty()) {
-            Log.d("QR code display", "No QR code associated with event");
-        } else {
-            try {
-                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                Bitmap qrBitmap = barcodeEncoder.encodeBitmap(event.getQrCodeURL(), com.google.zxing.BarcodeFormat.QR_CODE, 400, 400);
-                qrImageView.setImageBitmap(qrBitmap);
-            } catch (Exception e) {
-                Log.e("QR code display", "Error with QR code bitmap", e);
-            }
-        }
-
-        saveQrImageButton.setOnClickListener(v -> {
-            if (qrImageView.getDrawable() != null) {
-                try {
-                    eventViewModel.saveImage(getContext(), qrImageView);
-                    Toast.makeText(getContext(), "QR code saved to gallery", Toast.LENGTH_SHORT).show();
-                } catch (Exception e){
-                    Log.e("Save image", "Error saving QR code from MyEventDetailsFragment");
-                    Toast.makeText(getContext(), "Error saving QR code", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
         return view;
     }
 
@@ -193,6 +161,7 @@ public class MyEventDetailsFragment extends Fragment {
         docRef.addSnapshotListener((snapshot, e) -> {
             if (e != null) {
                 Log.w("Firestore", "Listen failed.", e);
+                Log.d("QRDEBUG", "Loaded qrCodeURL = " + event.getQrCodeURL());
                 return;
             }
 
