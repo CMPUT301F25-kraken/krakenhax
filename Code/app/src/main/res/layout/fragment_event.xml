@@ -215,6 +215,4 @@
         app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
         app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
 
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -49,9 +49,10 @@ public class EventFragment extends Fragment {
     private NavController navController;
     private Event event;
     private TextView tvWaitlistEntry;
-    private android.os.Handler timerHandler = new android.os.Handler();
+    private final android.os.Handler timerHandler = new android.os.Handler();
     private Runnable waitlistRunnable;
     private Runnable deadlineRunnable;
+    private Runnable updateButtonRunnable;
 
     public EventFragment() {
         // Required empty public constructor
@@ -142,99 +143,117 @@ public class EventFragment extends Fragment {
      * Updates the accept, decline, signup, and delete buttons for an event depending on the state.
      */
     private void updateButtons() {
-        // Get view
-        View view = getView();
-        if (view == null) return;
-
-        // Initialize buttons
-        Button buttonAccept = view.findViewById(R.id.button_accept);
-        Button buttonDecline = view.findViewById(R.id.button_decline);
-        Button buttonSignup = view.findViewById(R.id.button_signup);
-        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
-
-        if (currentUser.getType().equals("Admin")) {
-            buttonSignup.setVisibility(View.GONE);
-            deleteButton.setVisibility(View.VISIBLE);
-        }
-
-        if (event.getWonList().contains(currentUser)) {
-            buttonSignup.setVisibility(View.GONE);
-            buttonAccept.setVisibility(View.VISIBLE);
-            buttonDecline.setVisibility(View.VISIBLE);
-
-            buttonAccept.setOnClickListener(v -> {
-                event.addToAcceptList(currentUser);
-                updateEventInFirestore();
-                buttonAccept.setVisibility(View.GONE);
-                buttonDecline.setVisibility(View.GONE);
-                buttonSignup.setVisibility(View.VISIBLE);
-                updateButtons();
-            });
-
-            buttonDecline.setOnClickListener(v -> {
-                event.addToCancelList(currentUser);
-                updateEventInFirestore();
-                buttonAccept.setVisibility(View.GONE);
-                buttonDecline.setVisibility(View.GONE);
-                buttonSignup.setVisibility(View.VISIBLE);
-                updateButtons();
-            });
-
-        } else if (event.getCancelList().contains(currentUser)) {
-            buttonSignup.setClickable(false);
-            buttonSignup.setText("You cancelled your entry");
-
-        } else if (event.getAcceptList().contains(currentUser)) {
-            buttonSignup.setClickable(false);
-            buttonSignup.setText("You accepted your entry");
-
-        } else if (event.getLostList().contains(currentUser)) {
-            buttonSignup.setClickable(false);
-            buttonSignup.setText("You were not selected");
-        } else if (currentUser.getMyWaitlist().contains(event.getId())) {
-            buttonSignup.setText("Withdraw");
-            buttonSignup.setOnClickListener(v -> {
-                event.removeFromWaitList(currentUser);
-                currentUser.removeFromMyWaitList(event.getId());
-                updateEventInFirestore();
-                updateButtons();
-
-                // Notify user
-                NotifyUser notifyUser = new NotifyUser(requireContext());
-                notifyUser.sendNotification(currentUser,
-                        "❌ You have withdrawn from " + event.getTitle());
-            });
-            //event.getWaitList().contains(currentUser)
-        } else {
-            buttonSignup.setText("Sign Up");
-            buttonSignup.setOnClickListener(v -> {
-                //event.addToWaitList(currentUser);
-                //currentUser.addToMyWaitlist(event.getId());
-                //updateEventInFirestore(event);
-                //updateButtons(view, event, navController);
-
-                if (event.getUseGeolocation()) {
-                    if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        // User denied once normally → you can ask again
-                        new AlertDialog.Builder(requireContext())
-                                .setTitle("Location Required")
-                                .setMessage("We need your location to join this event. Please allow it.")
-                                .setPositiveButton("OK", (d, w) -> requestLocationPermissions())
-                                .setNegativeButton("Cancel", null)
-                                .show();
-                    } else {
-                        // First time → ask directly
-                        requestLocationPermissions();
-                    }
-                } else {
-                    joinWaitlist();
+        // Use a timer to update the state of the buttons live
+        updateButtonRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Check if the view is no longer valid from the fragment being destroyed
+                if (getView() == null) {
+                    timerHandler.removeCallbacks(this);
+                    return;
                 }
-                updateButtons();
-            });
-        }
 
-        // Update the waitlist info
-        setWaitlistInfo();
+                // Get view
+                View view = getView();
+                if (view == null) return;
+
+                // Initialize buttons
+                Button buttonAccept = view.findViewById(R.id.button_accept);
+                Button buttonDecline = view.findViewById(R.id.button_decline);
+                Button buttonSignup = view.findViewById(R.id.button_signup);
+                Button deleteButton = view.findViewById(R.id.EventDeleteButton);
+
+                if (currentUser.getType().equals("Admin")) {
+                    buttonSignup.setVisibility(View.GONE);
+                    deleteButton.setVisibility(View.VISIBLE);
+                }
+
+                if (event.getWonList().contains(currentUser)) {
+                    buttonSignup.setVisibility(View.GONE);
+                    buttonAccept.setVisibility(View.VISIBLE);
+                    buttonDecline.setVisibility(View.VISIBLE);
+
+                    buttonAccept.setOnClickListener(v -> {
+                        event.addToAcceptList(currentUser);
+                        updateEventInFirestore();
+                        buttonAccept.setVisibility(View.GONE);
+                        buttonDecline.setVisibility(View.GONE);
+                        buttonSignup.setVisibility(View.VISIBLE);
+                        updateButtons();
+                    });
+
+                    buttonDecline.setOnClickListener(v -> {
+                        event.addToCancelList(currentUser);
+                        updateEventInFirestore();
+                        buttonAccept.setVisibility(View.GONE);
+                        buttonDecline.setVisibility(View.GONE);
+                        buttonSignup.setVisibility(View.VISIBLE);
+                        updateButtons();
+                    });
+
+                } else if (event.getCancelList().contains(currentUser)) {
+                    buttonSignup.setClickable(false);
+                    buttonSignup.setText("You cancelled your entry");
+
+                } else if (event.getAcceptList().contains(currentUser)) {
+                    buttonSignup.setClickable(false);
+                    buttonSignup.setText("You accepted your entry");
+
+                } else if (event.getLostList().contains(currentUser)) {
+                    buttonSignup.setClickable(false);
+                    buttonSignup.setText("You were not selected");
+                } else if (event.getWaitList().contains(currentUser)) {
+                    buttonSignup.setText("Withdraw");
+                    buttonSignup.setOnClickListener(v -> {
+                        event.removeFromWaitList(currentUser);
+                        //currentUser.removeFromMyWaitList(event.getId());
+                        updateEventInFirestore();
+                        updateButtons();
+
+                        // Notify user
+                        NotifyUser notifyUser = new NotifyUser(requireContext());
+                        notifyUser.sendNotification(currentUser,
+                                "❌ You have withdrawn from " + event.getTitle());
+                    });
+                    //event.getWaitList().contains(currentUser)
+                } else {
+                    buttonSignup.setText("Sign Up");
+                    buttonSignup.setOnClickListener(v -> {
+                        //event.addToWaitList(currentUser);
+                        //currentUser.addToMyWaitlist(event.getId());
+                        //updateEventInFirestore(event);
+                        //updateButtons(view, event, navController);
+
+                        if (event.getUseGeolocation()) {
+                            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                                // User denied once normally → you can ask again
+                                new AlertDialog.Builder(requireContext())
+                                        .setTitle("Location Required")
+                                        .setMessage("We need your location to join this event. Please allow it.")
+                                        .setPositiveButton("OK", (d, w) -> requestLocationPermissions())
+                                        .setNegativeButton("Cancel", null)
+                                        .show();
+                            } else {
+                                // First time → ask directly
+                                requestLocationPermissions();
+                            }
+                        } else {
+                            joinWaitlist();
+                        }
+                        updateButtons();
+                    });
+                }
+
+                // Update the waitlist info
+                setWaitlistInfo();
+
+                // Set the timer to repeat this code every 1 second
+                timerHandler.postDelayed(this, 1000);
+            }
+        };
+
+        // Start the timer
+        timerHandler.post(updateButtonRunnable);
     }
 
     /**
@@ -246,7 +265,7 @@ public class EventFragment extends Fragment {
         if (view == null) return;
 
         event.addToWaitList(currentUser);
-        currentUser.addToMyWaitlist(event.getId());
+        //currentUser.addToMyWaitlist(event.getId());
         updateEventInFirestore();
         updateButtons();
         // Notify user
@@ -460,6 +479,28 @@ public class EventFragment extends Fragment {
         }
     }
 
+    /**
+     * Set up a Firestore snapshot listener to get real-time updates for the event.
+     */
+    private void startFirestoreListener() {
+        if (event == null || event.getId() == null) {
+            return;
+        }
+
+        db.collection("Events").document(event.getId())
+                .addSnapshotListener((snapshot, e) -> {
+                    assert snapshot != null;
+                    Event updatedEvent = snapshot.toObject(Event.class);
+
+                    if (updatedEvent != null) {
+                        this.event = updatedEvent;
+
+                        // Update the UI for the buttons
+                        updateButtons();
+                    }
+                });
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
@@ -480,6 +521,9 @@ public class EventFragment extends Fragment {
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
+
+        // Start a firestore listener for the event
+        startFirestoreListener();
 
         // Get the object for the current user
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -544,6 +588,7 @@ public class EventFragment extends Fragment {
         if (timerHandler != null) {
             timerHandler.removeCallbacks(waitlistRunnable);
             timerHandler.removeCallbacks(deadlineRunnable);
+            timerHandler.removeCallbacks(updateButtonRunnable);
         }
     }
 

@@ -91,8 +91,7 @@ public class OrganizerFragment extends Fragment {
 
     /**
      * Sets up a Firestore snapshot listener to get real-time updates for the "Events" collection.
-     * It filters events to show only those created by the current user (organizer) and
-     * events that the user is on any event list for.
+     * It filters events to show only those created by the selected organizer.
      */
     private void startFirestoreListener(String organizerID) {
         CollectionReference eventsRef = db.collection("Events");

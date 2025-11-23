@@ -3,6 +3,7 @@ package com.kraken.krakenhax;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
  */
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
     private final ArrayList<Profile> profileList;
+    private OnRemoveClickListener listener;
 
     /**
      * Constructor for the ProfileAdapter.
@@ -26,6 +28,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     public ProfileAdapter(ArrayList<Profile> profileList) {
 
         this.profileList = profileList;
+    }
+
+    public void setOnRemoveClickListener(OnRemoveClickListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -66,11 +72,16 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         return profileList.size();
     }
 
+    public interface OnRemoveClickListener {
+        void onRemoveClick(int position);
+    }
+
     /**
      * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameText, emailText;
+        Button removeButton;
 
         /**
          * Constructor for the ViewHolder.
@@ -81,8 +92,16 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
             super(itemView);
             nameText = itemView.findViewById(R.id.textViewProfileName);
             emailText = itemView.findViewById(R.id.textViewProfileEmail);
-        }
+            removeButton = itemView.findViewById(R.id.button_remove);
 
+            // Set on click listener for the remove button
+            removeButton.setOnClickListener(v -> {
+                int position = getBindingAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onRemoveClick(position);
+                }
+            });
+        }
     }
 
 }

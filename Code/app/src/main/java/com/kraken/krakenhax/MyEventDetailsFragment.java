@@ -36,14 +36,9 @@ import java.util.Locale;
  */
 public class MyEventDetailsFragment extends Fragment {
     private Profile currentUser;
-    private FirebaseStorage storage;
     private FirebaseFirestore db;
     private StorageReference storageRef;
     private ImageView imgPoster;
-    private Button btnUploadPoster;
-    private Button btnBack;
-    private Button btnentrantInfo;
-    private Button btnLottery;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
@@ -78,15 +73,15 @@ public class MyEventDetailsFragment extends Fragment {
             currentUser = mainActivity.currentUser;
         }
 
-        storage = FirebaseStorage.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
         db = FirebaseFirestore.getInstance();
         storageRef = storage.getReference();
 
         imgPoster = view.findViewById(R.id.imgPoster);
-        btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
-        btnBack = view.findViewById(R.id.btnBack);
-        btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
-        btnLottery = view.findViewById(R.id.btnLottery);
+        Button btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
+        Button btnBack = view.findViewById(R.id.btnBack);
+        Button btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
+        Button btnLottery = view.findViewById(R.id.btnLottery);
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
 //         assert mainActivity != null;
@@ -272,21 +267,20 @@ public class MyEventDetailsFragment extends Fragment {
             UploadTask uploadTask = eventPosterRef.putFile(filePath);
 
             uploadTask.addOnSuccessListener(taskSnapshot ->
-                eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                    String downloadUrl = uri.toString();
-                    Log.d("Firebase", "Download URL: " + downloadUrl);
-                    event.setPoster(downloadUrl);
-                    // Corrected the collection name to "Events" (capital 'E')
-                    db.collection("Events")
-                            .document(event.getId())
-                            .set(event);
-                })
+                    eventPosterRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        Log.d("Firebase", "Download URL: " + downloadUrl);
+                        event.setPoster(downloadUrl);
+                        // Corrected the collection name to "Events" (capital 'E')
+                        db.collection("Events")
+                                .document(event.getId())
+                                .set(event);
+                    })
             ).addOnFailureListener(e ->
                     Log.e("Firebase", "Upload failed", e)
             );
         }
     }
-
 
     private void updateEventInFirestore(Event event) {
         if (event != null && event.getId() != null) {
