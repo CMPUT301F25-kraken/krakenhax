@@ -84,6 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:text="Sign Up"
+        android:backgroundTint="@color/LoginButtonColor"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/event_image"
         app:layout_constraintStart_toEndOf="@+id/event_image" />
@@ -138,10 +139,11 @@
         android:layout_width="351dp"
         android:layout_height="232dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="28dp"
         android:text="Event Description"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
 
@@ -214,5 +216,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_waitlist"
         app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
         app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
+
+    <Button
+        android:id="@+id/delete_event_Photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Event Photo"
+        android:visibility="gone"
+        android:backgroundTint="@color/LoginButtonColor"
+        app:layout_constraintEnd_toEndOf="@+id/event_image"
+        app:layout_constraintStart_toStartOf="@+id/event_image"
+        app:layout_constraintTop_toBottomOf="@+id/event_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
