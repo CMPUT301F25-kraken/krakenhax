@@ -31,6 +31,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -53,6 +55,7 @@ public class EventFragment extends Fragment {
     private Runnable waitlistRunnable;
     private Runnable deadlineRunnable;
     private Runnable updateButtonRunnable;
+    private StorageReference storageRef;
 
     public EventFragment() {
         // Required empty public constructor
@@ -534,6 +537,8 @@ public class EventFragment extends Fragment {
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
+
 
         // Start a firestore listener for the event
         startFirestoreListener();
@@ -570,6 +575,23 @@ public class EventFragment extends Fragment {
         ImageView eventImage = view.findViewById(R.id.event_image);
         setEventPoster(eventImage);
 
+        Button photoDelete = view.findViewById(R.id.delete_event_Photo);
+        if (currentUser.getType().equals("Admin")){
+            photoDelete.setVisibility(View.VISIBLE);
+        } else {
+            photoDelete.setVisibility(View.GONE);
+        }
+        photoDelete.setOnClickListener(v -> {
+
+            event.setPoster(null);
+            deleteEventPic();
+            setEventPoster(eventImage);
+            updateEventInFirestore();
+        });
+
+
+
+
         // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
         buttonBack.setOnClickListener(v -> navController.popBackStack());
@@ -591,9 +613,27 @@ public class EventFragment extends Fragment {
 
         // Delete button logic
         Button deleteButton = view.findViewById(R.id.EventDeleteButton);
-        deleteButton.setOnClickListener(v -> deleteEventFromFirestore());
-    }
+        if (currentUser.getType().equals("Admin") || currentUser.getType().equals("Organizer")) {
+            deleteButton.setVisibility(View.VISIBLE);
+        } else {
+            deleteButton.setVisibility(View.GONE);
+        }
+        deleteButton.setOnClickListener(v -> {
+            deleteEventFromFirestore();
+            navController.popBackStack();
+        });
 
+    }
+    public void deleteEventPic() {
+        StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
+        eventPosterRef.delete().addOnSuccessListener(aVoid -> {
+            // Profile picture deleted successfully
+            Log.d("EventFragment", "Event poster deleted successfully");
+        }).addOnFailureListener(e -> {
+            // Error
+            Log.e("Firebase", "Delete event poster failed", e);
+        });
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

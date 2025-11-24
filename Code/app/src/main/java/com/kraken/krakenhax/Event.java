@@ -27,7 +27,7 @@ public class Event implements Parcelable {
     private String eventDetails;
     private String location;
     private Integer Radius;
-    private String poster;
+    public String poster;
     private ArrayList<Profile> waitList;
     private ArrayList<Profile> lostList;
     private ArrayList<Profile> wonList;
