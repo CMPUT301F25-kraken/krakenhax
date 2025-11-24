@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +23,9 @@ import java.util.Set;
  */
 public class AdminProfileAdapter extends ArrayAdapter<Profile> {
     private final ArrayList<Profile> profiles;
-    private final Set<String> selectedProfileIds = new HashSet<>();
+    private Profile profile;
+    public ImageView profilePic;
+
 
     /**
      * Required public constructor
@@ -52,55 +56,36 @@ public class AdminProfileAdapter extends ArrayAdapter<Profile> {
             view = LayoutInflater.from(getContext()).inflate(R.layout.profile_format, parent, false);
         }
 
-        Profile profile = getItem(position);
-        CheckBox checkBox = view.findViewById(R.id.checkBox);
+        profile = getItem(position);
         TextView name = view.findViewById(R.id.UsernameDisplay);
         TextView Email = view.findViewById(R.id.EmailDisplay);
-        ImageView profilePic = view.findViewById(R.id.profilePic);
+        profilePic = view.findViewById(R.id.profilePic);
+        loadProfilePic();
 
-        assert profile != null;
-        checkBox.setChecked(selectedProfileIds.contains(profile.getID()));
 
         name.setText(profile.getUsername());
         Email.setText(profile.getEmail());
-        profilePic.setImageResource(R.drawable.obama);
+        loadProfilePic();
 
         return view;
     }
 
-    /**
-     * Toggles the selection of a profile.
-     *
-     * @param position
-     */
-    public void toggleSelection(int position) {
-        Profile profile = profiles.get(position);
-        if (profile != null) {
-            String profileId = profile.getID();
-            if (selectedProfileIds.contains(profileId)) {
-                selectedProfileIds.remove(profileId);
-            } else {
-                selectedProfileIds.add(profileId);
-            }
-            notifyDataSetChanged();
+    public void loadProfilePic() {
+        String profilePicURL = profile.getPicture();
+        if (profilePicURL == null || profilePicURL.isEmpty()) {
+            profilePic.setImageResource(R.drawable.obama);
+        } else {
+            Picasso.get()
+                    .load(profilePicURL)
+                    .placeholder(R.drawable.obama)
+                    .error(R.drawable.obama)
+                    .fit().centerCrop()
+                    .into(profilePic);
         }
     }
 
-    /**
-     * Returns the set of selected profile IDs.
-     *
-     * @return the set of selected profile IDs.
-     */
-    public Set<String> getSelectedProfileIds() {
-        return selectedProfileIds;
-    }
 
-    /**
-     * Clears the selection of all profiles.
-     */
-    public void clearSelection() {
-        selectedProfileIds.clear();
-        notifyDataSetChanged();
-    }
+
+
 
 }
