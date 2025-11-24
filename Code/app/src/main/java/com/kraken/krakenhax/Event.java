@@ -440,11 +440,27 @@ public class Event implements Parcelable {
                 winners.add(winner);
                 losers.remove(winner);
                 newWinnersAdded++;
+
+                // Add action to users history
+                winner.updateHistory(new Action("Won lottery for event", null, this.getId()));
             }
             i++;
         }
 
         this.lostList = losers;
+
+        // Add actions to users history
+
+        // From organizers perspective
+        //String eventOrganizerID = this.getOrgId();
+        // get the organizer for the event, will match the id
+        //Profile eventOrganzier;
+        //eventOrganizer.updateHistory(new Action("Triggered lottery for event", null, this));
+
+        // From the entrants perspective
+        for (Profile loser : losers) {
+            loser.updateHistory(new Action("Lose lottery for event", null, this.getId()));
+        }
     }
 
     public void setWaitListCap(int cap) {

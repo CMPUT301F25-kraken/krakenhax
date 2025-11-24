@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
@@ -23,6 +24,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
 
 
 /**
@@ -58,6 +61,26 @@ public class MainActivity extends AppCompatActivity {
                 ).addOnFailureListener(e -> {
                     android.util.Log.e("Firestore", "Failed to update profile: " + docID, e);
                 });
+            }
+        });
+    }
+
+    /**
+     * Go through every profile in firebase and add a history array if it does not already have one.
+     */
+    private void addHistory() {
+        db = FirebaseFirestore.getInstance();
+        CollectionReference profileRef = db.collection("Profiles");
+
+        profileRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                String docID = document.getId();
+
+                profileRef.document(docID).update(
+                        "history", new ArrayList<Action>()
+                ).addOnFailureListener(e ->
+                        Log.e("Firestore", "Failed to update profile: " + docID, e)
+                );
             }
         });
     }
@@ -196,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
         //removeMyWaitlists();
         //cleanUpLegacyEvents();
         //ensureEventTimeframes();
+        addHistory();
 
         // Set up the navigation bar
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);

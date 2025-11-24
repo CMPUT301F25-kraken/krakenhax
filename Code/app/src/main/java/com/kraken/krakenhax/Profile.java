@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,7 @@ public class Profile implements Parcelable {
     private String pictureURL;
     private boolean notificationsEnabled = true;
     private Timestamp dateCreated;
+    private List<Action> history;
 
     /**
      * Constructs a new user profile with the given details.
@@ -62,6 +64,7 @@ public class Profile implements Parcelable {
         this.ID = ID;
         this.bookmarkedEvents = new ArrayList<String>();
         this.dateCreated = Timestamp.now();
+        this.history = new ArrayList<Action>();
     }
 
     /**
@@ -346,4 +349,15 @@ public class Profile implements Parcelable {
         dest.writeByte((byte) (notificationsEnabled ? 1 : 0));
     }
 
+    public List<Action> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<Action> history) {
+        this.history = history;
+    }
+
+    public void updateHistory(Action newAction) {
+        this.history.add(newAction);
+    }
 }

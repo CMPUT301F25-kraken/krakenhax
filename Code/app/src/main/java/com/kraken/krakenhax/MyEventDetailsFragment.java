@@ -42,7 +42,6 @@ public class MyEventDetailsFragment extends Fragment {
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
-    //private Profile currentUser;
 
     /**
      * Required empty public constructor for fragment instantiation.
@@ -80,7 +79,7 @@ public class MyEventDetailsFragment extends Fragment {
         imgPoster = view.findViewById(R.id.imgPoster);
         Button btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         Button btnBack = view.findViewById(R.id.btnBack);
-        Button btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
+        Button btnEntrantInfo = view.findViewById(R.id.btn_entrant_info);
         Button btnLottery = view.findViewById(R.id.btnLottery);
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
@@ -88,7 +87,7 @@ public class MyEventDetailsFragment extends Fragment {
 //         currentUser = mainActivity.currentUser;
 //
 //         if (Objects.equals(currentUser.getType(), "Entrant")) {
-//         btnentrantInfo.setVisibility(View.GONE);
+//         btnEntrantInfo.setVisibility(View.GONE);
 //         btnUploadPoster.setVisibility(View.GONE);
 //         }
 //
@@ -123,7 +122,7 @@ public class MyEventDetailsFragment extends Fragment {
 
         btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
-        btnentrantInfo.setOnClickListener(v -> {
+        btnEntrantInfo.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             // Pass the most up-to-date event object
             bundle.putParcelable("event", event);

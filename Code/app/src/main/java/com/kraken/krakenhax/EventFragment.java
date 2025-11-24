@@ -180,6 +180,10 @@ public class EventFragment extends Fragment {
                         buttonDecline.setVisibility(View.GONE);
                         buttonSignup.setVisibility(View.VISIBLE);
                         updateButtons();
+
+                        // Add action to users history
+                        // Action: Accept place in event
+                        currentUser.updateHistory(new Action("Accept place in event", null, event.getId()));
                     });
 
                     buttonDecline.setOnClickListener(v -> {
@@ -189,6 +193,9 @@ public class EventFragment extends Fragment {
                         buttonDecline.setVisibility(View.GONE);
                         buttonSignup.setVisibility(View.VISIBLE);
                         updateButtons();
+
+                        // Add action to users history
+                        currentUser.updateHistory(new Action("Decline place in event", null, event.getId()));
                     });
 
                 } else if (event.getCancelList().contains(currentUser)) {
@@ -214,6 +221,9 @@ public class EventFragment extends Fragment {
                         NotifyUser notifyUser = new NotifyUser(requireContext());
                         notifyUser.sendNotification(currentUser,
                                 "❌ You have withdrawn from " + event.getTitle());
+
+                        // Update users history with action
+                        currentUser.updateHistory(new Action("Withdraw from waitlist", null, event.getId()));
                     });
                     //event.getWaitList().contains(currentUser)
                 } else {
@@ -272,6 +282,9 @@ public class EventFragment extends Fragment {
         NotifyUser notifyUser = new NotifyUser(requireContext());
         notifyUser.sendNotification(currentUser,
                 "✅ You have successfully signed up for " + event.getTitle());
+
+        // Add action to users history
+        currentUser.updateHistory(new Action("Join waitlist", null, event.getId()));
     }
 
     /**
