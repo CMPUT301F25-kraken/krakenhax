@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 
 
 /**
  * The organizer fragment
  */
 public class OrganizerFragment extends Fragment {
+    private FirebaseFirestore db;
+    private MyRecyclerViewAdapter adapter;
+    private ArrayList<Event> events;
 
     public OrganizerFragment() {
         // Required empty public constructor
@@ -41,6 +54,9 @@ public class OrganizerFragment extends Fragment {
         // Set up the nav controller
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
+        // Create instance of firestore database
+        db = FirebaseFirestore.getInstance();
+
         // Set up back button
         Button back = view.findViewById(R.id.button_organizer_back);
         back.setOnClickListener(v -> {
@@ -48,12 +64,61 @@ public class OrganizerFragment extends Fragment {
             navController.popBackStack();
         });
 
-        // Set up the text view
-        TextView tvOrganizer = view.findViewById(R.id.tv_organizer_fragment);
+        // Set up the text view for organizer name
+        TextView tvOrganizer = view.findViewById(R.id.tv_organizer_name);
         assert organizer != null;
-        String organizerUsername = organizer.getUsername();
-        String organizerID = organizer.getID();
-        tvOrganizer.setText(String.format("This is the organizer page for organizer: %s with ID: %s", organizerUsername, organizerID));
+        tvOrganizer.setText(organizer.getUsername());
+
+        // Set up the recycler view
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_organizer);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        events = new ArrayList<>();
+        adapter = new MyRecyclerViewAdapter(events);
+        recyclerView.setAdapter(adapter);
+
+        // Start the firestore listener
+        startFirestoreListener(organizer.getID());
+
+        // Set an on item click listener for the recycler view
+        // When an event is clicked on
+        adapter.setClickListener((v, position) -> {
+            Event clickedEvent = adapter.getItem(position);
+            Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("event", clickedEvent);
+            navController.navigate(R.id.action_OrganizerFragment_to_EventFragment, bundle);
+        });
+    }
+
+    /**
+     * Sets up a Firestore snapshot listener to get real-time updates for the "Events" collection.
+     * It filters events to show only those created by the selected organizer.
+     */
+    private void startFirestoreListener(String organizerID) {
+        CollectionReference eventsRef = db.collection("Events");
+        eventsRef.addSnapshotListener((snap, e) -> {
+            if (e != null) {
+                Log.e("Firestore", "Listen failed", e);
+                return;
+            }
+            if (snap != null && !snap.isEmpty()) {
+                events.clear();
+                for (QueryDocumentSnapshot doc : snap) {
+                    // Use .toObject() for robust deserialization
+                    Event event = doc.toObject(Event.class);
+
+                    // Display events organized by the organizer
+                    if (event.getOrgId() != null && event.getOrgId().equals(organizerID)) {
+                        events.add(event);
+                    }
+
+                }
+                // Sort the events from newest to oldest
+                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
 }

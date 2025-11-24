@@ -20,7 +20,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 
 /**
@@ -37,6 +39,113 @@ public class MainActivity extends AppCompatActivity {
     //public ProfileViewModel profileModel;
     private FirebaseFirestore db;
     //private CollectionReference ProfileRef;
+
+    /**
+     * Go through every profile in the firestore database and removes the myWaitList from every
+     * profile and replaces it with an empty list called bookmarkedEvents.
+     */
+    private void removeMyWaitlists() {
+        db = FirebaseFirestore.getInstance();
+        CollectionReference profileRef = db.collection("Profiles");
+
+        profileRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                String docID = document.getId();
+
+                profileRef.document(docID).update(
+                        "myWaitlist", com.google.firebase.firestore.FieldValue.delete(),
+                        "bookmarkedEvents", new java.util.ArrayList<>()
+                ).addOnFailureListener(e -> {
+                    android.util.Log.e("Firestore", "Failed to update profile: " + docID, e);
+                });
+            }
+        });
+    }
+
+    /**
+     * Helper function to clean up legacy event data.
+     * Goes through all events and adds default values for missing dateTime or orgId fields.
+     */
+    private void cleanUpLegacyEvents() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsRef = db.collection("Events");
+
+        eventsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                boolean needsUpdate = false;
+                java.util.Map<String, Object> updates = new java.util.HashMap<>();
+
+                // Check if 'dateTime' is missing
+                if (!document.contains("dateTime") || document.get("dateTime") == null) {
+                    // Create Date object for December 31, 1969
+                    java.util.Calendar calendar = java.util.Calendar.getInstance();
+                    calendar.set(1969, java.util.Calendar.DECEMBER, 31, 0, 0, 0);
+
+                    // Convert to Firestore Timestamp
+                    com.google.firebase.Timestamp defaultDate = new com.google.firebase.Timestamp(calendar.getTime());
+
+                    updates.put("dateTime", defaultDate);
+                    needsUpdate = true;
+                }
+
+                // Check if 'orgId' is missing
+                if (!document.contains("orgId") || document.get("orgId") == null) {
+                    updates.put("orgId", "ytVu305PhzdgB1CBWAQN");
+                    needsUpdate = true;
+                }
+
+                // Only perform the database write if fields were actually missing
+                if (needsUpdate) {
+                    eventsRef.document(document.getId()).update(updates)
+                            .addOnSuccessListener(aVoid -> android.util.Log.d("LegacyCleanup", "Updated event: " + document.getId()))
+                            .addOnFailureListener(e -> android.util.Log.e("LegacyCleanup", "Failed to update event: " + document.getId(), e));
+                }
+            }
+        }).addOnFailureListener(e -> {
+            android.util.Log.e("LegacyCleanup", "Error getting events for cleanup", e);
+        });
+    }
+
+    /**
+     * Helper function to ensure all events have a valid timeframe field.
+     * If missing or null, sets it to [Jan 1, 2026, Dec 31, 2026].
+     */
+    private void ensureEventTimeframes() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsRef = db.collection("Events");
+
+        eventsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                // Check if 'timeframe' is missing, explicitly null, or an empty list
+                if (!document.contains("timeframe") || document.get("timeframe") == null || ((java.util.List<?>) document.get("timeframe")).isEmpty()) {
+
+                    // Create the two default dates
+                    java.util.Calendar startCal = java.util.Calendar.getInstance();
+                    startCal.set(2026, java.util.Calendar.JANUARY, 1, 0, 0, 0);
+
+                    java.util.Calendar endCal = java.util.Calendar.getInstance();
+                    endCal.set(2026, java.util.Calendar.DECEMBER, 31, 23, 59, 59);
+
+                    // Convert to Firestore Timestamps
+                    com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startCal.getTime());
+                    com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endCal.getTime());
+
+                    // Create the list
+                    java.util.List<com.google.firebase.Timestamp> defaultTimeframe = new java.util.ArrayList<>();
+                    defaultTimeframe.add(startTs);
+                    defaultTimeframe.add(endTs);
+
+                    // Update Firestore
+                    eventsRef.document(document.getId()).update("timeframe", defaultTimeframe)
+                            .addOnSuccessListener(aVoid -> android.util.Log.d("TimeframeCleanup", "Updated event: " + document.getId()))
+                            .addOnFailureListener(e -> android.util.Log.e("TimeframeCleanup", "Failed to update event: " + document.getId(), e));
+                }
+            }
+        }).addOnFailureListener(e -> {
+            android.util.Log.e("TimeframeCleanup", "Error getting events for cleanup", e);
+        });
+    }
+
 
     /**
      * Called when the activity is first created. This is where you should do all of your normal static set up:
@@ -83,6 +192,10 @@ public class MainActivity extends AppCompatActivity {
         loggedIn = false;
         db = FirebaseFirestore.getInstance();
         //ProfileRef = db.collection("Profiles");
+
+        //removeMyWaitlists();
+        //cleanUpLegacyEvents();
+        //ensureEventTimeframes();
 
         // Set up the navigation bar
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);

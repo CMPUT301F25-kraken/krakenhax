@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextWatcher;
@@ -29,6 +30,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.WriterException;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -192,6 +194,7 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         });
+
         winnerNumber.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -229,14 +232,17 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         });
+
         geolocationSwitch.setOnClickListener(v -> {
             if (event != null) {
                 event.setUseGeolocation(geolocationSwitch.isChecked());
             }
         });
-        uploadPosterButton.setOnClickListener(v -> {
-            imagePicker.launch("image/*");
-        });
+
+        uploadPosterButton.setOnClickListener(v ->
+                imagePicker.launch("image/*")
+        );
+
         registrationDateTimeButton.setOnClickListener(v -> {
             MaterialDatePicker<androidx.core.util.Pair<Long, Long>> dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
                     .setTitleText("Select Event Timeframe")
@@ -325,8 +331,22 @@ public class CreateEventFragment extends Fragment {
                 }
 
                 // All checks passed, proceed with saving the event
-                eventViewModel.addEvent(event);
-                navController.navigate(R.id.action_CreateEventFragment_to_MyEventsFragment);
+                try {
+                    Bitmap qrCodeBitmap = eventViewModel.generateQR(event.getId());
+                    if (qrCodeBitmap != null) {
+                        eventViewModel.uploadQrCode(event, qrCodeBitmap, downloadUrl -> {
+                            event.setQrCodeURL(downloadUrl.toString());
+                            eventViewModel.addEvent(event);
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelable("event", event);
+                            navController.navigate(R.id.action_CreateEventFragment_to_QrCodeFragment, bundle);
+                        });
+                    } else {
+                        Log.e("QrCodeFragment", "generateQR() returned null");
+                    }
+                } catch (WriterException e) {
+                    Log.e("QrCodeFragment", "Error generating QR code", e);
+                }
             } else {
                 Log.e("Firebase", "Event is null");
                 new AlertDialog.Builder(requireContext())

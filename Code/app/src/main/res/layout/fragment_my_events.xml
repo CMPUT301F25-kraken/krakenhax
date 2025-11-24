@@ -36,6 +36,7 @@
             android:id="@+id/recycler_view_events_list2"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton

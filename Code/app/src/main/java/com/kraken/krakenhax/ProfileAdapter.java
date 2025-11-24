@@ -3,6 +3,7 @@ package com.kraken.krakenhax;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,17 +16,21 @@ import java.util.ArrayList;
  * RecyclerView adapter for displaying a simple list of profiles.
  * Used to populate a RecyclerView with profile names and emails.
  */
-public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHolder> {
+public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
     private final ArrayList<Profile> profileList;
+    private OnRemoveClickListener listener;
 
     /**
-     * Constructor for the ProfileAdapterS.
+     * Constructor for the ProfileAdapter.
      *
      * @param profileList The list of profiles to be displayed.
      */
-    public ProfileAdapterS(ArrayList<Profile> profileList) {
-
+    public ProfileAdapter(ArrayList<Profile> profileList) {
         this.profileList = profileList;
+    }
+
+    public void setOnRemoveClickListener(OnRemoveClickListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -40,7 +45,7 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.profile_item, parent, false);
-        return new ProfileAdapterS.ViewHolder(view);
+        return new ProfileAdapter.ViewHolder(view);
     }
 
     /**
@@ -66,11 +71,16 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
         return profileList.size();
     }
 
+    public interface OnRemoveClickListener {
+        void onRemoveClick(int position);
+    }
+
     /**
      * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
      */
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameText, emailText;
+        Button removeButton;
 
         /**
          * Constructor for the ViewHolder.
@@ -81,8 +91,16 @@ public class ProfileAdapterS extends RecyclerView.Adapter<ProfileAdapterS.ViewHo
             super(itemView);
             nameText = itemView.findViewById(R.id.textViewProfileName);
             emailText = itemView.findViewById(R.id.textViewProfileEmail);
-        }
+            removeButton = itemView.findViewById(R.id.button_remove);
 
+            // Set on click listener for the remove button
+            removeButton.setOnClickListener(v -> {
+                int position = getBindingAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onRemoveClick(position);
+                }
+            });
+        }
     }
 
 }

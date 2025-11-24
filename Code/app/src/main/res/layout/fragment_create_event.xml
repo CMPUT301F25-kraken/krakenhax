@@ -46,7 +46,7 @@
         android:backgroundTint="@color/white"
         android:text="Registration Date, Time"
         android:textColor="@color/gray"
-        android:textSize="7dp"
+        android:textSize="7sp"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -59,7 +59,7 @@
         android:backgroundTint="@color/white"
         android:text="Event Date, Time"
         android:textColor="@color/gray"
-        android:textSize="7dp"
+        android:textSize="7sp"
         app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -83,17 +83,13 @@
         android:id="@+id/UploadPosterText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="112dp"
+        android:layout_marginStart="336dp"
+        android:layout_marginTop="4dp"
         android:text="Upload poster..."
         android:textColor="@color/black"
-        android:textSize="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
-        app:layout_constraintEnd_toEndOf="@+id/imagePosterView"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/EventAddressEditTExt"
-        app:layout_constraintTop_toBottomOf="@+id/floatingActionButton3"
-        app:layout_constraintVertical_bias="0.0" />
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="@+id/imagePosterView"
+        app:layout_constraintTop_toBottomOf="@+id/UploadPosterButton" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/EventDescriptionEditText"

@@ -225,13 +225,14 @@
 
         <!-- Action to navigate from the Event Fragment to Admin List Fragment -->
         <action
-            android:id="@id/action_MyEventDetailsFragment_to_AdminListFragment"
+            android:id="@+id/action_EventFragment_to_AdminListFragment"
             app:destination="@id/adminListFragment" />
 
         <!-- Action to navigate from the Event Fragment to Organizer Fragment -->
         <action
             android:id="@+id/action_EventFragment_to_OrganizerFragment"
             app:destination="@+id/OrganizerFragment" />
+
     </fragment>
 
     <!-- Destination for Admin List Fragment -->
@@ -263,6 +264,9 @@
         <action
             android:id="@+id/action_CreateEventFragment_to_MyEventsFragment"
             app:destination="@id/MyEventsFragment" />
+        <action
+            android:id="@+id/action_CreateEventFragment_to_QrCodeFragment"
+            app:destination="@id/QrCodeFragment" />
     </fragment>
 
     <!-- Destination for Organizer Fragment -->
@@ -286,5 +290,18 @@
 
     </fragment>
 
+    <fragment
+        android:id="@+id/QrCodeFragment"
+        android:name="com.kraken.krakenhax.QrCodeFragment"
+        android:label="GenerateQrFragment"
+        tools:layout="@layout/fragment_generate_qr">
+
+        <action
+            android:id="@+id/action_QrCodeFragment_to_CreateEventFragment"
+            app:destination="@id/CreateEventFragment" />
+        <action
+            android:id="@+id/action_QrCodeFragment_to_MyEventsFragment"
+            app:destination="@id/MyEventsFragment" />
+    </fragment>
 
 </navigation>

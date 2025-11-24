@@ -9,17 +9,30 @@
     tools:context=".OrganizerFragment">
 
     <TextView
-        android:id="@+id/tv_organizer_fragment"
+        android:id="@+id/tv_organizer_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="10sp"
-        android:text="@string/hello_organizer_fragment"
-        android:textSize="20sp"
+        android:paddingVertical="20sp"
+        android:text="Organizer"
+        android:textAlignment="center"
+        android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_organizer_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="20sp"
+        android:text="Organizer Name"
+        android:textAlignment="textStart"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_title" />
 
     <Button
         android:id="@+id/button_organizer_back"
@@ -29,5 +42,32 @@
         android:text="Go Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_their_events"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Their events:"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_name" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_their_events">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_organizer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
