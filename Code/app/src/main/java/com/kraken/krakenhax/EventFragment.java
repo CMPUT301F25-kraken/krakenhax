@@ -173,10 +173,6 @@ public class EventFragment extends Fragment {
         } else {
             buttonSignup.setText("Sign Up");
             buttonSignup.setOnClickListener(v -> {
-                event.addToWaitList(currentUser);
-                currentUser.addToMyWaitlist(event.getId());
-                updateEventInFirestore(event);
-                updateButtons(view, event, navController);
 
                 if (event.getUseGeolocation()) {
                     if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {

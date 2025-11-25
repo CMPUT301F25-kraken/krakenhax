@@ -7,16 +7,26 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -33,6 +43,11 @@ public class EntrantInfoFragment extends Fragment {
     private TextView entrantType;
     private TextView eventTitle;
     private ProfileAdapterS adapter;
+
+    private View notifyOverlay;
+
+    private FirebaseStorage storage;
+    private FirebaseFirestore db;
 
     public EntrantInfoFragment() {
         // Required empty public constructor
@@ -106,8 +121,98 @@ public class EntrantInfoFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(R.id.action_EntrantInfoFragment_to_OrganizerMapFragment, bundle);
         });
 
+        notifyOverlay = view.findViewById(R.id.notifyOverlay);
+        Button topNotifyButton = view.findViewById(R.id.btn_notify);
+        ImageButton btnCloseNotify = view.findViewById(R.id.btnCloseNotify);
+
+        // show popup
+        topNotifyButton.setOnClickListener(v -> {
+            notifyOverlay.setVisibility(View.VISIBLE);
+            sendNotification(view);
+
+        });
+
+        // hide when X pressed or after sending
+        btnCloseNotify.setOnClickListener(v -> {
+            notifyOverlay.setVisibility(View.GONE);
+        });
+
+        view.findViewById(R.id.notifyOverlayDim).setOnClickListener(v -> {
+            notifyOverlay.setVisibility(View.GONE);
+        });
+
         return view;
 
     }
 
+    public void sendNotification(View view) {
+        Spinner spinnerGroup = view.findViewById(R.id.spinnerGroup);
+
+        ArrayAdapter<String> groupAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                new String[]{"Waitlisted", "Enrolled", "Cancelled"}
+        );
+
+        spinnerGroup.setAdapter(groupAdapter);
+
+        EditText editMessage = view.findViewById(R.id.editMessage);
+        Button btnSendNotify = view.findViewById(R.id.btnSendNotify);
+        db = FirebaseFirestore.getInstance();
+
+        NotifyUser notifier = new NotifyUser(requireContext());
+
+        btnSendNotify.setOnClickListener(v -> {
+            String message = editMessage.getText().toString().trim();
+            String group = spinnerGroup.getSelectedItem().toString();
+
+            if (message.isEmpty()) {
+                Toast.makeText(requireContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<Profile> recipients = new ArrayList<>();
+
+            switch (group) {
+                case "Waitlisted":
+                    recipients = event.getWaitList();
+                    break;
+                case "Enrolled":
+                    recipients = event.getWonList();
+                    break;
+                case "Cancelled":
+                    recipients = event.getCancelList();
+                    break;
+            }
+            if (recipients == null || recipients.isEmpty()) {
+                Toast.makeText(requireContext(), "No users in this group.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            for (Profile p : recipients) {
+                if (!p.isNotificationsEnabled()) continue;
+
+                Map<String, Object> notif = new HashMap<>();
+                notif.put("message", message);
+                notif.put("eventId", event.getId());
+                notif.put("createdAt", FieldValue.serverTimestamp());
+                notif.put("read", false);
+
+                db.collection("Profiles")
+                        .document(p.getID())               // profile’s firestore id
+                        .collection("Notifications")
+                        .add(notif);
+            }
+            //notifier.sendBroadcast(recipients, message);
+
+            Toast.makeText(requireContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
+
+            // close popup
+            notifyOverlay.setVisibility(View.GONE);
+            editMessage.setText(""); // clear message
+
+        });
+
+
+    }
 }

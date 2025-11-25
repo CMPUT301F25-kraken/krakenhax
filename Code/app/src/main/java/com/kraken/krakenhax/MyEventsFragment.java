@@ -118,8 +118,10 @@ public class MyEventsFragment extends Fragment {
                     if (Objects.equals(orgProfile, currentUser.getID())) {
                         events.add(event);
                     }
-                    if (currentUser.getMyWaitlist().contains(eventId)) {
-                        events.add(event);
+                    if (currentUser.getMyWaitlist() != null){
+                        if (currentUser.getMyWaitlist().contains(eventId)) {
+                            events.add(event);
+                        }
                     }
 
                 }
