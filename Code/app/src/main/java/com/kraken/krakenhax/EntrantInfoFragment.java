@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,11 +41,7 @@ public class EntrantInfoFragment extends Fragment {
     private Spinner spinner_list;
     private FirebaseFirestore db;
     private Runnable entrantListRunnable;
-
     private View notifyOverlay;
-
-    private FirebaseStorage storage;
-    private FirebaseFirestore db;
 
     public EntrantInfoFragment() {
         // Required empty public constructor
@@ -157,6 +152,75 @@ public class EntrantInfoFragment extends Fragment {
                 });
     }
 
+    public void sendNotification(View view) {
+        Spinner spinnerGroup = view.findViewById(R.id.spinnerGroup);
+
+        ArrayAdapter<String> groupAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                new String[]{"Waitlisted", "Enrolled", "Cancelled"}
+        );
+
+        spinnerGroup.setAdapter(groupAdapter);
+
+        EditText editMessage = view.findViewById(R.id.editMessage);
+        Button btnSendNotify = view.findViewById(R.id.btnSendNotify);
+        db = FirebaseFirestore.getInstance();
+
+        NotifyUser notifier = new NotifyUser(requireContext());
+
+        btnSendNotify.setOnClickListener(v -> {
+            String message = editMessage.getText().toString().trim();
+            String group = spinnerGroup.getSelectedItem().toString();
+
+            if (message.isEmpty()) {
+                Toast.makeText(requireContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<Profile> recipients = new ArrayList<>();
+
+            switch (group) {
+                case "Waitlisted":
+                    recipients = event.getWaitList();
+                    break;
+                case "Enrolled":
+                    recipients = event.getWonList();
+                    break;
+                case "Cancelled":
+                    recipients = event.getCancelList();
+                    break;
+            }
+            if (recipients == null || recipients.isEmpty()) {
+                Toast.makeText(requireContext(), "No users in this group.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            for (Profile p : recipients) {
+                if (!p.isNotificationsEnabled()) continue;
+
+                Map<String, Object> notif = new HashMap<>();
+                notif.put("message", message);
+                notif.put("eventId", event.getId());
+                notif.put("createdAt", FieldValue.serverTimestamp());
+                notif.put("read", false);
+
+                db.collection("Profiles")
+                        .document(p.getID())               // profile’s firestore id
+                        .collection("Notifications")
+                        .add(notif);
+            }
+            //notifier.sendBroadcast(recipients, message);
+
+            Toast.makeText(requireContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
+
+            // close popup
+            notifyOverlay.setVisibility(View.GONE);
+            editMessage.setText(""); // clear message
+
+        });
+    }
+
     /**
      * Inflates the layout for this fragment, initializes UI components,
      * and sets up listeners for the spinner and back button.
@@ -254,75 +318,6 @@ public class EntrantInfoFragment extends Fragment {
 
         return view;
     }
-
-    public void sendNotification(View view) {
-        Spinner spinnerGroup = view.findViewById(R.id.spinnerGroup);
-
-        ArrayAdapter<String> groupAdapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                new String[]{"Waitlisted", "Enrolled", "Cancelled"}
-        );
-
-        spinnerGroup.setAdapter(groupAdapter);
-
-        EditText editMessage = view.findViewById(R.id.editMessage);
-        Button btnSendNotify = view.findViewById(R.id.btnSendNotify);
-        db = FirebaseFirestore.getInstance();
-
-        NotifyUser notifier = new NotifyUser(requireContext());
-
-        btnSendNotify.setOnClickListener(v -> {
-            String message = editMessage.getText().toString().trim();
-            String group = spinnerGroup.getSelectedItem().toString();
-
-            if (message.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter a message", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            List<Profile> recipients = new ArrayList<>();
-
-            switch (group) {
-                case "Waitlisted":
-                    recipients = event.getWaitList();
-                    break;
-                case "Enrolled":
-                    recipients = event.getWonList();
-                    break;
-                case "Cancelled":
-                    recipients = event.getCancelList();
-                    break;
-            }
-            if (recipients == null || recipients.isEmpty()) {
-                Toast.makeText(requireContext(), "No users in this group.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            for (Profile p : recipients) {
-                if (!p.isNotificationsEnabled()) continue;
-
-                Map<String, Object> notif = new HashMap<>();
-                notif.put("message", message);
-                notif.put("eventId", event.getId());
-                notif.put("createdAt", FieldValue.serverTimestamp());
-                notif.put("read", false);
-
-                db.collection("Profiles")
-                        .document(p.getID())               // profile’s firestore id
-                        .collection("Notifications")
-                        .add(notif);
-            }
-            //notifier.sendBroadcast(recipients, message);
-
-            Toast.makeText(requireContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
-
-            // close popup
-            notifyOverlay.setVisibility(View.GONE);
-            editMessage.setText(""); // clear message
-
-        });
-
 
     @Override
     public void onDestroyView() {
