@@ -8,4 +8,6 @@
     <string name="my_events_page_title">My Events</string>
     <string name="hello_organizer_fragment">This is the organizer page for organizer: Example Organizer with ID: Example ID</string>
     <string name="spinner_prompt" />
+    <string name="ImaSourceStr">Source:</string>
+    <string name="RespUserStr">User:</string>
 </resources>

@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.google.gms.google.services)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.secrets.gradle.plugin)
 }
 
@@ -79,7 +78,11 @@ dependencies {
 
     // For splash screen
     implementation(libs.core.splashscreen)
+
     // For Maps
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+
+    // For QR Codes
+    implementation(libs.zxing.android.embedded)
 }

@@ -12,7 +12,7 @@
         android:id="@+id/tv_location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="20dp"
         android:text="Location:"
         app:layout_constraintEnd_toEndOf="@+id/tv_registration_info"
         app:layout_constraintHorizontal_bias="0.0"
@@ -24,19 +24,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="20dp"
         android:text="Example Location"
         app:layout_constraintStart_toEndOf="@+id/tv_location"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
 
     <TextView
         android:id="@+id/tv_event_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="8dp"
         android:text="Event Name"
         android:textSize="24sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/event_image"
         app:layout_constraintTop_toTopOf="@+id/event_image" />
 
@@ -45,50 +46,54 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="35dp"
         android:background="@color/white"
         android:scaleType="centerCrop"
         android:src="@drawable/outline_attractions_100"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_back"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.RoundedImageView" />
 
     <Button
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:backgroundTint="@color/LoginButtonColor"
         android:text="Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
     <TextView
         android:id="@+id/tv_date_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Data and Time"
-        app:layout_constraintStart_toStartOf="@+id/tv_event_name"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:text="Date and Time"
+        app:layout_constraintBottom_toTopOf="@+id/button_signup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/event_image"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
 
     <Button
         android:id="@+id/button_signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginStart="10dp"
         android:text="Sign Up"
+        android:backgroundTint="@color/LoginButtonColor"
         android:visibility="visible"
-        app:layout_constraintStart_toStartOf="@+id/tv_date_time"
-        app:layout_constraintTop_toBottomOf="@+id/tv_date_time" />
+        app:layout_constraintBottom_toBottomOf="@+id/event_image"
+        app:layout_constraintStart_toEndOf="@+id/event_image" />
 
     <Button
         android:id="@+id/button_accept"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="36dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginStart="10dp"
         android:outlineAmbientShadowColor="@color/acceptButton"
         android:outlineSpotShadowColor="@color/acceptButton"
         android:shadowColor="@color/acceptButton"
@@ -97,15 +102,13 @@
         android:textColorHint="@color/acceptButton"
         android:textColorLink="@color/acceptButton"
         android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@+id/button_signup"
-        app:layout_constraintTop_toBottomOf="@+id/tv_date_time" />
+        app:layout_constraintBottom_toBottomOf="@+id/event_image"
+        app:layout_constraintStart_toEndOf="@+id/event_image" />
 
     <Button
         android:id="@+id/button_decline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="28dp"
         android:outlineAmbientShadowColor="@color/declineButton"
         android:outlineSpotShadowColor="@color/declineButton"
         android:shadowColor="@color/declineButton"
@@ -114,32 +117,34 @@
         android:textColorHint="@color/declineButton"
         android:textColorLink="@color/declineButton"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/button_accept"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.111"
-        app:layout_constraintStart_toEndOf="@+id/button_signup"
-        app:layout_constraintTop_toBottomOf="@+id/tv_date_time" />
+        app:layout_constraintStart_toEndOf="@+id/button_accept" />
 
     <TextView
         android:id="@+id/tv_registration_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="50dp"
         android:layout_marginEnd="28dp"
         android:text="Time until registration closes"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/button_signup" />
 
     <TextView
         android:id="@+id/tv_event_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
+        android:layout_width="351dp"
+        android:layout_height="232dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="28dp"
         android:text="Event Description"
-        app:layout_constraintEnd_toEndOf="@+id/tv_registration_info"
-        app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
 
     <CheckBox
@@ -183,23 +188,15 @@
         android:id="@+id/EventDeleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
         android:text="Delete Event"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/button_event_organizer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
-
-    <Button
-        android:id="@+id/button_notify"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:backgroundTint="@color/LoginButtonColor"
-        android:text="Send Demo Notification"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_back" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/tv_waitlist_entry"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_description"
+        app:layout_constraintVertical_bias="0.49" />
 
     <TextView
         android:id="@+id/tv_waitlist"
@@ -220,6 +217,15 @@
         app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
         app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
 
-
+    <Button
+        android:id="@+id/delete_event_Photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Event Photo"
+        android:visibility="gone"
+        android:backgroundTint="@color/LoginButtonColor"
+        app:layout_constraintEnd_toEndOf="@+id/event_image"
+        app:layout_constraintStart_toStartOf="@+id/event_image"
+        app:layout_constraintTop_toBottomOf="@+id/event_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

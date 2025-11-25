@@ -40,14 +40,11 @@ public class ProfileFragment extends Fragment {
     private EditText usernameView;
     private EditText emailView;
     private EditText phoneNumberView;
-    private Button updateButton;
-    private Switch notificationSwitch;
     private Profile profile;
     private FirebaseFirestore db;
     private CollectionReference profileRef;
     private Uri filePath;
     private StorageReference storageRef;
-    private FirebaseStorage storage;
     private ImageView profilePic;
     private CollectionReference eventsRef;
 
@@ -76,15 +73,15 @@ public class ProfileFragment extends Fragment {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
         profileRef = db.collection("Profiles");
-        storage = FirebaseStorage.getInstance();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
 
         // UI bindings
         usernameView = view.findViewById(R.id.UsernameTextView);
         emailView = view.findViewById(R.id.EmailTextView);
         phoneNumberView = view.findViewById(R.id.PhoneNumberTextView);
-        updateButton = view.findViewById(R.id.UpdateProfileButton);
-        notificationSwitch = view.findViewById(R.id.switch_notifications);
+        Button updateButton = view.findViewById(R.id.UpdateProfileButton);
+        Switch notificationSwitch = view.findViewById(R.id.switch_notifications);
         profilePic = view.findViewById(R.id.profile_pic);
 
         // Load current user profile
@@ -203,9 +200,9 @@ public class ProfileFragment extends Fragment {
 
             builder.setNegativeButton(
                     "Nooooo!",
-                    (dialog, which) -> {
-                        dialog.cancel();
-                    });
+                    (dialog, which) ->
+                            dialog.cancel()
+            );
 
             AlertDialog alert = builder.create();
             alert.show();
@@ -257,9 +254,9 @@ public class ProfileFragment extends Fragment {
                     // URL couldn't be retrieved after a successful upload
                     Log.e("Firebase", "Failed to get download URL", e);
                 });
-            }).addOnFailureListener(e -> {
-                Log.e("Firebase", "Upload failed", e);
-            });
+            }).addOnFailureListener(e ->
+                    Log.e("Firebase", "Upload failed", e)
+            );
         }
     }
 
@@ -306,9 +303,9 @@ public class ProfileFragment extends Fragment {
                     Log.d("Firebase", "Profile with id: " + profile.getID() + " successfully deleted.");
                     Toast.makeText(requireContext(), "Account deleted", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(aVoid -> {
-                    Log.d("Firebase", "Delete profile with id: " + profile.getID() + " failed.");
-                });
+                .addOnFailureListener(aVoid ->
+                        Log.d("Firebase", "Delete profile with id: " + profile.getID() + " failed.")
+                );
 
         // Delete the users profile photo
         deleteProfilePic();
@@ -350,9 +347,9 @@ public class ProfileFragment extends Fragment {
 
             deleteEvents(profileID);
 
-        }).addOnFailureListener(e -> {
-            Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e);
-        });
+        }).addOnFailureListener(e ->
+                Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e)
+        );
     }
 
     public void deleteEvents(String profileID) {
@@ -375,40 +372,40 @@ public class ProfileFragment extends Fragment {
                 }
             }
 
-            // Delete event from profiles
-            if (!deletedEventIDs.isEmpty()) {
-                removeEventFromProfileMyWaitlists(deletedEventIDs);
-            }
+//            // Delete event from profiles
+//            if (!deletedEventIDs.isEmpty()) {
+//                removeEventFromProfileMyWaitlists(deletedEventIDs);
+//            }
         }).addOnFailureListener(e -> Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e));
     }
 
-    public void removeEventFromProfileMyWaitlists(List<String> deletedEventIDs) {
-        // Remove the deleted events from each profiles myWaitlist
-        profileRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            // For each profile
-            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                Profile profile = document.toObject(Profile.class);
-                boolean isUpdated = false;
+//    public void removeEventFromProfileMyWaitlists(List<String> deletedEventIDs) {
+//        // Remove the deleted events from each profiles myWaitlist
+//        profileRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+//            // For each profile
+//            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+//                Profile profile = document.toObject(Profile.class);
+//                boolean isUpdated = false;
+//
 
-                // Check if the myWaitlist contains a deleted event
-                List<String> myWaitlist = profile.getMyWaitlist();
-                if (myWaitlist != null) {
-                    // Remove all deleted events from the waitlist
-                    if (myWaitlist.removeAll(deletedEventIDs)) {
-                        isUpdated = true;
-                    }
-                }
-
-                // Update the profile in the firestore database if it was modified
-                if (isUpdated) {
-                    profileRef.document(profile.getID()).update("myWaitList", myWaitlist)
-                            .addOnSuccessListener(aVoid -> Log.d("deleteAccount", "Profile: " + profile.getUsername() + " updated."))
-                            .addOnFailureListener(e -> Log.e("deleteAccount", "Failed to update profile: " + profile.getUsername() + ".", e));
-                }
-            }
-        }).addOnFailureListener(e -> Log.e("DeleteAccount", "Error: Cannot retrieve profiles in deleteAccount function.", e));
-    }
-
+    /// /                // Check if the myWaitlist contains a deleted event
+    /// /                List<String> myWaitlist = profile.getMyWaitlist();
+    /// /                if (myWaitlist != null) {
+    /// /                    // Remove all deleted events from the waitlist
+    /// /                    if (myWaitlist.removeAll(deletedEventIDs)) {
+    /// /                        isUpdated = true;
+    /// /                    }
+    /// /                }
+//
+//                // Update the profile in the firestore database if it was modified
+//                if (isUpdated) {
+//                    profileRef.document(profile.getID()).update("myWaitList", myWaitlist)
+//                            .addOnSuccessListener(aVoid -> Log.d("deleteAccount", "Profile: " + profile.getUsername() + " updated."))
+//                            .addOnFailureListener(e -> Log.e("deleteAccount", "Failed to update profile: " + profile.getUsername() + ".", e));
+//                }
+//            }
+//        }).addOnFailureListener(e -> Log.e("DeleteAccount", "Error: Cannot retrieve profiles in deleteAccount function.", e));
+//    }
     public void signOut(MainActivity mainActivity) {
         // Clear local session immediately
         if (mainActivity != null) {

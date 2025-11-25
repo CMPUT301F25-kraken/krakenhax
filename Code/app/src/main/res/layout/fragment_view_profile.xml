@@ -19,16 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/UsernameTextView" />
 
-    <Switch
-        android:id="@+id/switch_notifications"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Enable Notifications"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UpdateProfileButton" />
+
 
     <TextView
         android:id="@+id/tv_phone_num"
@@ -55,7 +46,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/profile_pic"
+        android:id="@+id/profile_pic_view"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_marginTop="15dp"
@@ -70,7 +61,7 @@
         app:strokeWidth="4dp"
         tools:src="@tools:sample/avatars" />
 
-    <EditText
+    <TextView
         android:id="@+id/UsernameTextView"
 
         android:layout_width="250dp"
@@ -82,7 +73,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userView" />
 
-    <EditText
+    <TextView
         android:id="@+id/EmailTextView"
         android:layout_width="250dp"
         android:layout_height="47dp"
@@ -93,7 +84,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_email" />
 
-    <EditText
+    <TextView
         android:id="@+id/PhoneNumberTextView"
         android:layout_width="250dp"
         android:layout_height="47dp"
@@ -104,15 +95,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_phone_num" />
 
-    <Button
-        android:id="@+id/UpdateProfileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="12dp"
-        android:text="Update Profile"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PhoneNumberTextView" />
+
 
     <TextView
         android:id="@+id/userView"
@@ -124,26 +107,8 @@
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_upload_profile_pic" />
+        app:layout_constraintTop_toBottomOf="@+id/button_delete" />
 
-    <Button
-        android:id="@+id/button_signout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="80dp"
-        android:text="Sign Out"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PhoneNumberTextView" />
-
-    <Button
-        android:id="@+id/button_upload_profile_pic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Upload"
-        app:layout_constraintStart_toStartOf="@+id/profile_pic"
-        app:layout_constraintTop_toBottomOf="@+id/profile_pic" />
 
     <Button
         android:id="@+id/button_delete"
@@ -151,19 +116,27 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="Delete"
-        app:layout_constraintEnd_toEndOf="@+id/profile_pic"
-        app:layout_constraintTop_toBottomOf="@+id/profile_pic" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_pic_view" />
 
     <Button
         android:id="@+id/button_delete_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="15dp"
         android:backgroundTint="@android:color/holo_red_light"
         android:text="DELETE ACCOUNT"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch_notifications" />
+        app:layout_constraintTop_toBottomOf="@+id/PhoneNumberTextView" />
+
+    <Button
+        android:id="@+id/back_to_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

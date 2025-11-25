@@ -23,6 +23,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 
 /**
@@ -91,7 +92,6 @@ public class EventsFragment extends Fragment {
         recycler_view_event_list.setAdapter(adapter);
 
         // Set up a firebase listener to get the events
-        db = FirebaseFirestore.getInstance();
         startFirestoreListener();
 
         // Set an on item click listener for the recycler view
@@ -100,7 +100,7 @@ public class EventsFragment extends Fragment {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_name", clickedEvent);
+            bundle.putParcelable("event", clickedEvent);
             navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
         });
 
@@ -125,6 +125,9 @@ public class EventsFragment extends Fragment {
                     Event event = doc.toObject(Event.class);
                     events.add(event);
                 }
+                // Sort the events from newest to oldest
+                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+
                 adapter.notifyDataSetChanged();
             }
         });

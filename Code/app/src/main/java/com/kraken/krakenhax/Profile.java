@@ -5,6 +5,8 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.Timestamp;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -15,7 +17,6 @@ import java.util.Objects;
  *
  * <p>Collaborators: Event, WaitList, Organizer, Administrator</p>
  *
- *
  * @version 1.2
  */
 public class Profile implements Parcelable {
@@ -25,20 +26,20 @@ public class Profile implements Parcelable {
     private String type; // e.g., "entrant", "organizer", "admin"
     private String phoneNumber;
     private String ID;
-
     private double latitude;
     private double longitude;
-
-    private ArrayList<String> myWaitlist;
+    private ArrayList<String> bookmarkedEvents;
     private String pictureURL;
     private boolean notificationsEnabled = true;
+    private Timestamp dateCreated;
 
     /**
      * Constructs a new user profile with the given details.
+     *
      * @param username the user's username
      * @param password the user's password
-     * @param type the role type (entrant, organizer, admin)
-     * @param email the user's email address
+     * @param type     the role type (entrant, organizer, admin)
+     * @param email    the user's email address
      * @throws IllegalArgumentException if any parameter is null or empty
      */
     public Profile(String ID, String username, String password, String type, String email, String phoneNumber) {
@@ -59,7 +60,8 @@ public class Profile implements Parcelable {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.ID = ID;
-        this.myWaitlist = new ArrayList<String>();
+        this.bookmarkedEvents = new ArrayList<String>();
+        this.dateCreated = Timestamp.now();
     }
 
     /**
@@ -69,7 +71,35 @@ public class Profile implements Parcelable {
         // Empty
     }
 
-    public ArrayList<String> getMyWaitlist() {return myWaitlist;}
+    protected Profile(Parcel in) {
+        username = in.readString();
+        password = in.readString();
+        email = in.readString();
+        type = in.readString();
+        phoneNumber = in.readString();
+        ID = in.readString();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
+        bookmarkedEvents = in.createStringArrayList();
+        pictureURL = in.readString();
+        notificationsEnabled = in.readByte() != 0;
+    }
+
+    public static final Creator<Profile> CREATOR = new Creator<Profile>() {
+        @Override
+        public Profile createFromParcel(Parcel in) {
+            return new Profile(in);
+        }
+
+        @Override
+        public Profile[] newArray(int size) {
+            return new Profile[size];
+        }
+    };
+
+    public ArrayList<String> getBookmarkedEvents() {
+        return bookmarkedEvents;
+    }
 
     public double getLatitude() {
         return latitude;
@@ -87,53 +117,73 @@ public class Profile implements Parcelable {
         this.longitude = longitude;
     }
 
-    public void addToMyWaitlist(String eventId) {
-        myWaitlist.add(eventId);
+    public void addToBookmarkedEvents(String eventId) {
+        bookmarkedEvents.add(eventId);
     }
 
-    public void removeFromMyWaitList(String event_id) {
-        this.myWaitlist.remove(event_id);
+    public void removeFromBookmarkedEvents(String event_id) {
+        this.bookmarkedEvents.remove(event_id);
     }
 
     /**
      * Returns the user's username.
+     *
      * @return the user's username
      */
     // Getters
-    public String getUsername() { return username; }
+    public String getUsername() {
+        return username;
+    }
 
     /**
      * Returns the user's password.
+     *
      * @return the user's password
      */
-    public String getPassword() { return password; }
+    public String getPassword() {
+        return password;
+    }
+
     /**
      * Returns the user's email address.
+     *
      * @return the user's email address
      */
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
+
     /**
      * Returns the user's role type.
+     *
      * @return the user's role type
      */
-    public String getType() { return type; }
+    public String getType() {
+        return type;
+    }
+
     /**
      * Returns the user's phone number.
+     *
      * @return the user's phone number
      */
     public String getPhoneNumber() {
         return phoneNumber;
     }
+
     /**
      * Returns the user's ID.
+     *
      * @return the user's ID
      */
     public String getID() {
         return this.ID;
     }
     // Setters
+
     /**
      * Sets the user's username.
+     *
      * @param username the new username
      * @throws IllegalArgumentException if the username is null or empty
      */
@@ -142,8 +192,10 @@ public class Profile implements Parcelable {
             throw new IllegalArgumentException("Username cannot be empty.");
         this.username = username;
     }
+
     /**
      * Sets the user's password.
+     *
      * @param password the new password
      * @throws IllegalArgumentException if the password is null or empty
      */
@@ -152,8 +204,10 @@ public class Profile implements Parcelable {
             throw new IllegalArgumentException("Password cannot be empty.");
         this.password = password;
     }
+
     /**
      * Sets the user's email address.
+     *
      * @param email the new email address
      * @throws IllegalArgumentException if the email is null or empty
      */
@@ -162,8 +216,10 @@ public class Profile implements Parcelable {
             throw new IllegalArgumentException("Email cannot be empty.");
         this.email = email;
     }
+
     /**
      * Sets the user's role type.
+     *
      * @param type the new role type
      * @throws IllegalArgumentException if the type is null or empty
      */
@@ -172,15 +228,19 @@ public class Profile implements Parcelable {
             throw new IllegalArgumentException("Type cannot be empty.");
         this.type = type;
     }
+
     /**
      * Sets the user's phone number.
+     *
      * @param phoneNumber the new phone number
      */
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
     /**
      * Sets the user's ID.
+     *
      * @param ID the new ID
      */
     public void setID(String ID) {
@@ -203,8 +263,13 @@ public class Profile implements Parcelable {
         this.notificationsEnabled = enabled;
     }
 
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
     /**
      * Checks if the given object is equal to this profile.
+     *
      * @param o
      * @return true if the objects are equal, false otherwise
      */
@@ -218,16 +283,20 @@ public class Profile implements Parcelable {
         return Objects.equals(ID, profile.ID) &&
                 Objects.equals(username, profile.username);
     }
+
     /**
      * Generates a hash code for this profile.
+     *
      * @return the hash code
      */
     @Override
     public int hashCode() {
         return Objects.hash(username);
     }
+
     /**
      * Returns a string representation of this profile.
+     *
      * @return the string representation
      */
     @NonNull
@@ -258,15 +327,23 @@ public class Profile implements Parcelable {
     /**
      * Flatten this object in to a Parcel.
      *
-     * @param dest
-     *         The Parcel in which the object should be written.
-     * @param flags
-     *         Additional flags about how the object should be written.
-     *         May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
      */
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
-
+        dest.writeString(username);
+        dest.writeString(password);
+        dest.writeString(email);
+        dest.writeString(type);
+        dest.writeString(phoneNumber);
+        dest.writeString(ID);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
+        dest.writeStringList(bookmarkedEvents);
+        dest.writeString(pictureURL);
+        dest.writeByte((byte) (notificationsEnabled ? 1 : 0));
     }
 
 }
