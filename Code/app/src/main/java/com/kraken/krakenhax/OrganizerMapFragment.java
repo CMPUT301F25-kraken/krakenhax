@@ -1,15 +1,15 @@
 package com.kraken.krakenhax;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,7 +35,7 @@ public class OrganizerMapFragment extends Fragment {
          * user has installed Google Play services and returned to the app.
          */
         @Override
-        public void onMapReady(GoogleMap googleMap) {
+        public void onMapReady(@NonNull GoogleMap googleMap) {
             // Get the Event that was passed into this fragment
             Bundle args = getArguments();
             if (args == null) return;
@@ -72,8 +72,6 @@ public class OrganizerMapFragment extends Fragment {
                                             .title(doc.getString("username"))
                             );
 
-                            
-
                         });
             }
         }
@@ -98,9 +96,9 @@ public class OrganizerMapFragment extends Fragment {
         }
         backBtn = view.findViewById(R.id.goBack);
 
-        backBtn.setOnClickListener(v-> {
-            NavHostFragment.findNavController(this).popBackStack();
-        });
+        backBtn.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).popBackStack()
+        );
 
     }
 }

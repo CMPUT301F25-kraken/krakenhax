@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,10 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 
 /**
@@ -30,6 +35,9 @@ public class EventsFragment extends Fragment {
     private ArrayList<Event> events;
     private CollectionReference eventsRef;
 
+    private Profile currentUser;
+
+    private ListenerRegistration notificationListener;
     /**
      * Required empty public constructor for fragment instantiation.
      */
@@ -63,6 +71,14 @@ public class EventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Button notifications = view.findViewById(R.id.notifications);
+
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            currentUser = mainActivity.currentUser;
+        }
+        startNotificationListener();
         // Set up nav controller
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
@@ -75,7 +91,6 @@ public class EventsFragment extends Fragment {
         recycler_view_event_list.setAdapter(adapter);
 
         // Set up a firebase listener to get the events
-        db = FirebaseFirestore.getInstance();
         startFirestoreListener();
 
         // Set an on item click listener for the recycler view
@@ -84,9 +99,15 @@ public class EventsFragment extends Fragment {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_name", clickedEvent);
+            bundle.putParcelable("event", clickedEvent);
             navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
         });
+
+        notifications.setOnClickListener( v ->{
+            navController.navigate(R.id.action_EventsFragment_to_NotificationFragment);
+        });
+
+
     }
 
     /**
@@ -106,9 +127,45 @@ public class EventsFragment extends Fragment {
                     Event event = doc.toObject(Event.class);
                     events.add(event);
                 }
+                // Sort the events from newest to oldest
+                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+
                 adapter.notifyDataSetChanged();
             }
         });
+    }
+    private void startNotificationListener() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
+        // Get current profile id
+        String profileId = currentUser.getID();
+
+        notificationListener = db.collection("Profiles")
+                .document(profileId)
+                .collection("Notifications")
+                .whereEqualTo("read", false)   // only unread
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null || snap == null) return;
+
+                    for (DocumentChange dc : snap.getDocumentChanges()) {
+                        if (dc.getType() == DocumentChange.Type.ADDED) {
+                            DocumentSnapshot doc = dc.getDocument();
+                            String message = doc.getString("body");
+                            String eventId = doc.getString("eventId");
+
+                            // Show local notification on THIS device
+                            showLocalNotification(message);
+
+                            // Mark as read so we don't show it again
+                            doc.getReference().update("read", true);
+                        }
+                    }
+                });
+    }
+    private void showLocalNotification(String message) {
+        NotifyUser notifier = new NotifyUser(requireContext());
+        notifier.sendNotification(currentUser, message);
     }
 
 }
