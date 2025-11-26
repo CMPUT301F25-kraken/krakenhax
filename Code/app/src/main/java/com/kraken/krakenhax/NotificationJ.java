@@ -17,6 +17,11 @@ public class NotificationJ {
         this.recipient = recipient;
     }
 
+    public NotificationJ() {
+        // Required empty public constructor
+    }
+
+
     public String getTitle() {
         return title;
     }

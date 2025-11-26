@@ -41,7 +41,6 @@
                 android:id="@+id/UsernameDisplay"
                 android:layout_width="173dp"
                 android:layout_height="23dp"
-                android:layout_marginTop="5dp"
                 android:text="TextView"
                 app:layout_constraintStart_toEndOf="@+id/profilePic"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -52,9 +51,7 @@
                 android:layout_width="173dp"
                 android:layout_height="23dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"
                 android:text="TextView"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/profilePic"
                 app:layout_constraintTop_toBottomOf="@+id/UsernameDisplay" />
 
