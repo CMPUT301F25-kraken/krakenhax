@@ -160,7 +160,7 @@ public class EventFragment extends Fragment {
         } else if (event.getLostList().contains(currentUser)) {
             buttonSignup.setClickable(false);
             buttonSignup.setText("You were not selected");
-        } else if (currentUser.getMyWaitlist().contains(event.getId())) {
+        } else if (event.getWaitList() != null &&currentUser.getMyWaitlist().contains(event.getId())) {
             buttonSignup.setText("Withdraw");
             buttonSignup.setOnClickListener(v -> {
                 event.removeFromWaitList(currentUser);
@@ -231,7 +231,6 @@ public class EventFragment extends Fragment {
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
-
         // Get the object for the current user
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -311,6 +310,7 @@ public class EventFragment extends Fragment {
 
         // Set the event poster
         ImageView eventImage = view.findViewById(R.id.event_image);
+        ImageView qrImageView = view.findViewById(R.id.qr_imageview);
         String posterURL = event.getPoster();
         if (posterURL == null || posterURL.isEmpty()) {
             eventImage.setImageResource(R.drawable.outline_attractions_100);

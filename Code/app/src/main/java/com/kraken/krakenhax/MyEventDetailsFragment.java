@@ -107,6 +107,7 @@ public class MyEventDetailsFragment extends Fragment {
         // Set up a real-time listener for the event
         setupFirestoreListener(view);
 
+
         // Image picker
         imagePicker = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {

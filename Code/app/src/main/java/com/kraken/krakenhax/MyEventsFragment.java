@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -115,13 +116,14 @@ public class MyEventsFragment extends Fragment {
                     Event event = doc.toObject(Event.class);
                     String orgProfile = event.getOrgId();
                     String eventId = event.getId();
-                    if (Objects.equals(orgProfile, currentUser.getID())) {
-                        events.add(event);
-                    }
-                    if (currentUser.getMyWaitlist().contains(eventId)) {
-                        events.add(event);
-                    }
+                    boolean isOrganizer = Objects.equals(orgProfile, currentUser.getID());
+                    boolean isOnWaitlist = currentUser.getMyWaitlist() != null && currentUser.getMyWaitlist().contains(eventId);
+                    if (isOrganizer || isOnWaitlist) {
+                        if (!events.contains(event)) {
+                            events.add(event);
 
+                        }
+                    }
                 }
                 adapter.notifyDataSetChanged();
             }
