@@ -18,6 +18,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Comparator;
 import java.util.Objects;
 
 
@@ -52,39 +53,45 @@ public class MyEventsFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_events, container, false);
 
+        // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
 
-        RecyclerView recycler_view_event_list2 = view.findViewById(R.id.recycler_view_events_list2);
-        recycler_view_event_list2.setLayoutManager(new LinearLayoutManager(requireContext()));
+        // Get the object for the current user
         MainActivity mainActivity = (MainActivity) getActivity();
         assert mainActivity != null;
         currentUser = mainActivity.currentUser;
 
-        makeEventButton = view.findViewById(R.id.MakeEventButton);
+        // Set up the create event button
+        Button makeEventButton = view.findViewById(R.id.MakeEventButton);
         if (Objects.equals(currentUser.getType(), "Entrant")) {
             makeEventButton.setVisibility(View.GONE);
         }
+        makeEventButton.setOnClickListener(v ->
+                NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_CreateEventFragment)
+        );
 
-        makeEventButton.setOnClickListener(v -> {
-            NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_CreateEventFragment);
-        });
-
-
+        // Set up the recycler view to display the list of events
+        RecyclerView recycler_view_event_list2 = view.findViewById(R.id.recycler_view_events_list2);
+        recycler_view_event_list2.setLayoutManager(new LinearLayoutManager(requireContext()));
         events = new ArrayList<>();
 
         adapter = new MyRecyclerViewAdapter(events);
         recycler_view_event_list2.setAdapter(adapter);
 
+        // Start the firestore listener
         startFirestoreListener();
 
+        // Set on click listener for clicking on an event
         adapter.setClickListener((v, position) -> {
             Event clickedEvent = adapter.getItem(position);
             Log.d("EventsFragment", "You clicked " + clickedEvent.getTitle() + " on row number " + position);
             Bundle bundle = new Bundle();
-            bundle.putParcelable("event_name", clickedEvent);
+            bundle.putParcelable("event", clickedEvent);
+
+            // Navigate to the correct event details fragment depending on the account type
             if (Objects.equals(currentUser.getType(), "Organizer")) {
                 NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_MyEventDetailsFragment, bundle);
             } else if (Objects.equals(currentUser.getType(), "Entrant")) {
@@ -100,10 +107,11 @@ public class MyEventsFragment extends Fragment {
 
     /**
      * Sets up a Firestore snapshot listener to get real-time updates for the "Events" collection.
-     * It filters events to show only those created by the current user (organizer).
+     * It filters events to show only those created by the current user (organizer) and
+     * events that the user is on any event list for.
      */
     private void startFirestoreListener() {
-        eventsRef = db.collection("Events"); // Corrected to capital 'E'
+        CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.addSnapshotListener((snap, e) -> {
             if (e != null) {
                 Log.e("Firestore", "Listen failed", e);
@@ -115,16 +123,29 @@ public class MyEventsFragment extends Fragment {
                     // Use .toObject() for robust deserialization
                     Event event = doc.toObject(Event.class);
                     String orgProfile = event.getOrgId();
-                    String eventId = event.getId();
-                    boolean isOrganizer = Objects.equals(orgProfile, currentUser.getID());
-                    boolean isOnWaitlist = currentUser.getMyWaitlist() != null && currentUser.getMyWaitlist().contains(eventId);
-                    if (isOrganizer || isOnWaitlist) {
-                        if (!events.contains(event)) {
-                            events.add(event);
 
-                        }
+                    // Display events organized by the user
+                    if (Objects.equals(orgProfile, currentUser.getID())) {
+                        events.add(event);
                     }
+
+                    // Display events that the user is on any event list for
+                    else if (event.getWaitList().contains(currentUser)) {
+                        events.add(event);
+                    } else if (event.getAcceptList().contains(currentUser)) {
+                        events.add(event);
+                    } else if (event.getCancelList().contains(currentUser)) {
+                        events.add(event);
+                    } else if (event.getLostList().contains(currentUser)) {
+                        events.add(event);
+                    } else if (event.getWonList().contains(currentUser)) {
+                        events.add(event);
+                    }
+
                 }
+                // Sort the events from newest to oldest
+                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+
                 adapter.notifyDataSetChanged();
             }
         });

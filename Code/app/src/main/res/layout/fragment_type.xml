@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:background="@drawable/custom_type_button"
+
         android:backgroundTint="#DB5454"
         android:text="Entrant"
         app:layout_constraintEnd_toEndOf="parent"
