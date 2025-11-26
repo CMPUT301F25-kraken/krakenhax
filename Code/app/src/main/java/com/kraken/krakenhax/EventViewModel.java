@@ -40,6 +40,7 @@ import java.util.ArrayList;
 public class EventViewModel extends ViewModel {
 
     private static MutableLiveData<ArrayList<Event>> eventList;
+    private final MutableLiveData<Bitmap> qrCode;
     private final FirebaseFirestore db;
     private final CollectionReference eventCollection;
     private final StorageReference storageRef;
@@ -52,6 +53,7 @@ public class EventViewModel extends ViewModel {
         db = FirebaseFirestore.getInstance();
         eventCollection = db.collection("Events");
         storageRef = FirebaseStorage.getInstance().getReference();
+        qrCode = new MutableLiveData<>();
         addSnapshotListener();
     }
 

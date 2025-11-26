@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -47,6 +48,7 @@ public class EventFragment extends Fragment {
     private Profile currentUser;
     private FirebaseFirestore db;
     private ProfileViewModel profileModel;
+
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private NavController navController;
     private Event event;
@@ -93,7 +95,7 @@ public class EventFragment extends Fragment {
      * Prompts the user to give permission to access their location.
      */
     private void requestLocationPermissions() {
-        locationPermissionRequest.launch(new String[]{
+        locationPermissionRequest.launch(new String[] {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
@@ -117,6 +119,7 @@ public class EventFragment extends Fragment {
 
         fused.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
+
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
 
@@ -140,6 +143,19 @@ public class EventFragment extends Fragment {
                         Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    /**
+     * Adds the entrant to the waitlist for an event.
+     */
+    private void joinWaitlist() {
+        // Get view
+        View view = getView();
+        if (view == null) return;
+        //currentUser.addToMyWaitlist(event.getId());
+        updateEventInFirestore();
+        updateButtons();
     }
 
     /**
@@ -260,24 +276,6 @@ public class EventFragment extends Fragment {
     }
 
     /**
-     * Adds the entrant to the waitlist for an event.
-     */
-    private void joinWaitlist() {
-        // Get view
-        View view = getView();
-        if (view == null) return;
-
-        event.addToWaitList(currentUser);
-        //currentUser.addToMyWaitlist(event.getId());
-        updateEventInFirestore();
-        updateButtons();
-        // Notify user
-        NotifyUser notifyUser = new NotifyUser(requireContext());
-        notifyUser.sendNotification(currentUser,
-                "✅ You have successfully signed up for " + event.getTitle());
-    }
-
-    /**
      * Returns a location permission request object.
      */
     private ActivityResultLauncher<String[]> requestLocationPermission() {
@@ -316,13 +314,18 @@ public class EventFragment extends Fragment {
                                     .setNegativeButton("Cancel", null)
                                     .show();
                         } else {
+                            //
                             Toast.makeText(requireContext(),
                                     "This event needs location, please try again and allow location",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
+
                 }
+
         );
+
+
 
         return locationPermissionRequest;
     }
@@ -349,6 +352,7 @@ public class EventFragment extends Fragment {
                 } else {
                     tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
                 }
+
 
                 // Set the timer to repeat this code every 10 seconds
                 timerHandler.postDelayed(this, 10000);
@@ -505,8 +509,7 @@ public class EventFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
-            savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
@@ -518,7 +521,7 @@ public class EventFragment extends Fragment {
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
         assert event != null;
-
+        ImageView qrImageView = view.findViewById(R.id.qr_imageview);
         // Set up the nav controller
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 

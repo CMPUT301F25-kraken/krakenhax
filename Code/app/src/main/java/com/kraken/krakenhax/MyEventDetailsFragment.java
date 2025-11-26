@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -36,12 +38,19 @@ import java.util.Locale;
  */
 public class MyEventDetailsFragment extends Fragment {
     private Profile currentUser;
+    private FirebaseStorage storage;
     private FirebaseFirestore db;
     private StorageReference storageRef;
     private ImageView imgPoster;
+    private Button btnUploadPoster;
+    private Button btnBack;
+    private Button btnentrantInfo;
+    private Button btnLottery;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
+    private EventViewModel eventViewModel;
+    private ImageView qrCodeImage;
     //private Profile currentUser;
 
     /**
@@ -64,6 +73,7 @@ public class MyEventDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_event_details, container, false);
 
+        assert getArguments() != null;
         // Get the initial (potentially stale) event object from the arguments
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
@@ -82,6 +92,8 @@ public class MyEventDetailsFragment extends Fragment {
         Button btnBack = view.findViewById(R.id.btnBack);
         Button btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
         Button btnLottery = view.findViewById(R.id.btnLottery);
+        qrCodeImage = view.findViewById(R.id.qr_code_imageview);
+        eventViewModel = new EventViewModel();
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
 //         assert mainActivity != null;
@@ -149,6 +161,7 @@ public class MyEventDetailsFragment extends Fragment {
         docRef.addSnapshotListener((snapshot, e) -> {
             if (e != null) {
                 Log.w("Firestore", "Listen failed.", e);
+                Log.d("QRDEBUG", "Loaded qrCodeURL = " + event.getQrCodeURL());
                 return;
             }
 
@@ -281,6 +294,7 @@ public class MyEventDetailsFragment extends Fragment {
             );
         }
     }
+
 
     private void updateEventInFirestore(Event event) {
         if (event != null && event.getId() != null) {
