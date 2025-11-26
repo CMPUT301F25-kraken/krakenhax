@@ -588,6 +588,7 @@ public class Event implements Parcelable {
         categories = in.createStringArrayList();
         eventDetails = in.readString();
         location = in.readString();
+        qrCodeURL = in.readString();
         if (in.readByte() == 0) {
             Radius = null;
         } else {
@@ -629,6 +630,7 @@ public class Event implements Parcelable {
         dest.writeStringList(categories);
         dest.writeString(eventDetails);
         dest.writeString(location);
+        dest.writeString(qrCodeURL);
         if (Radius == null) {
             dest.writeByte((byte) 0);
         } else {

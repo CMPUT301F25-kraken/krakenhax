@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -46,6 +47,7 @@ public class EventFragment extends Fragment {
     private Profile currentUser;
     private FirebaseFirestore db;
     private ProfileViewModel profileModel;
+
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private NavController navController;
     private Event event;
@@ -213,7 +215,7 @@ public class EventFragment extends Fragment {
      * Prompts the user to give permission to access their location.
      */
     private void requestLocationPermissions() {
-        locationPermissionRequest.launch(new String[]{
+        locationPermissionRequest.launch(new String[] {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
@@ -237,6 +239,7 @@ public class EventFragment extends Fragment {
 
         fused.getLastLocation().addOnSuccessListener(location -> {
             if (location != null) {
+
                 double lat = location.getLatitude();
                 double lng = location.getLongitude();
 
@@ -260,6 +263,19 @@ public class EventFragment extends Fragment {
                         Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    /**
+     * Adds the entrant to the waitlist for an event.
+     */
+    private void joinWaitlist() {
+        // Get view
+        View view = getView();
+        if (view == null) return;
+        //currentUser.addToMyWaitlist(event.getId());
+        updateEventInFirestore();
+        updateButtons();
     }
 
     /**
@@ -487,13 +503,18 @@ public class EventFragment extends Fragment {
                                     .setNegativeButton("Cancel", null)
                                     .show();
                         } else {
+                            //
                             Toast.makeText(requireContext(),
                                     "This event needs location, please try again and allow location",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
+
                 }
+
         );
+
+
 
         return locationPermissionRequest;
     }
@@ -520,6 +541,7 @@ public class EventFragment extends Fragment {
                 } else {
                     tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
                 }
+
 
                 // Set the timer to repeat this code every 10 seconds
                 timerHandler.postDelayed(this, 10000);
@@ -675,6 +697,112 @@ public class EventFragment extends Fragment {
                 });
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_event, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Get the object for the event
+        assert getArguments() != null;
+        event = getArguments().getParcelable("event");
+        assert event != null;
+        ImageView qrImageView = view.findViewById(R.id.qr_imageview);
+        // Set up the nav controller
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+
+        // Create instance of firestore database
+        db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
+
+
+        // Start a firestore listener for the event
+        startFirestoreListener();
+
+        // Get the object for the current user
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            currentUser = mainActivity.currentUser;
+        }
+
+        // Creates an instance of the ProfileViewModel
+        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+
+        // Location permission
+        locationPermissionRequest = requestLocationPermission();
+
+        // Set the event name
+        TextView tvEventName = view.findViewById(R.id.tv_event_name);
+        tvEventName.setText(event.getTitle());
+
+        // Set the event location
+        TextView tvLocation = view.findViewById(R.id.tv_location_field);
+        tvLocation.setText(event.getLocation());
+
+        // Set the event description
+        TextView tvDescription = view.findViewById(R.id.tv_event_description);
+        tvDescription.setText(event.getEventDetails());
+
+        // Set up the waitlist info
+        tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
+        setWaitlistInfo();
+
+        // Set the event poster
+        ImageView eventImage = view.findViewById(R.id.event_image);
+        setEventPoster(eventImage);
+
+        Button photoDelete = view.findViewById(R.id.delete_event_Photo);
+        if (currentUser.getType().equals("Admin")){
+            photoDelete.setVisibility(View.VISIBLE);
+        } else {
+            photoDelete.setVisibility(View.GONE);
+        }
+        photoDelete.setOnClickListener(v -> {
+
+            event.setPoster(null);
+            deleteEventPic();
+            setEventPoster(eventImage);
+            updateEventInFirestore();
+        });
+
+
+
+
+        // Set up the back button
+        Button buttonBack = view.findViewById(R.id.button_back);
+        buttonBack.setOnClickListener(v -> navController.popBackStack());
+
+        // Set the view event organizer button to show the name of the organizer and navigate to the organizers page
+        Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
+        setOrganizerButton(buttonEventOrganizer);
+
+        // Set tvRegistrationInfo to display the deadline for registration
+        TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
+        setRegistrationDeadline(tvRegistrationInfo);
+
+        // Set the tvDateTime to show the date and time of the event
+        TextView tvDateTime = view.findViewById(R.id.tv_date_time);
+        setEventDate(tvDateTime);
+
+        // Update buttons for current user state
+        updateButtons();
+
+        // Delete button logic
+        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
+        if (currentUser.getType().equals("Admin") || currentUser.getType().equals("Organizer")) {
+            deleteButton.setVisibility(View.VISIBLE);
+        } else {
+            deleteButton.setVisibility(View.GONE);
+        }
+        deleteButton.setOnClickListener(v -> {
+            deleteEventFromFirestore();
+            navController.popBackStack();
+        });
+
+    }
     public void deleteEventPic() {
         StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
         eventPosterRef.delete().addOnSuccessListener(aVoid -> {

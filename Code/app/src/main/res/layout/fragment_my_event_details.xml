@@ -96,13 +96,11 @@
 
     <TextView
         android:id="@+id/tv_event_description"
-        android:layout_width="352dp"
-        android:layout_height="129dp"
+        android:layout_width="177dp"
+        android:layout_height="135dp"
         android:layout_marginStart="28dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="28dp"
+        android:layout_marginTop="4dp"
         android:text="Event Description"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
 
@@ -181,5 +179,15 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_waitlist"
         app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
         app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
+
+    <ImageView
+        android:id="@+id/qr_code_imageview"
+        android:layout_width="179dp"
+        android:layout_height="135dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="4dp"
+        android:src="@drawable/outline_beach_access_100"
+        app:layout_constraintStart_toEndOf="@+id/tv_event_description"
+        app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
