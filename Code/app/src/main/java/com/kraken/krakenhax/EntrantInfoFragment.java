@@ -49,6 +49,10 @@ public class EntrantInfoFragment extends Fragment {
     private Runnable entrantListRunnable;
     private View notifyOverlay;
 
+    private Profile currentUser;
+
+    private NotificationJ notif;
+
     public EntrantInfoFragment() {
         // Required empty public constructor
     }
@@ -224,19 +228,18 @@ public class EntrantInfoFragment extends Fragment {
 
             for (Profile p : recipients) {
                 if (!p.isNotificationsEnabled()) continue;
-
-                Map<String, Object> notif = new HashMap<>();
-                notif.put("message", message);
-                notif.put("eventId", event.getId());
-                notif.put("createdAt", FieldValue.serverTimestamp());
-                notif.put("read", false);
+                notif = new NotificationJ(event.getTitle(), message,currentUser.getUsername(),null, event.getId(), p.getUsername(), false);
 
                 db.collection("Profiles")
                         .document(p.getID())               // profile’s firestore id
                         .collection("Notifications")
-                        .add(notif);
+                        .add(notif)
+                        .addOnSuccessListener(docRef -> {
+                            // NOW update timestamp to server time
+                            docRef.update("timestamp", FieldValue.serverTimestamp());
+                        });
             }
-            //notifier.sendBroadcast(recipients, message);
+
 
             Toast.makeText(requireContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
 
@@ -265,6 +268,10 @@ public class EntrantInfoFragment extends Fragment {
         // Get the event object
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+        assert mainActivity != null;
+        currentUser = mainActivity.currentUser;
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
