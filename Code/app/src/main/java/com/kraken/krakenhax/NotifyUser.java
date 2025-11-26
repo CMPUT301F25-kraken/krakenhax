@@ -26,9 +26,7 @@ public class NotifyUser {
      * Sends a real Android notification to the user.
      */
     public void sendNotification(Profile recipient, String message) {
-        if (recipient == null || message == null) return;
-
-        // Check opt-out preference
+        if (recipient == null || message == null) return;        // Check opt-out preference
         if (!recipient.isNotificationsEnabled()) {
             Log.d("NotifyUser", "Skipped notification for " + recipient.getUsername());
             Toast.makeText(context, recipient.getUsername() + " has notifications off", Toast.LENGTH_SHORT).show();

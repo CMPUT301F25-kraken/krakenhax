@@ -3,6 +3,7 @@ package com.kraken.krakenhax;
 import static java.security.AccessController.getContext;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +12,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStore;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
 public class NotifAdapterJ extends ArrayAdapter<NotificationJ> {
-
+    public Profile organizer;
+    public Profile Recipient;
     public ArrayList<NotificationJ> notifList;
 
     public NotifAdapterJ(Context context, ArrayList<NotificationJ> notifList) {
@@ -39,10 +49,36 @@ public class NotifAdapterJ extends ArrayAdapter<NotificationJ> {
 
         NotificationJ notification = getItem(position);
         assert notification != null;
-        sender.setText(notification.getSender());
+        String senderProfileID = notification.getSender();
+        String recipientProfileID = notification.getRecipient();
+
+        if (senderProfileID != null && !senderProfileID.isEmpty()) {
+            DocumentReference senderRef = FirebaseFirestore.getInstance().collection("Profiles").document(senderProfileID);
+            senderRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Profile senderProfile = documentSnapshot.toObject(Profile.class);
+                    if (senderProfile != null) {
+                        sender.setText(senderProfile.getUsername());
+                    }
+                }
+            });
+        }
+
+        if (recipientProfileID != null && !recipientProfileID.isEmpty()) {
+            DocumentReference recipientRef = FirebaseFirestore.getInstance().collection("Profiles").document(recipientProfileID);
+            recipientRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    Profile recipientProfile = documentSnapshot.toObject(Profile.class);
+                    if (recipientProfile != null) {
+                        recipient.setText(recipientProfile.getUsername());
+                    }
+                }
+            });
+        }
         message.setText(notification.getBody());
         title.setText(notification.getTitle());
-        recipient.setText(notification.getRecipient());
+
+
 
         return view;
     }

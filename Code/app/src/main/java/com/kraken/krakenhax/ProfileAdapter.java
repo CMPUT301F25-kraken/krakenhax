@@ -18,7 +18,7 @@ import java.util.ArrayList;
  */
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
     private final ArrayList<Profile> profileList;
-    private OnRemoveClickListener listener;
+    public OnRemoveClickListener listener;
 
     /**
      * Constructor for the ProfileAdapter.

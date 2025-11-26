@@ -32,6 +32,11 @@ public class NotificationJ {
         this.read = read;
     }
 
+    public NotificationJ() {
+        // Required empty public constructor
+    }
+
+
     public String getTitle() {
         return title;
     }

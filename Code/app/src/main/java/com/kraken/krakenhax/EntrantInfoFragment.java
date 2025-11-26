@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +14,15 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.time.LocalDateTime;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -27,6 +31,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -34,8 +39,9 @@ import java.util.Map;
  * It allows viewing entrants who are waitlisted, enrolled, or have cancelled.
  */
 public class EntrantInfoFragment extends Fragment {
-    private final android.os.Handler timerHandler = new android.os.Handler();
+    private final Handler timerHandler = new Handler();
     private Event event;
+    public ProfileViewModel ProfileModel;
     private TextView entrantType;
     private RecyclerView profileRecycler;
     private Spinner spinner_list;
@@ -102,11 +108,31 @@ public class EntrantInfoFragment extends Fragment {
                     //Profile profileToRemove = targetList.get(position);
 
                     // Remove the user from the target list
+                    Profile user = targetList.get(position);
                     targetList.remove(position);
                     adapter.notifyItemRemoved(position);
 
                     // Update the event in firestore
                     updateEventInFirestore(event);
+                    CollectionReference notifRef = db.collection("Notifications");
+
+                    final ArrayList<Profile> profileList = new ArrayList<>();
+                    ProfileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+                    ProfileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+                        for (Profile profile : profiles) {
+                            if (profile.getID().equals(event.getOrgId())) {
+                                profileList.add(profile);
+                            }
+                        }
+                    });
+                    Profile organizer = profileList.get(0);
+                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear "+ user.getUsername()+", you have been removed from "+ event.getTitle() +".", event.getOrgId(), LocalDateTime.now().toString(), event.getId(), user.getID());
+                    notifRef.add(notification);
+
+                    NotifyUser notifier = new NotifyUser(requireContext());
+                    notifier.sendNotification(user, "Dear "+ user.getUsername()+", you have been removed from "+ event.getTitle() +".");
+
+
                 });
 
                 profileRecycler.setAdapter(adapter);

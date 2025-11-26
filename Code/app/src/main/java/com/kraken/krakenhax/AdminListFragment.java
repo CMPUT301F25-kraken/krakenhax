@@ -266,12 +266,22 @@ public class AdminListFragment extends Fragment {
         // Get notifications from Firebase Firestore
         CollectionReference notificationsRef = db.collection("Notifications");
         notifList.clear();
-        NotificationJ testNotif1 = new NotificationJ("Test Title", "Test Body", "Test Sender", null, "Test Event ID", "Test Recipient",false);
-        notifList.add(testNotif1);
-        NotificationJ testNotif2 = new NotificationJ("Test Title 2", "Test Body 2", "Test Sender 2", null, "Test Event ID 2", "Test Recipient 2", false);
-        notifList.add(testNotif2);
-        NotificationJ testNotif3 = new NotificationJ("Test Title 3", "Test Body 3", "Test Sender 3", null, "Test Event ID 3", "Test Recipient 3", false);
-        notifList.add(testNotif3);
+
+        notificationsRef.addSnapshotListener((snap, e )-> {
+            if (e != null) {
+                Log.e("Firestore", "Listen failed", e);
+                return;
+            }
+            if (snap != null && !snap.isEmpty()) {
+                for (QueryDocumentSnapshot doc : snap) {
+                    // Use .toObject() for robust deserialization
+                    NotificationJ notification = doc.toObject(NotificationJ.class);
+                    notifList.add(notification);
+                }
+                NotifAdapter.notifyDataSetChanged();
+            }
+        });
+
 
         NotifAdapter = new NotifAdapterJ(requireContext(), notifList);
         NotificationListView.setAdapter(NotifAdapter);
