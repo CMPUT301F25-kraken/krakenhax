@@ -35,114 +35,10 @@ public class EntrantInfoFragment extends Fragment {
     private Spinner spinner_list;
     private FirebaseFirestore db;
     private Runnable entrantListRunnable;
+    private Profile currentUser;
 
     public EntrantInfoFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Sets the recycler view to display the selected event list.
-     */
-    private void updateRecyclerList(String status) {
-        // STOP ANY PREVIOUS TIMER BEFORE STARTING A NEW ONE
-        if (entrantListRunnable != null) {
-            timerHandler.removeCallbacks(entrantListRunnable);
-        }
-
-        // Use a timer to update the info live
-        entrantListRunnable = new Runnable() {
-            @Override
-            public void run() {
-                // Check if the view is no longer valid from the fragment being destroyed
-                if (getView() == null) {
-                    timerHandler.removeCallbacks(this);
-                    return;
-                }
-
-                entrantType.setText("Entrant " + status);
-
-                // Retrieve the selected list from the event
-                ArrayList<Profile> targetList;
-                switch (status) {
-                    case "Waitlisted":
-                        targetList = event.getWaitList();
-                        break;
-                    case "Won":
-                        targetList = event.getWonList();
-                        break;
-                    case "Lost":
-                        targetList = event.getLostList();
-                        break;
-                    case "Accepted":
-                        targetList = event.getAcceptList();
-                        break;
-                    case "Cancelled":
-                        targetList = event.getCancelList();
-                        break;
-                    default:
-                        targetList = new ArrayList<>();
-                        break;
-                }
-
-                ProfileAdapter adapter = new ProfileAdapter(targetList);
-
-                // Set the listener for the remove button
-                adapter.setOnRemoveClickListener(position -> {
-                    //Profile profileToRemove = targetList.get(position);
-
-                    // Remove the user from the target list
-                    targetList.remove(position);
-                    adapter.notifyItemRemoved(position);
-
-                    // Update the event in firestore
-                    updateEventInFirestore(event);
-                });
-
-                profileRecycler.setAdapter(adapter);
-
-                // Set the timer to repeat this code every 1 second
-                timerHandler.postDelayed(this, 1000);
-            }
-        };
-
-        // Start the timer
-        timerHandler.post(entrantListRunnable);
-    }
-
-    /**
-     * Updates an event in firestore.
-     */
-    private void updateEventInFirestore(Event event) {
-        if (event != null && event.getId() != null) {
-            db.collection("Events").document(event.getId()).set(event)
-                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
-                    .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
-        }
-    }
-
-    /**
-     * Set up a Firestore snapshot listener to get real-time updates for the event.
-     */
-    private void startFirestoreListener() {
-        if (event == null || event.getId() == null) {
-            return;
-        }
-
-        db.collection("Events").document(event.getId())
-                .addSnapshotListener((snapshot, e) -> {
-                    assert snapshot != null;
-                    Event updatedEvent = snapshot.toObject(Event.class);
-
-                    if (updatedEvent != null) {
-                        this.event = updatedEvent;
-
-                        // Update the recycler view
-                        if (spinner_list != null && spinner_list.getSelectedItem() != null) {
-                            String currentSelection = spinner_list.getSelectedItem().toString();
-                            updateRecyclerList(currentSelection);
-                        }
-                    }
-                });
     }
 
     /**
@@ -163,6 +59,12 @@ public class EntrantInfoFragment extends Fragment {
         // Get the event object
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
+
+        // Get the object for the current user
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            currentUser = mainActivity.currentUser;
+        }
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
@@ -231,4 +133,138 @@ public class EntrantInfoFragment extends Fragment {
             timerHandler.removeCallbacks(entrantListRunnable);
         }
     }
+
+    /**
+     * Sets the recycler view to display the selected event list.
+     */
+    private void updateRecyclerList(String status) {
+        // STOP ANY PREVIOUS TIMER BEFORE STARTING A NEW ONE
+        if (entrantListRunnable != null) {
+            timerHandler.removeCallbacks(entrantListRunnable);
+        }
+
+        // Use a timer to update the info live
+        entrantListRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Check if the view is no longer valid from the fragment being destroyed
+                if (getView() == null) {
+                    timerHandler.removeCallbacks(this);
+                    return;
+                }
+
+                entrantType.setText("Entrant " + status);
+                String strList = "";
+
+                // Retrieve the selected list from the event
+                ArrayList<Profile> targetList;
+                switch (status) {
+                    case "Waitlisted":
+                        targetList = event.getWaitList();
+                        strList = "wait list";
+                        break;
+                    case "Won":
+                        targetList = event.getWonList();
+                        strList = "won list";
+                        break;
+                    case "Lost":
+                        targetList = event.getLostList();
+                        strList = "lost list";
+                        break;
+                    case "Accepted":
+                        targetList = event.getAcceptList();
+                        strList = "accept list";
+                        break;
+                    case "Cancelled":
+                        targetList = event.getCancelList();
+                        strList = "cancel list";
+                        break;
+                    default:
+                        targetList = new ArrayList<>();
+                        break;
+                }
+
+                ProfileAdapter adapter = new ProfileAdapter(targetList);
+
+                // Set the listener for the remove button
+                String finalStrList = strList;
+                adapter.setOnRemoveClickListener(position -> {
+                    Profile profileToRemove = targetList.get(position);
+
+                    // Remove the user from the target list
+                    targetList.remove(position);
+                    adapter.notifyItemRemoved(position);
+
+                    // Update the event in firestore
+                    updateEventInFirestore(event);
+
+                    // Add actions to users history
+                    // From organizer perspective
+                    String stringAction = String.format("Removed user from %s", finalStrList);
+                    currentUser.updateHistory(new Action(stringAction, profileToRemove.getID(), event.getId()));
+                    updateProfileInFirestore(currentUser);
+                    // From entrants perspective
+                    stringAction = String.format("Removed from %s", finalStrList);
+                    profileToRemove.updateHistory(new Action(stringAction, currentUser.getID(), event.getId()));
+                    updateProfileInFirestore(profileToRemove);
+                });
+
+                profileRecycler.setAdapter(adapter);
+
+                // Set the timer to repeat this code every 1 second
+                timerHandler.postDelayed(this, 1000);
+            }
+        };
+
+        // Start the timer
+        timerHandler.post(entrantListRunnable);
+    }
+
+    /**
+     * Updates an event in firestore.
+     */
+    private void updateEventInFirestore(Event event) {
+        if (event != null && event.getId() != null) {
+            db.collection("Events").document(event.getId()).set(event)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
+        }
+    }
+
+    /**
+     * Updates a profile in firestore.
+     */
+    private void updateProfileInFirestore(Profile profile) {
+        if (profile != null && profile.getID() != null) {
+            db.collection("Profiles").document(profile.getID()).set(profile)
+                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Updated profile: " + profile.getUsername() + " successfully!"))
+                    .addOnFailureListener(e -> Log.e("Firestore", "Error updating profile: " + profile.getUsername(), e));
+        }
+    }
+
+    /**
+     * Set up a Firestore snapshot listener to get real-time updates for the event.
+     */
+    private void startFirestoreListener() {
+        if (event == null || event.getId() == null) {
+            return;
+        }
+
+        db.collection("Events").document(event.getId())
+                .addSnapshotListener((snapshot, e) -> {
+                    assert snapshot != null;
+                    Event updatedEvent = snapshot.toObject(Event.class);
+
+                    if (updatedEvent != null) {
+                        this.event = updatedEvent;
+
+                        // Update the recycler view
+                        if (spinner_list != null && spinner_list.getSelectedItem() != null) {
+                            String currentSelection = spinner_list.getSelectedItem().toString();
+                            updateRecyclerList(currentSelection);
+                        }
+                    }
+                });
+    }
+
 }

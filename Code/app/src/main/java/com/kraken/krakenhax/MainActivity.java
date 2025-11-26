@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         //removeMyWaitlists();
         //cleanUpLegacyEvents();
         //ensureEventTimeframes();
-        addHistory();
+        //addHistory(); // Migration helper: run manually if needed, do not execute on every app start
 
         // Set up the navigation bar
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);

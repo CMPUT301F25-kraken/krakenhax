@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -426,6 +427,8 @@ public class Event implements Parcelable {
      *        The number of winners to be selected from the entrant pool.
      */
     public void drawLottery(ArrayList<Profile> entrantPool, Integer numberOfWinners) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         ArrayList<Profile> winners = this.wonList;
         ArrayList<Profile> losers = (ArrayList<Profile>) entrantPool.clone();
 
@@ -443,6 +446,10 @@ public class Event implements Parcelable {
 
                 // Add action to users history
                 winner.updateHistory(new Action("Won lottery for event", null, this.getId()));
+                // Save to firestore
+                db.collection("Profiles").document(winner.getID()).set(winner)
+                        .addOnFailureListener(e -> Log.e("drawLottery", "Failed to save winner history", e));
+
             }
             i++;
         }
@@ -452,14 +459,33 @@ public class Event implements Parcelable {
         // Add actions to users history
 
         // From organizers perspective
-        //String eventOrganizerID = this.getOrgId();
+        String eventID = this.getId();
         // get the organizer for the event, will match the id
-        //Profile eventOrganzier;
-        //eventOrganizer.updateHistory(new Action("Triggered lottery for event", null, this));
+        this.lookupOrganizer(new Event.OrganizerCallback() {
+            @Override
+            public void onOrganizerFound(Profile organizer) {
+                if (organizer != null) {
+                    organizer.updateHistory(new Action("Triggered lottery for event", null, eventID));
+                    // Save to firestore
+                    db.collection("Profiles").document(organizer.getID()).set(organizer)
+                            .addOnFailureListener(e -> Log.e("drawLottery", "Failed to save organizer history", e));
+                }
+            }
+
+            /**
+             * If there is an error.
+             */
+            @Override
+            public void onError(Exception e) {
+                Log.e("lookupOrganizer", "Error: Cannot lookup organizer", e);
+            }
+        });
 
         // From the entrants perspective
         for (Profile loser : losers) {
             loser.updateHistory(new Action("Lose lottery for event", null, this.getId()));
+            db.collection("Profiles").document(loser.getID()).set(loser)
+                    .addOnFailureListener(e -> Log.e("drawLottery", "Failed to save loser history", e));
         }
     }
 
@@ -514,6 +540,42 @@ public class Event implements Parcelable {
     public Timestamp getDateCreated() {
         return dateCreated;
     }
+
+    public interface OrganizerCallback {
+        void onOrganizerFound(Profile organizer);
+
+        void onError(Exception e);
+    }
+
+    /**
+     * Looks up the organizer for the event from the organizer ID.
+     */
+    public void lookupOrganizer(OrganizerCallback callback) {
+        if (this.getOrgId() == null) {
+            Log.d("lookupOrganizer", "Org ID is null");
+            callback.onOrganizerFound(null);
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("Profiles").document(this.getOrgId()).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Profile organizer = documentSnapshot.toObject(Profile.class);
+                        // Send the data back to the caller
+                        callback.onOrganizerFound(organizer);
+                    } else {
+                        Log.d("lookupOrganizer", "Organizer not found in DB");
+                        callback.onOrganizerFound(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("lookupOrganizer", "Firebase error", e);
+                    callback.onOrganizerFound(null);
+                });
+    }
+
 
     /**
      * Flatten this object in to a Parcel.
