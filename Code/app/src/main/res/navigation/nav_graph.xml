@@ -59,6 +59,9 @@
         <action
             android:id="@+id/action_EventsFragment_to_EventFragment"
             app:destination="@+id/EventFragment" />
+        <action
+            android:id="@+id/action_EventsFragment_to_NotificationFragment"
+            app:destination="@+id/NotificationFragment" />
     </fragment>
 
     <!-- Destination for My Events Fragment -->
@@ -316,6 +319,16 @@
         <action
             android:id="@+id/action_ViewProfiles_to_AdminListFragment"
             app:destination="@id/adminListFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/NotificationFragment"
+        android:name="com.kraken.krakenhax.NotificationFragment"
+        android:label="NotificationFragment"
+        tools:layout="@layout/fragment_notification">
+        <action
+            android:id="@+id/action_NotificationFragment_to_EventFragment"
+            app:destination="@id/EventFragment" />
 
     </fragment>
 
