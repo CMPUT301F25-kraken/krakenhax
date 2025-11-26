@@ -71,7 +71,6 @@ public class EventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //TODO: add functionality to go to new fragment for notifications for currentUser
         Button notifications = view.findViewById(R.id.notifications);
 
 
@@ -104,9 +103,12 @@ public class EventsFragment extends Fragment {
             navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
         });
 
+        notifications.setOnClickListener( v ->{
+            navController.navigate(R.id.action_EventsFragment_to_NotificationFragment);
+        });
+
 
     }
-
 
     /**
      * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
@@ -136,8 +138,6 @@ public class EventsFragment extends Fragment {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
-
-
         // Get current profile id
         String profileId = currentUser.getID();
 
@@ -151,7 +151,7 @@ public class EventsFragment extends Fragment {
                     for (DocumentChange dc : snap.getDocumentChanges()) {
                         if (dc.getType() == DocumentChange.Type.ADDED) {
                             DocumentSnapshot doc = dc.getDocument();
-                            String message = doc.getString("message");
+                            String message = doc.getString("body");
                             String eventId = doc.getString("eventId");
 
                             // Show local notification on THIS device
