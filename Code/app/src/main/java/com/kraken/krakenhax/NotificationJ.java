@@ -12,7 +12,7 @@ public class NotificationJ {
 
     private boolean read;
 
-    public NotificationJ() { }
+    //public NotificationJ() { }
 
     public NotificationJ(String title, String body, String sender, Timestamp timestamp, String eventID, String recipient, boolean read) {
         this.title = title;
