@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +24,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Picasso;
+import com.kraken.krakenhax.NotificationJ;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
+
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -36,12 +42,19 @@ import java.util.Locale;
  */
 public class MyEventDetailsFragment extends Fragment {
     private Profile currentUser;
+    private FirebaseStorage storage;
     private FirebaseFirestore db;
     private StorageReference storageRef;
     private ImageView imgPoster;
+    private Button btnUploadPoster;
+    private Button btnBack;
+    private Button btnentrantInfo;
+    private Button btnLottery;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
+    private EventViewModel eventViewModel;
+    private ImageView qrCodeImage;
     //private Profile currentUser;
 
     /**
@@ -64,6 +77,7 @@ public class MyEventDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_event_details, container, false);
 
+        assert getArguments() != null;
         // Get the initial (potentially stale) event object from the arguments
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
@@ -82,6 +96,8 @@ public class MyEventDetailsFragment extends Fragment {
         Button btnBack = view.findViewById(R.id.btnBack);
         Button btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
         Button btnLottery = view.findViewById(R.id.btnLottery);
+        qrCodeImage = view.findViewById(R.id.qr_code_imageview);
+        eventViewModel = new EventViewModel();
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
 //         assert mainActivity != null;
@@ -113,11 +129,70 @@ public class MyEventDetailsFragment extends Fragment {
             if (event.getLostList().isEmpty()) {
                 event.drawLottery(event.getWaitList(), event.getWinnerNumber());
             } else {
-                event.drawLottery(event.getLostList(), event.getWinnerNumber() - event.getWonList().size());
+                event.drawLottery(
+                        event.getLostList(),
+                        event.getWinnerNumber() - event.getWonList().size()
+                );
             }
+
             updateEventInFirestore(event);
-            Toast.makeText(requireContext(), "Lottery drawn successfully!", Toast.LENGTH_SHORT).show();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            for (Profile p : event.getWonList()) {
+                if (p == null) continue;
+                if (!p.isNotificationsEnabled()) continue;
+
+                NotificationJ notif = new NotificationJ(
+                        "You won the lottery!",
+                        "You have been selected to participate in " + event.getTitle() + ".",
+                        event.getOrgId(),          // sender = organizer
+                        null,                      // timestamp will be set server-side
+                        event.getId(),             // event ID
+                        p.getID(),                 // recipient profile ID
+                        false                      // read = false
+                );
+
+                db.collection("Profiles")
+                        .document(p.getID())
+                        .collection("Notifications")
+                        .add(notif)
+                        .addOnSuccessListener(docRef ->
+                                docRef.update("timestamp", FieldValue.serverTimestamp())
+                        );
+            }
+
+            // Notify losers: "You were not selected"
+            for (Profile p : event.getLostList()) {
+                if (p == null) continue;
+                if (!p.isNotificationsEnabled()) continue;
+
+                NotificationJ notif = new NotificationJ(
+                        "Lottery result",
+                        "Unfortunately, you were not selected for " + event.getTitle() + ".",
+                        event.getOrgId(),
+                        null,
+                        event.getId(),
+                        p.getID(),
+                        false
+                );
+
+                db.collection("Profiles")
+                        .document(p.getID())
+                        .collection("Notifications")
+                        .add(notif)
+                        .addOnSuccessListener(docRef ->
+                                docRef.update("timestamp", FieldValue.serverTimestamp())
+                        );
+            }
+
+            // 4. UI feedback
+            Toast.makeText(requireContext(),
+                    "Lottery drawn successfully!",
+                    Toast.LENGTH_SHORT
+            ).show();
         });
+
 
         btnUploadPoster.setOnClickListener(v -> imagePicker.launch("image/*"));
 
@@ -149,6 +224,7 @@ public class MyEventDetailsFragment extends Fragment {
         docRef.addSnapshotListener((snapshot, e) -> {
             if (e != null) {
                 Log.w("Firestore", "Listen failed.", e);
+                Log.d("QRDEBUG", "Loaded qrCodeURL = " + event.getQrCodeURL());
                 return;
             }
 
@@ -281,6 +357,7 @@ public class MyEventDetailsFragment extends Fragment {
             );
         }
     }
+
 
     private void updateEventInFirestore(Event event) {
         if (event != null && event.getId() != null) {

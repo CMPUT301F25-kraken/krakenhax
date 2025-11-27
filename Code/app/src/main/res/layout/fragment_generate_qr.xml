@@ -12,19 +12,19 @@
         android:id="@+id/save_qr_button"
         android:layout_width="168dp"
         android:layout_height="52dp"
-        android:layout_marginTop="276dp"
+        android:layout_marginTop="72dp"
         android:text="Save QR code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.065"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/qr_code_text" />
 
     <Button
         android:id="@+id/come_back_button"
         android:layout_width="169dp"
         android:layout_height="53dp"
         android:layout_marginStart="224dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="72dp"
         android:text="Come back later"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/qr_code_text" />
@@ -33,7 +33,7 @@
         android:id="@+id/qr_code_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="108dp"
         android:text="Your event has a QR code! You can save it to your camera roll now, or come back to it later."
         android:textAlignment="center"
         android:textSize="20sp"
@@ -45,8 +45,9 @@
         android:layout_width="293dp"
         android:layout_height="293dp"
         android:layout_marginStart="56dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="136dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/qr_code_text"
         app:srcCompat="@drawable/outline_beach_access_100" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

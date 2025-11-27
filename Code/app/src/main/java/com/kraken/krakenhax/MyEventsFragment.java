@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -29,8 +30,11 @@ import java.util.Objects;
 public class MyEventsFragment extends Fragment {
     private FirebaseFirestore db;
     private ArrayList<Event> events;
+    private CollectionReference eventsRef;
     private MyRecyclerViewAdapter adapter;
+    private Button makeEventButton;
     private Profile currentUser;
+
 
     /**
      * Required empty public constructor for fragment instantiation.
@@ -74,6 +78,7 @@ public class MyEventsFragment extends Fragment {
         RecyclerView recycler_view_event_list2 = view.findViewById(R.id.recycler_view_events_list2);
         recycler_view_event_list2.setLayoutManager(new LinearLayoutManager(requireContext()));
         events = new ArrayList<>();
+
         adapter = new MyRecyclerViewAdapter(events);
         recycler_view_event_list2.setAdapter(adapter);
 
@@ -95,6 +100,7 @@ public class MyEventsFragment extends Fragment {
             } else if (Objects.equals(currentUser.getType(), "Guest")) {
                 NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_EventFragment, bundle);
             }
+
         });
 
         return view;

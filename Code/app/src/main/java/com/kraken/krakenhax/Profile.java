@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.google.firebase.Timestamp;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,7 @@ public class Profile implements Parcelable {
     private String pictureURL;
     private boolean notificationsEnabled = true;
     private Timestamp dateCreated;
+    private List<Action> history = new ArrayList<Action>();
 
     /**
      * Constructs a new user profile with the given details.
@@ -62,6 +64,7 @@ public class Profile implements Parcelable {
         this.ID = ID;
         this.bookmarkedEvents = new ArrayList<String>();
         this.dateCreated = Timestamp.now();
+        //this.history = new ArrayList<Action>();
     }
 
     /**
@@ -83,6 +86,7 @@ public class Profile implements Parcelable {
         bookmarkedEvents = in.createStringArrayList();
         pictureURL = in.readString();
         notificationsEnabled = in.readByte() != 0;
+        history = in.createTypedArrayList(Action.CREATOR);
     }
 
     public static final Creator<Profile> CREATOR = new Creator<Profile>() {
@@ -344,6 +348,24 @@ public class Profile implements Parcelable {
         dest.writeStringList(bookmarkedEvents);
         dest.writeString(pictureURL);
         dest.writeByte((byte) (notificationsEnabled ? 1 : 0));
+        dest.writeTypedList(history);
     }
 
+    public List<Action> getHistory() {
+        if (history == null) {
+            history = new ArrayList<>();
+        }
+        return history;
+    }
+
+    public void setHistory(List<Action> history) {
+        this.history = history;
+    }
+
+    public void updateHistory(Action newAction) {
+        if (this.history == null) {
+            this.history = new ArrayList<>();
+        }
+        this.history.add(newAction);
+    }
 }

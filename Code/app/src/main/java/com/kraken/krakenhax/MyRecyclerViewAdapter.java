@@ -15,7 +15,8 @@ import java.util.ArrayList;
 
 
 /**
- * Creates an adapter for the RecyclerView, allows us to connect our RecyclerView to an array containing the data we want to display.
+ * Creates an adapter for the RecyclerView, allows us to connect our RecyclerView to an array
+ * containing the data we want to display.
  */
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder> {
     private final ArrayList<Event> data;
@@ -111,7 +112,6 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
          * @param position The position of the view in the adapter.
          */
         void onItemClick(View view, int position);
-
     }
 
     /**
@@ -119,7 +119,6 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
      */
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final TextView tvLogEntry;
-
         final TextView tvDescription;
         final ImageView ivEventImage;
 
@@ -132,7 +131,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
             tvLogEntry = itemView.findViewById(R.id.tv_event_title);
             ivEventImage = itemView.findViewById(R.id.event_icon);
-            tvDescription = itemView.findViewById(R.id.tv_description);
+            tvDescription = itemView.findViewById(R.id.tv_event_description);
 
             itemView.setOnClickListener(this);
         }
@@ -144,10 +143,12 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         @Override
         public void onClick(View view) {
             if (clickListener != null) {
-                clickListener.onItemClick(view, getAdapterPosition());
+                int position = getBindingAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    clickListener.onItemClick(view, position);
+                }
             }
         }
-
     }
 
 }

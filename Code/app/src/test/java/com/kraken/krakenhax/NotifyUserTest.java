@@ -20,7 +20,7 @@ public class NotifyUserTest {
 
     @Before
     public void setUp() {
-        notifier = new NotifyUser(context);
+        //notifier = new NotifyUser();
         recipient = new Profile("6","TestUser", "password123", "entrant", "test@example.com","0");
 
     }
