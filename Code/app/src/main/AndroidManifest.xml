@@ -7,6 +7,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+
+
 
 
 
@@ -53,8 +58,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="event"
-                    android:scheme="krakenhax" />
+                    android:scheme="https"
+                    android:host="www.krakenhax.com"
+                    android:pathPrefix="/events" />
             </intent-filter>
         </activity>
     </application>

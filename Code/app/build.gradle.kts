@@ -85,4 +85,5 @@ dependencies {
 
     // For QR Codes
     implementation(libs.zxing.android.embedded)
+
 }
