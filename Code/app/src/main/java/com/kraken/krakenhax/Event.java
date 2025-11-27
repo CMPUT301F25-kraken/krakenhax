@@ -484,7 +484,7 @@ public class Event implements Parcelable {
         // From the entrants perspective
         for (Profile loser : losers) {
             loser.updateHistory(new Action("Lose lottery for event", null, this.getId()));
-            db.collection("Profiles").document(loser.getID()).set(loser)
+            db.collection("Profiles").document(loser.getID()).update("history", loser.getHistory())
                     .addOnFailureListener(e -> Log.e("drawLottery", "Failed to save loser history", e));
         }
     }
