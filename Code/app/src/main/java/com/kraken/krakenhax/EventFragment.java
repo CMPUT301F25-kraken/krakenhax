@@ -31,6 +31,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -39,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import com.kraken.krakenhax.NotificationJ;
 
 /**
  * The Event Page — displays event details and provides sign-up / cancel / notification functionality.
@@ -59,7 +61,6 @@ public class EventFragment extends Fragment {
     private StorageReference storageRef;
     private EventViewModel eventViewModel;
 
-
     public EventFragment() {
         // Required empty public constructor
     }
@@ -77,7 +78,9 @@ public class EventFragment extends Fragment {
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
         assert event != null;
+
         ImageView qrImageView = view.findViewById(R.id.qr_imageview);
+
         // Set up the nav controller
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
@@ -100,12 +103,9 @@ public class EventFragment extends Fragment {
             }
         });
 
-
-
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
-
 
         // Start a firestore listener for the event
         startFirestoreListener();
@@ -143,21 +143,17 @@ public class EventFragment extends Fragment {
         setEventPoster(eventImage);
 
         Button photoDelete = view.findViewById(R.id.delete_event_Photo);
-        if (currentUser.getType().equals("Admin")){
+        if (currentUser.getType().equals("Admin")) {
             photoDelete.setVisibility(View.VISIBLE);
         } else {
             photoDelete.setVisibility(View.GONE);
         }
         photoDelete.setOnClickListener(v -> {
-
             event.setPoster(null);
             deleteEventPic();
             setEventPoster(eventImage);
             updateEventInFirestore();
         });
-
-
-
 
         // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
@@ -189,7 +185,6 @@ public class EventFragment extends Fragment {
             deleteEventFromFirestore();
             navController.popBackStack();
         });
-
     }
 
     @Override
@@ -285,7 +280,6 @@ public class EventFragment extends Fragment {
         });
     }
 
-
     /**
      * Adds the entrant to the waitlist for an event.
      */
@@ -307,8 +301,7 @@ public class EventFragment extends Fragment {
         notifyUser.sendNotification(currentUser,
                 "✅ You have successfully signed up for " + event.getTitle());
 
-        // 3. ROBUST HISTORY UPDATE
-        // Re-fetch the user to ensure we aren't overwriting with stale data
+        // ROBUST HISTORY UPDATE
         db.collection("Profiles").document(currentUser.getID()).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     Profile freshProfile = documentSnapshot.toObject(Profile.class);
@@ -371,29 +364,52 @@ public class EventFragment extends Fragment {
                         updateButtons();
 
                         // Add action to users history
-                        // Action: Accept place in event
                         currentUser.updateHistory(new Action("Accept place in event", "n/a", event.getId()));
-                        // Save only history to Firestore to avoid overwriting other fields
                         db.collection("Profiles").document(currentUser.getID())
                                 .update("history", currentUser.getHistory())
                                 .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history (Accept)", e));
                     });
 
                     buttonDecline.setOnClickListener(v -> {
+                        // 1. Update event state and Firestore
                         event.addToCancelList(currentUser);
                         updateEventInFirestore();
+
+                        // 2. Create a notification so the entrant sees a record of the cancellation
+                        if (currentUser.isNotificationsEnabled()) {
+                            NotificationJ notification = new NotificationJ(
+                                    "You cancelled your spot",
+                                    "You have cancelled your participation in " + event.getTitle() + ".",
+                                    event.getOrgId(),          // sender = organizer / event owner
+                                    null,                      // timestamp set by server
+                                    event.getId(),
+                                    currentUser.getID(),
+                                    false
+                            );
+
+                            db.collection("Profiles")
+                                    .document(currentUser.getID())
+                                    .collection("Notifications")
+                                    .add(notification)
+                                    .addOnSuccessListener(docRef ->
+                                            docRef.update("timestamp", FieldValue.serverTimestamp())
+                                    )
+                                    .addOnFailureListener(e ->
+                                            Log.e("EventFragment", "Failed to create cancellation notification", e)
+                                    );
+                        }
+
+                        // 3. Update UI
                         buttonAccept.setVisibility(View.GONE);
                         buttonDecline.setVisibility(View.GONE);
                         buttonSignup.setVisibility(View.VISIBLE);
                         updateButtons();
 
-                        // Add action to users history
+                        // 4. Add action to users history
                         currentUser.updateHistory(new Action("Decline place in event", "n/a", event.getId()));
-                        // Save only history to Firestore to avoid overwriting other fields
                         db.collection("Profiles").document(currentUser.getID())
                                 .update("history", currentUser.getHistory())
                                 .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history (Decline)", e));
-
                     });
 
                 } else if (event.getCancelList().contains(currentUser)) {
@@ -407,39 +423,30 @@ public class EventFragment extends Fragment {
                 } else if (event.getLostList().contains(currentUser)) {
                     buttonSignup.setClickable(false);
                     buttonSignup.setText("You were not selected");
+
                 } else if (event.getWaitList().contains(currentUser)) {
                     buttonSignup.setText("Withdraw");
                     buttonSignup.setOnClickListener(v -> {
                         event.removeFromWaitList(currentUser);
-                        //currentUser.removeFromMyWaitList(event.getId());
                         updateEventInFirestore();
                         updateButtons();
 
                         // Notify user
                         NotifyUser notifyUser = new NotifyUser(requireContext());
                         notifyUser.sendNotification(currentUser,
-                                "\u274c You have withdrawn from " + event.getTitle());
+                                "❌ You have withdrawn from " + event.getTitle());
 
                         // Update users history with action
                         currentUser.updateHistory(new Action("Withdraw from waitlist", "n/a", event.getId()));
-                        // Save only history to Firestore to avoid overwriting other fields
                         db.collection("Profiles").document(currentUser.getID())
                                 .update("history", currentUser.getHistory())
                                 .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history (Withdraw)", e));
-
                     });
-                    //event.getWaitList().contains(currentUser)
                 } else {
                     buttonSignup.setText("Sign Up");
                     buttonSignup.setOnClickListener(v -> {
-                        //event.addToWaitList(currentUser);
-                        //currentUser.addToMyWaitlist(event.getId());
-                        //updateEventInFirestore(event);
-                        //updateButtons(view, event, navController);
-
                         if (event.getUseGeolocation()) {
                             if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                                // User denied once normally → you can ask again
                                 new AlertDialog.Builder(requireContext())
                                         .setTitle("Location Required")
                                         .setMessage("We need your location to join this event. Please allow it.")
@@ -447,7 +454,6 @@ public class EventFragment extends Fragment {
                                         .setNegativeButton("Cancel", null)
                                         .show();
                             } else {
-                                // First time → ask directly
                                 requestLocationPermissions();
                             }
                         } else {
@@ -481,7 +487,8 @@ public class EventFragment extends Fragment {
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
                     boolean hasLocationPermission =
-                            Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION)) || Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_COARSE_LOCATION));
+                            Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_FINE_LOCATION)) ||
+                                    Boolean.TRUE.equals(result.get(Manifest.permission.ACCESS_COARSE_LOCATION));
 
                     if (hasLocationPermission) {
                         // User allowed at least one location permission
@@ -508,18 +515,13 @@ public class EventFragment extends Fragment {
                                     .setNegativeButton("Cancel", null)
                                     .show();
                         } else {
-                            //
                             Toast.makeText(requireContext(),
                                     "This event needs location, please try again and allow location",
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
-
                 }
-
         );
-
-
 
         return locationPermissionRequest;
     }
@@ -547,10 +549,8 @@ public class EventFragment extends Fragment {
                     tvWaitlistEntry.setText(String.format("%d / infinity", numWaitlist));
                 }
 
-
                 // Set the timer to repeat this code every 10 seconds
                 timerHandler.postDelayed(this, 10000);
-
             }
         };
 
@@ -654,10 +654,8 @@ public class EventFragment extends Fragment {
                         // Set the timer to repeat this code every 10 seconds
                         timerHandler.postDelayed(this, 10000);
                     }
-                    // Throw an exception when the timeframe array for the event is empty
                 } catch (IndexOutOfBoundsException e) {
                     tvRegistrationInfo.setText("ERROR: This event has an invalid or empty timeframe.");
-                    //throw new IllegalStateException("The event titled '" + event.getTitle() + "' (ID: " + event.getId() + ") has an invalid or empty timeframe. It must contain at least two timestamps.", e);
                 }
             }
         };
@@ -705,12 +703,9 @@ public class EventFragment extends Fragment {
     public void deleteEventPic() {
         StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
         eventPosterRef.delete().addOnSuccessListener(aVoid -> {
-            // Profile picture deleted successfully
             Log.d("EventFragment", "Event poster deleted successfully");
         }).addOnFailureListener(e -> {
-            // Error
             Log.e("Firebase", "Delete event poster failed", e);
         });
     }
-
 }
