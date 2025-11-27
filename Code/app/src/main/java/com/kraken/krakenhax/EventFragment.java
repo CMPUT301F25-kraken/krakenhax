@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -294,10 +293,15 @@ public class EventFragment extends Fragment {
         // Get view
         View view = getView();
         if (view == null) return;
-        //currentUser.addToMyWaitlist(event.getId());
+
+        event.addToWaitList(currentUser);
         updateEventInFirestore();
         updateButtons();
 
+        doStuff();
+    }
+
+    private void doStuff() {
         // Notify user
         NotifyUser notifyUser = new NotifyUser(requireContext());
         notifyUser.sendNotification(currentUser,
