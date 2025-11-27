@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.Timestamp;
@@ -50,7 +51,7 @@ public class MyEventDetailsFragment extends Fragment {
     private Uri filePath;
     private Event event;
     private EventViewModel eventViewModel;
-    private ImageView qrCodeImage;
+    private ImageView qrImageView;
     //private Profile currentUser;
 
     /**
@@ -92,8 +93,7 @@ public class MyEventDetailsFragment extends Fragment {
         Button btnBack = view.findViewById(R.id.btnBack);
         Button btnEntrantInfo = view.findViewById(R.id.btn_entrant_info);
         Button btnLottery = view.findViewById(R.id.btnLottery);
-        qrCodeImage = view.findViewById(R.id.qr_code_imageview);
-        eventViewModel = new EventViewModel();
+        qrImageView = view.findViewById(R.id.qr_code_imageview);
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
 //         assert mainActivity != null;
@@ -143,6 +143,29 @@ public class MyEventDetailsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+        eventViewModel.clearDownloadedBitmap();
+
+        String url = event.getQrCodeURL();
+
+        if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
+            qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+        } else {
+            eventViewModel.urlToBitmap(requireContext(), url);
+        }
+        Log.e("QRCODEDEBUG", "URL value = " + url);
+
+        eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
+            if (bitmap != null) {
+                qrImageView.setImageBitmap(bitmap);
+            } else {
+                qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+            }
+        });
     }
 
     /**

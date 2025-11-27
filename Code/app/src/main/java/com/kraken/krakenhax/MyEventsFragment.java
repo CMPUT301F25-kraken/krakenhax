@@ -35,6 +35,7 @@ public class MyEventsFragment extends Fragment {
     private Button makeEventButton;
     private Profile currentUser;
 
+
     /**
      * Required empty public constructor for fragment instantiation.
      */

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -29,6 +30,7 @@ import androidx.navigation.Navigation;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -47,6 +49,7 @@ public class EventFragment extends Fragment {
     private Profile currentUser;
     private FirebaseFirestore db;
     private ProfileViewModel profileModel;
+
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private NavController navController;
     private Event event;
@@ -55,14 +58,15 @@ public class EventFragment extends Fragment {
     private Runnable deadlineRunnable;
     private Runnable updateButtonRunnable;
     private StorageReference storageRef;
+    private EventViewModel eventViewModel;
+
 
     public EventFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
-            savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
@@ -74,16 +78,35 @@ public class EventFragment extends Fragment {
         assert getArguments() != null;
         event = getArguments().getParcelable("event");
         assert event != null;
-
-        // Set up the qrImageView (not used in this fragment but initialized here)
         ImageView qrImageView = view.findViewById(R.id.qr_imageview);
-
         // Set up the nav controller
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+        eventViewModel.clearDownloadedBitmap();
+
+        String url = event.getQrCodeURL();
+
+        if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
+            qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+        } else {
+            eventViewModel.urlToBitmap(requireContext(), url);
+        }
+        Log.e("QRCODEDEBUG", "URL value = " + url);
+
+        eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
+            if (bitmap != null) {
+                qrImageView.setImageBitmap(bitmap);
+            } else {
+                qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+            }
+        });
+
+
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
+
 
         // Start a firestore listener for the event
         startFirestoreListener();
@@ -121,7 +144,7 @@ public class EventFragment extends Fragment {
         setEventPoster(eventImage);
 
         Button photoDelete = view.findViewById(R.id.delete_event_Photo);
-        if (currentUser.getType().equals("Admin")) {
+        if (currentUser.getType().equals("Admin")){
             photoDelete.setVisibility(View.VISIBLE);
         } else {
             photoDelete.setVisibility(View.GONE);
@@ -133,6 +156,9 @@ public class EventFragment extends Fragment {
             setEventPoster(eventImage);
             updateEventInFirestore();
         });
+
+
+
 
         // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
@@ -187,6 +213,9 @@ public class EventFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
                     .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
         }
+        DocumentReference profRef = db.collection("Profiles").document(currentUser.getID());
+        profRef.set(currentUser);
+        //profRef.update("myWaitlist", FieldValue.arrayUnion(event.getId()));
     }
 
     /**
@@ -207,7 +236,7 @@ public class EventFragment extends Fragment {
      * Prompts the user to give permission to access their location.
      */
     private void requestLocationPermissions() {
-        locationPermissionRequest.launch(new String[]{
+        locationPermissionRequest.launch(new String[] {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
@@ -265,8 +294,7 @@ public class EventFragment extends Fragment {
         // Get view
         View view = getView();
         if (view == null) return;
-
-        event.addToWaitList(currentUser);
+        //currentUser.addToMyWaitlist(event.getId());
         updateEventInFirestore();
         updateButtons();
 
@@ -482,8 +510,12 @@ public class EventFragment extends Fragment {
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
+
                 }
+
         );
+
+
 
         return locationPermissionRequest;
     }
