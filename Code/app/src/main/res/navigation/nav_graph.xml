@@ -152,6 +152,10 @@
             android:id="@+id/action_signout"
             app:destination="@+id/LoginFragment" />
 
+        <action
+            android:id="@+id/action_ProfileFragment_to_HistoryFragment"
+            app:destination="@+id/HistoryFragment" />
+
     </fragment>
 
     <!-- Destination for Login Fragment -->
@@ -332,5 +336,15 @@
 
     </fragment>
 
+    <fragment
+        android:id="@+id/HistoryFragment"
+        android:name="com.kraken.krakenhax.HistoryFragment"
+        android:label="HistoryFragment"
+        tools:layout="@layout/fragment_history">
+
+        <action
+            android:id="@+id/action_HistoryFragment_to_ProfileFragment"
+            app:destination="@id/ProfileFragment" />
+    </fragment>
 
 </navigation>
