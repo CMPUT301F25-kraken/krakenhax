@@ -371,11 +371,10 @@ public class EventFragment extends Fragment {
                     });
 
                     buttonDecline.setOnClickListener(v -> {
-                        // 1. Update event state and Firestore
                         event.addToCancelList(currentUser);
                         updateEventInFirestore();
 
-                        // 2. Create a notification so the entrant sees a record of the cancellation
+                        // Creating a notification so the entrant sees a record of the cancellation
                         if (currentUser.isNotificationsEnabled()) {
                             NotificationJ notification = new NotificationJ(
                                     "You cancelled your spot",
@@ -399,13 +398,13 @@ public class EventFragment extends Fragment {
                                     );
                         }
 
-                        // 3. Update UI
+                        // Update UI
                         buttonAccept.setVisibility(View.GONE);
                         buttonDecline.setVisibility(View.GONE);
                         buttonSignup.setVisibility(View.VISIBLE);
                         updateButtons();
 
-                        // 4. Add action to users history
+                        // Add action to users history
                         currentUser.updateHistory(new Action("Decline place in event", "n/a", event.getId()));
                         db.collection("Profiles").document(currentUser.getID())
                                 .update("history", currentUser.getHistory())
@@ -436,7 +435,7 @@ public class EventFragment extends Fragment {
                         notifyUser.sendNotification(currentUser,
                                 "❌ You have withdrawn from " + event.getTitle());
 
-                        // Update users history with action
+                        // Update users' history with action
                         currentUser.updateHistory(new Action("Withdraw from waitlist", "n/a", event.getId()));
                         db.collection("Profiles").document(currentUser.getID())
                                 .update("history", currentUser.getHistory())
