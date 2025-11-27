@@ -60,26 +60,24 @@ dependencies {
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
 
-    // For unit testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-
-    // For navigating between fragments
+    // For navigating between fragments (non-ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
-    // For interacting with Firebase
+    // Firebase / storage / images
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.installations)
     implementation(libs.picasso)
 
-    // For splash screen
+    // QR codes
+    implementation(libs.zxing.android.embedded)
+
+    // Splash
     implementation(libs.core.splashscreen)
 
-    // For Maps
+    // Maps / location
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 
@@ -91,4 +89,17 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("androidx.test.ext:junit:1.3.0")
+    // UNIT TESTS
+    testImplementation(libs.junit)
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.+")
+
+    // ANDROID TESTS (UI / instrumentation)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // FragmentScenario needs debugImplementation
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
 }
