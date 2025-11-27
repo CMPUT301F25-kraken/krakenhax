@@ -148,11 +148,17 @@ public class MyEventDetailsFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
-        if (event.getQrCodeURL() == null) {
-            Log.e("EventFragment", "QR image URL is null");
+        eventViewModel.clearDownloadedBitmap();
+
+        String url = event.getQrCodeURL();
+
+        if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
+            qrImageView.setImageResource(R.drawable.outline_beach_access_100);
         } else {
-            eventViewModel.urlToBitmap(getActivity().getApplicationContext(), event.getQrCodeURL());
+            eventViewModel.urlToBitmap(requireContext(), url);
         }
+        Log.e("QRCODEDEBUG", "URL value = " + url);
+
         eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
             if (bitmap != null) {
                 qrImageView.setImageBitmap(bitmap);

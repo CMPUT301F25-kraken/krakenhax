@@ -173,6 +173,10 @@ public class EventViewModel extends ViewModel {
         Picasso.get().load(url).into(picassoTarget);
     }
 
+    public void clearDownloadedBitmap() {
+        downloadedBitmap.setValue(null);
+    }
+
     public MutableLiveData<Bitmap> getDownloadedBitmap() {
         return downloadedBitmap;
     }

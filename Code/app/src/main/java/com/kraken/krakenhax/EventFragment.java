@@ -527,12 +527,16 @@ public class EventFragment extends Fragment {
         // Set up the nav controller
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
-        if (event.getQrCodeURL() == null) {
-            Log.e("EventFragment", "QR image URL is null");
+        eventViewModel.clearDownloadedBitmap();
+
+        String url = event.getQrCodeURL();
+
+        if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
+            qrImageView.setImageResource(R.drawable.outline_beach_access_100);
         } else {
-            eventViewModel.urlToBitmap(getActivity().getApplicationContext(), event.getQrCodeURL());
+            eventViewModel.urlToBitmap(requireContext(), url);
         }
-        Log.d("QRDEBUG", "URL value = '" + event.getQrCodeURL() + "'");
+        Log.e("QRCODEDEBUG", "URL value = " + url);
 
         eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
             if (bitmap != null) {
