@@ -26,6 +26,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Picasso;
+import com.kraken.krakenhax.NotificationJ;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
+
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -125,11 +129,70 @@ public class MyEventDetailsFragment extends Fragment {
             if (event.getLostList().isEmpty()) {
                 event.drawLottery(event.getWaitList(), event.getWinnerNumber());
             } else {
-                event.drawLottery(event.getLostList(), event.getWinnerNumber() - event.getWonList().size());
+                event.drawLottery(
+                        event.getLostList(),
+                        event.getWinnerNumber() - event.getWonList().size()
+                );
             }
+
             updateEventInFirestore(event);
-            Toast.makeText(requireContext(), "Lottery drawn successfully!", Toast.LENGTH_SHORT).show();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            for (Profile p : event.getWonList()) {
+                if (p == null) continue;
+                if (!p.isNotificationsEnabled()) continue;
+
+                NotificationJ notif = new NotificationJ(
+                        "You won the lottery!",
+                        "You have been selected to participate in " + event.getTitle() + ".",
+                        event.getOrgId(),          // sender = organizer
+                        null,                      // timestamp will be set server-side
+                        event.getId(),             // event ID
+                        p.getID(),                 // recipient profile ID
+                        false                      // read = false
+                );
+
+                db.collection("Profiles")
+                        .document(p.getID())
+                        .collection("Notifications")
+                        .add(notif)
+                        .addOnSuccessListener(docRef ->
+                                docRef.update("timestamp", FieldValue.serverTimestamp())
+                        );
+            }
+
+            // Notify losers: "You were not selected"
+            for (Profile p : event.getLostList()) {
+                if (p == null) continue;
+                if (!p.isNotificationsEnabled()) continue;
+
+                NotificationJ notif = new NotificationJ(
+                        "Lottery result",
+                        "Unfortunately, you were not selected for " + event.getTitle() + ".",
+                        event.getOrgId(),
+                        null,
+                        event.getId(),
+                        p.getID(),
+                        false
+                );
+
+                db.collection("Profiles")
+                        .document(p.getID())
+                        .collection("Notifications")
+                        .add(notif)
+                        .addOnSuccessListener(docRef ->
+                                docRef.update("timestamp", FieldValue.serverTimestamp())
+                        );
+            }
+
+            // 4. UI feedback
+            Toast.makeText(requireContext(),
+                    "Lottery drawn successfully!",
+                    Toast.LENGTH_SHORT
+            ).show();
         });
+
 
         btnUploadPoster.setOnClickListener(v -> imagePicker.launch("image/*"));
 
