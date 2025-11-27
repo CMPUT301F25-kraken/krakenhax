@@ -5,13 +5,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
-
+import com.squareup.picasso.Target;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -27,6 +28,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,6 +46,9 @@ public class EventViewModel extends ViewModel {
     private final FirebaseFirestore db;
     private final CollectionReference eventCollection;
     private final StorageReference storageRef;
+
+    private final MutableLiveData<Bitmap> downloadedBitmap = new MutableLiveData<>();
+    private Target picassoTarget;
 
     /**
      * Constructor initializes Firestore and snapshot listener.
@@ -148,6 +153,32 @@ public class EventViewModel extends ViewModel {
         ).addOnFailureListener(e ->
                 Log.e("Firebase", "QR code upload failed", e)
         );
+    }
+
+    public void urlToBitmap(Context context, String url) {
+        picassoTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                downloadedBitmap.setValue(bitmap);
+            }
+            @Override
+            public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                Log.e("Picasso", "Error loading image", e);
+                downloadedBitmap.setValue(null);
+            }
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        };
+        Picasso.get().load(url).into(picassoTarget);
+    }
+
+    public void clearDownloadedBitmap() {
+        downloadedBitmap.setValue(null);
+    }
+
+    public MutableLiveData<Bitmap> getDownloadedBitmap() {
+        return downloadedBitmap;
     }
 
     /**
