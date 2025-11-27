@@ -85,4 +85,13 @@ dependencies {
 
     // For QR Codes
     implementation(libs.zxing.android.embedded)
+
+    testImplementation("org.mockito:mockito-core:5.20.0")
+// Use the latest version
+// For Kotlin projects, consider mockito-kotlin for a cleaner API
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
+// Use the latest version
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("androidx.test:core:1.7.0")
+    testImplementation("androidx.test.ext:junit:1.3.0")
 }

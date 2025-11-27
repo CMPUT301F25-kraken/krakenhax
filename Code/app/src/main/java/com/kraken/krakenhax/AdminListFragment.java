@@ -47,13 +47,11 @@ public class AdminListFragment extends Fragment {
     public FirebaseFirestore db;
     public AdminProfileAdapter adminProfileAdapter;
     public NotifAdapterJ NotifAdapter;
-
     private MyRecyclerViewAdapter adapter;
     private ArrayList<Event> events;
     private RecyclerView recyclerView;
     private ListView profileListView;
     private ListView NotificationListView;
-
     private CollectionReference profileRef;
     private CollectionReference eventsRef;
     private StorageReference storageRef;
@@ -112,7 +110,15 @@ public class AdminListFragment extends Fragment {
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
+        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+            profileList.clear();
 
+            for (Profile profile : profiles) {
+                if (profile.getType().equals("Entrant")) {
+                    profileList.add(profile);
+                }
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         ArrayAdapter<String> SpinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, spinnerList);
         SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -128,13 +134,13 @@ public class AdminListFragment extends Fragment {
                         NotificationListView.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                         profileListView.setVisibility(View.VISIBLE);
-                        getEntrants(navController);
+                        getEntrants(navController, profileList);
                         break;
                     case "Organizers":
                         NotificationListView.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                         profileListView.setVisibility(View.VISIBLE);
-                        getOrganizers(navController);
+                        getOrganizers(navController, profileList);
                         break;
                     case "Events":
                         NotificationListView.setVisibility(View.GONE);
@@ -146,13 +152,11 @@ public class AdminListFragment extends Fragment {
                         NotificationListView.setVisibility(View.VISIBLE);
                         profileListView.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
-                        getNotifications();
+                        getNotifications(profileList);
                         break;
                     default:
                         break;
-
                 }
-
             }
 
             @Override
@@ -210,84 +214,62 @@ public class AdminListFragment extends Fragment {
         });
     }
 
-    public void getEntrants(NavController navController) {
-        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
-            profileList.clear();
+    public void getEntrants(NavController navController, ArrayList<Profile> profileList) {
 
-            for (Profile profile : profiles) {
-                if (profile.getType().equals("Entrant")) {
-                    profileList.add(profile);
-                }
-            }
+        adminProfileAdapter = new AdminProfileAdapter(requireContext(), profileList);
+        profileListView.setAdapter(adminProfileAdapter);
 
-            adminProfileAdapter = new AdminProfileAdapter(requireContext(), profileList);
-            profileListView.setAdapter(adminProfileAdapter);
+        profileListView.setOnItemClickListener((parent, view, position, id) -> {
+            Profile clickedProfile = profileList.get(position);
+            Log.d("viewProfileFragment", "You clicked " + clickedProfile.getUsername() + " on row number " + position);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("profile", clickedProfile);
 
-            profileListView.setOnItemClickListener((parent, view, position, id) -> {
-                Profile clickedProfile = profileList.get(position);
-                Log.d("viewProfileFragment", "You clicked " + clickedProfile.getUsername() + " on row number " + position);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("profile", clickedProfile);
+            navController.navigate(R.id.action_adminListFragment_to_viewProfiles, bundle);
 
-                navController.navigate(R.id.action_adminListFragment_to_viewProfiles, bundle);
-
-            });
         });
     }
 
-    public void getOrganizers(NavController navController) {
-        profileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
-            profileList.clear();
+    public void getOrganizers(NavController navController, ArrayList<Profile> profileList) {
 
-            for (Profile profile : profiles) {
-                if (profile.getType().equals("Organizer")) {
-                    profileList.add(profile);
-                }
-            }
 
-            adminProfileAdapter = new AdminProfileAdapter(requireContext(), profileList);
-            profileListView.setAdapter(adminProfileAdapter);
+        adminProfileAdapter = new AdminProfileAdapter(requireContext(), profileList);
+        profileListView.setAdapter(adminProfileAdapter);
 
-            profileListView.setOnItemClickListener((parent, view, position, id) -> {
-                Profile clickedProfile = profileList.get(position);
-                Log.d("viewProfileFragment", "You clicked " + clickedProfile.getUsername() + " on row number " + position);
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("profile", clickedProfile);
+        profileListView.setOnItemClickListener((parent, view, position, id) -> {
+            Profile clickedProfile = profileList.get(position);
+            Log.d("viewProfileFragment", "You clicked " + clickedProfile.getUsername() + " on row number " + position);
+            Bundle bundle = new Bundle();
+            bundle.putParcelable("profile", clickedProfile);
 
-                navController.navigate(R.id.action_adminListFragment_to_viewProfiles, bundle);
-
-            });
+            navController.navigate(R.id.action_adminListFragment_to_viewProfiles, bundle);
         });
     }
 
-
-
-    public void getNotifications() {
+    public void getNotifications(ArrayList<Profile> profileList) {
         // Get notifications from Firebase Firestore
-        CollectionReference notificationsRef = db.collection("Notifications");
+        //CollectionReference notificationsRef = db.collection("Notifications");
         notifList.clear();
-
-        notificationsRef.addSnapshotListener((snap, e )-> {
-            if (e != null) {
-                Log.e("Firestore", "Listen failed", e);
-                return;
+        for (Profile p : profileList) {
+            if (!db.collection("Profile").document(p.getID()).collection("Notifications").get().getResult().isEmpty()) {
+                CollectionReference notifRef = db.collection("Profile").document(p.getID()).collection("Notifications");
+                notifRef.addSnapshotListener((snap, e) -> {
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed", e);
+                        return;
+                    }
+                    if (snap != null && !snap.isEmpty()) {
+                        for (QueryDocumentSnapshot doc : snap) {
+                            // Use .toObject() for robust deserialization
+                            NotificationJ notification = doc.toObject(NotificationJ.class);
+                            notifList.add(notification);
+                        }
+                        NotifAdapter.notifyDataSetChanged();
+                    }
+                });
             }
-            if (snap != null && !snap.isEmpty()) {
-                for (QueryDocumentSnapshot doc : snap) {
-                    // Use .toObject() for robust deserialization
-                    NotificationJ notification = doc.toObject(NotificationJ.class);
-                    notifList.add(notification);
-                }
-                NotifAdapter.notifyDataSetChanged();
-            }
-        });
-
-
+        }
         NotifAdapter = new NotifAdapterJ(requireContext(), notifList);
         NotificationListView.setAdapter(NotifAdapter);
-
-
-
     }
-
 }

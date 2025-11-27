@@ -1,5 +1,7 @@
 package com.kraken.krakenhax;
 
+import android.content.Context;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,10 +16,11 @@ public class NotifyUserTest {
 
     private NotifyUser notifier;
     private Profile recipient;
+    private Context context;
 
     @Before
     public void setUp() {
-        notifier = new NotifyUser();
+        notifier = new NotifyUser(context);
         recipient = new Profile("6","TestUser", "password123", "entrant", "test@example.com","0");
 
     }
