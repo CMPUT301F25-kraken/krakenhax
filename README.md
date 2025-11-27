@@ -12,8 +12,6 @@
 - **Organizers** configure events, run lotteries, and notify entrants.
 - **Administrators** oversee events, profiles, and notification activity.
 
-For Part 4, the focus was on implementing a full **notification workflow** for winners/losers, cancellations, and organizer broadcasts, plus adding **database and UI tests**.
-
 ---
 
 ## Team Members
@@ -176,6 +174,3 @@ Located under: `app/src/androidTest/java/com/kraken/krakenhax/`
 These tests validate that key **UI elements** for notifications and events behave as expected.
 
 ---
-
-```bash
-./gradlew :app:testDebugUnitTest
