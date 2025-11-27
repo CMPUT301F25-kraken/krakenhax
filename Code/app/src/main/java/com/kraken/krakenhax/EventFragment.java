@@ -45,6 +45,7 @@ import java.util.Locale;
  * The Event Page — displays event details and provides sign-up / cancel / notification functionality.
  */
 public class EventFragment extends Fragment {
+    private final android.os.Handler timerHandler = new android.os.Handler();
     private Profile currentUser;
     private FirebaseFirestore db;
     private ProfileViewModel profileModel;
@@ -53,7 +54,6 @@ public class EventFragment extends Fragment {
     private NavController navController;
     private Event event;
     private TextView tvWaitlistEntry;
-    private final android.os.Handler timerHandler = new android.os.Handler();
     private Runnable waitlistRunnable;
     private Runnable deadlineRunnable;
     private Runnable updateButtonRunnable;
@@ -63,6 +63,145 @@ public class EventFragment extends Fragment {
 
     public EventFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_event, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Get the object for the event
+        assert getArguments() != null;
+        event = getArguments().getParcelable("event");
+        assert event != null;
+        ImageView qrImageView = view.findViewById(R.id.qr_imageview);
+        // Set up the nav controller
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+        eventViewModel.clearDownloadedBitmap();
+
+        String url = event.getQrCodeURL();
+
+        if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
+            qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+        } else {
+            eventViewModel.urlToBitmap(requireContext(), url);
+        }
+        Log.e("QRCODEDEBUG", "URL value = " + url);
+
+        eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
+            if (bitmap != null) {
+                qrImageView.setImageBitmap(bitmap);
+            } else {
+                qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+            }
+        });
+
+
+
+        // Create instance of firestore database
+        db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
+
+
+        // Start a firestore listener for the event
+        startFirestoreListener();
+
+        // Get the object for the current user
+        MainActivity mainActivity = (MainActivity) getActivity();
+        if (mainActivity != null) {
+            currentUser = mainActivity.currentUser;
+        }
+
+        // Creates an instance of the ProfileViewModel
+        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+
+        // Location permission
+        locationPermissionRequest = requestLocationPermission();
+
+        // Set the event name
+        TextView tvEventName = view.findViewById(R.id.tv_event_name);
+        tvEventName.setText(event.getTitle());
+
+        // Set the event location
+        TextView tvLocation = view.findViewById(R.id.tv_location_field);
+        tvLocation.setText(event.getLocation());
+
+        // Set the event description
+        TextView tvDescription = view.findViewById(R.id.tv_event_description);
+        tvDescription.setText(event.getEventDetails());
+
+        // Set up the waitlist info
+        tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
+        setWaitlistInfo();
+
+        // Set the event poster
+        ImageView eventImage = view.findViewById(R.id.event_image);
+        setEventPoster(eventImage);
+
+        Button photoDelete = view.findViewById(R.id.delete_event_Photo);
+        if (currentUser.getType().equals("Admin")){
+            photoDelete.setVisibility(View.VISIBLE);
+        } else {
+            photoDelete.setVisibility(View.GONE);
+        }
+        photoDelete.setOnClickListener(v -> {
+
+            event.setPoster(null);
+            deleteEventPic();
+            setEventPoster(eventImage);
+            updateEventInFirestore();
+        });
+
+
+
+
+        // Set up the back button
+        Button buttonBack = view.findViewById(R.id.button_back);
+        buttonBack.setOnClickListener(v -> navController.popBackStack());
+
+        // Set the view event organizer button to show the name of the organizer and navigate to the organizers page
+        Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
+        setOrganizerButton(buttonEventOrganizer);
+
+        // Set tvRegistrationInfo to display the deadline for registration
+        TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
+        setRegistrationDeadline(tvRegistrationInfo);
+
+        // Set the tvDateTime to show the date and time of the event
+        TextView tvDateTime = view.findViewById(R.id.tv_date_time);
+        setEventDate(tvDateTime);
+
+        // Update buttons for current user state
+        updateButtons();
+
+        // Delete button logic
+        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
+        if (currentUser.getType().equals("Admin") || currentUser.getType().equals("Organizer")) {
+            deleteButton.setVisibility(View.VISIBLE);
+        } else {
+            deleteButton.setVisibility(View.GONE);
+        }
+        deleteButton.setOnClickListener(v -> {
+            deleteEventFromFirestore();
+            navController.popBackStack();
+        });
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // Stop the timer to prevent memory leaks or crashing
+        if (timerHandler != null) {
+            timerHandler.removeCallbacks(waitlistRunnable);
+            timerHandler.removeCallbacks(deadlineRunnable);
+            timerHandler.removeCallbacks(updateButtonRunnable);
+        }
     }
 
     /**
@@ -158,6 +297,31 @@ public class EventFragment extends Fragment {
         //currentUser.addToMyWaitlist(event.getId());
         updateEventInFirestore();
         updateButtons();
+
+        // Notify user
+        NotifyUser notifyUser = new NotifyUser(requireContext());
+        notifyUser.sendNotification(currentUser,
+                "✅ You have successfully signed up for " + event.getTitle());
+
+        // 3. ROBUST HISTORY UPDATE
+        // Re-fetch the user to ensure we aren't overwriting with stale data
+        db.collection("Profiles").document(currentUser.getID()).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Profile freshProfile = documentSnapshot.toObject(Profile.class);
+                    if (freshProfile != null) {
+                        // Add action to history
+                        freshProfile.updateHistory(new Action("Join waitlist", "n/a", event.getId()));
+
+                        // Save back to Firestore (only history field)
+                        db.collection("Profiles").document(freshProfile.getID())
+                                .update("history", freshProfile.getHistory())
+                                .addOnSuccessListener(aVoid -> Log.d("EventFragment", "History saved successfully"))
+                                .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history", e));
+
+                        // Update local currentUser reference so UI stays consistent
+                        this.currentUser = freshProfile;
+                    }
+                });
     }
 
     /**
@@ -201,6 +365,14 @@ public class EventFragment extends Fragment {
                         buttonDecline.setVisibility(View.GONE);
                         buttonSignup.setVisibility(View.VISIBLE);
                         updateButtons();
+
+                        // Add action to users history
+                        // Action: Accept place in event
+                        currentUser.updateHistory(new Action("Accept place in event", "n/a", event.getId()));
+                        // Save only history to Firestore to avoid overwriting other fields
+                        db.collection("Profiles").document(currentUser.getID())
+                                .update("history", currentUser.getHistory())
+                                .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history (Accept)", e));
                     });
 
                     buttonDecline.setOnClickListener(v -> {
@@ -210,6 +382,14 @@ public class EventFragment extends Fragment {
                         buttonDecline.setVisibility(View.GONE);
                         buttonSignup.setVisibility(View.VISIBLE);
                         updateButtons();
+
+                        // Add action to users history
+                        currentUser.updateHistory(new Action("Decline place in event", "n/a", event.getId()));
+                        // Save only history to Firestore to avoid overwriting other fields
+                        db.collection("Profiles").document(currentUser.getID())
+                                .update("history", currentUser.getHistory())
+                                .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history (Decline)", e));
+
                     });
 
                 } else if (event.getCancelList().contains(currentUser)) {
@@ -234,7 +414,15 @@ public class EventFragment extends Fragment {
                         // Notify user
                         NotifyUser notifyUser = new NotifyUser(requireContext());
                         notifyUser.sendNotification(currentUser,
-                                "❌ You have withdrawn from " + event.getTitle());
+                                "\u274c You have withdrawn from " + event.getTitle());
+
+                        // Update users history with action
+                        currentUser.updateHistory(new Action("Withdraw from waitlist", "n/a", event.getId()));
+                        // Save only history to Firestore to avoid overwriting other fields
+                        db.collection("Profiles").document(currentUser.getID())
+                                .update("history", currentUser.getHistory())
+                                .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history (Withdraw)", e));
+
                     });
                     //event.getWaitList().contains(currentUser)
                 } else {
@@ -510,133 +698,6 @@ public class EventFragment extends Fragment {
                 });
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_event, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Get the object for the event
-        assert getArguments() != null;
-        event = getArguments().getParcelable("event");
-        assert event != null;
-        ImageView qrImageView = view.findViewById(R.id.qr_imageview);
-        // Set up the nav controller
-        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
-        eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
-        eventViewModel.clearDownloadedBitmap();
-
-        String url = event.getQrCodeURL();
-
-        if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
-            qrImageView.setImageResource(R.drawable.outline_beach_access_100);
-        } else {
-            eventViewModel.urlToBitmap(requireContext(), url);
-        }
-        Log.e("QRCODEDEBUG", "URL value = " + url);
-
-        eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
-            if (bitmap != null) {
-                qrImageView.setImageBitmap(bitmap);
-            } else {
-                qrImageView.setImageResource(R.drawable.outline_beach_access_100);
-            }
-        });
-
-
-
-        // Create instance of firestore database
-        db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference();
-
-
-        // Start a firestore listener for the event
-        startFirestoreListener();
-
-        // Get the object for the current user
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            currentUser = mainActivity.currentUser;
-        }
-
-        // Creates an instance of the ProfileViewModel
-        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
-
-        // Location permission
-        locationPermissionRequest = requestLocationPermission();
-
-        // Set the event name
-        TextView tvEventName = view.findViewById(R.id.tv_event_name);
-        tvEventName.setText(event.getTitle());
-
-        // Set the event location
-        TextView tvLocation = view.findViewById(R.id.tv_location_field);
-        tvLocation.setText(event.getLocation());
-
-        // Set the event description
-        TextView tvDescription = view.findViewById(R.id.tv_event_description);
-        tvDescription.setText(event.getEventDetails());
-
-        // Set up the waitlist info
-        tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
-        setWaitlistInfo();
-
-        // Set the event poster
-        ImageView eventImage = view.findViewById(R.id.event_image);
-        setEventPoster(eventImage);
-
-        Button photoDelete = view.findViewById(R.id.delete_event_Photo);
-        if (currentUser.getType().equals("Admin")){
-            photoDelete.setVisibility(View.VISIBLE);
-        } else {
-            photoDelete.setVisibility(View.GONE);
-        }
-        photoDelete.setOnClickListener(v -> {
-
-            event.setPoster(null);
-            deleteEventPic();
-            setEventPoster(eventImage);
-            updateEventInFirestore();
-        });
-
-
-
-
-        // Set up the back button
-        Button buttonBack = view.findViewById(R.id.button_back);
-        buttonBack.setOnClickListener(v -> navController.popBackStack());
-
-        // Set the view event organizer button to show the name of the organizer and navigate to the organizers page
-        Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
-        setOrganizerButton(buttonEventOrganizer);
-
-        // Set tvRegistrationInfo to display the deadline for registration
-        TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
-        setRegistrationDeadline(tvRegistrationInfo);
-
-        // Set the tvDateTime to show the date and time of the event
-        TextView tvDateTime = view.findViewById(R.id.tv_date_time);
-        setEventDate(tvDateTime);
-
-        // Update buttons for current user state
-        updateButtons();
-
-        // Delete button logic
-        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
-        if (currentUser.getType().equals("Admin") || currentUser.getType().equals("Organizer")) {
-            deleteButton.setVisibility(View.VISIBLE);
-        } else {
-            deleteButton.setVisibility(View.GONE);
-        }
-        deleteButton.setOnClickListener(v -> {
-            deleteEventFromFirestore();
-            navController.popBackStack();
-        });
-
-    }
     public void deleteEventPic() {
         StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
         eventPosterRef.delete().addOnSuccessListener(aVoid -> {
@@ -646,16 +707,6 @@ public class EventFragment extends Fragment {
             // Error
             Log.e("Firebase", "Delete event poster failed", e);
         });
-    }
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        // Stop the timer to prevent memory leaks or crashing
-        if (timerHandler != null) {
-            timerHandler.removeCallbacks(waitlistRunnable);
-            timerHandler.removeCallbacks(deadlineRunnable);
-            timerHandler.removeCallbacks(updateButtonRunnable);
-        }
     }
 
 }

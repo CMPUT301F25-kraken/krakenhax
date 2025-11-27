@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -89,6 +90,9 @@ public class ProfileFragment extends Fragment {
         if (mainActivity != null) {
             profile = mainActivity.currentUser;
         }
+
+        // Set up the nav controller
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
         // Populate fields
         usernameView.setText(profile.getUsername());
@@ -171,9 +175,14 @@ public class ProfileFragment extends Fragment {
                 mainActivity.currentUser = profile;
             }
 
-            // Update Firestore
+            // Update Firestore with specific fields only to avoid overwriting history and other data
             String id = String.valueOf(profile.getID());
-            profileRef.document(id).set(profile);
+            profileRef.document(id)
+                    .update("username", profile.getUsername(),
+                            "email", profile.getEmail(),
+                            "phoneNumber", profile.getPhoneNumber())
+                    .addOnSuccessListener(aVoid -> Log.d("ProfileFragment", "Profile fields updated successfully"))
+                    .addOnFailureListener(e -> Log.e("ProfileFragment", "Error updating profile fields", e));
 
             Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
         });
@@ -207,6 +216,12 @@ public class ProfileFragment extends Fragment {
             AlertDialog alert = builder.create();
             alert.show();
         });
+
+        // Set up history button
+        ImageButton buttonHistory = view.findViewById(R.id.button_history);
+        buttonHistory.setOnClickListener(
+                v -> navController.navigate(R.id.action_ProfileFragment_to_HistoryFragment)
+        );
 
         return view;
     }
