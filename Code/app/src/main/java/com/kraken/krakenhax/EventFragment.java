@@ -58,6 +58,8 @@ public class EventFragment extends Fragment {
     private Runnable deadlineRunnable;
     private Runnable updateButtonRunnable;
     private StorageReference storageRef;
+    private EventViewModel eventViewModel;
+
 
     public EventFragment() {
         // Required empty public constructor
@@ -524,6 +526,23 @@ public class EventFragment extends Fragment {
         ImageView qrImageView = view.findViewById(R.id.qr_imageview);
         // Set up the nav controller
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+        if (event.getQrCodeURL() == null) {
+            Log.e("EventFragment", "QR image URL is null");
+        } else {
+            eventViewModel.urlToBitmap(getActivity().getApplicationContext(), event.getQrCodeURL());
+        }
+        Log.d("QRDEBUG", "URL value = '" + event.getQrCodeURL() + "'");
+
+        eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
+            if (bitmap != null) {
+                qrImageView.setImageBitmap(bitmap);
+            } else {
+                qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+            }
+        });
+
+
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
