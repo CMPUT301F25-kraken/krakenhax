@@ -4,7 +4,7 @@
 
 ---
 
-## 📘 Overview
+## Overview
 
 **KrakenHax** is an Android mobile application for managing event registrations using a **waitlist + lottery** system.
 
@@ -16,7 +16,7 @@ For Part 4, the focus was on implementing a full **notification workflow** for w
 
 ---
 
-## 👥 Team Members
+## Team Members
 
 - Amaan Sayyad  
 - Logan Pope  
@@ -27,7 +27,7 @@ For Part 4, the focus was on implementing a full **notification workflow** for w
 
 ---
 
-## 🔁 Summary of System Flow
+## Summary of System Flow
 
 1. **Entrant** browses or filters events on the home screen.
 2. Entrant **joins the waitlist** for a chosen event (optionally with geolocation).
@@ -41,7 +41,7 @@ For Part 4, the focus was on implementing a full **notification workflow** for w
 
 ---
 
-## ✨ Core Features
+## Core Features
 
 ### Entrant Features
 
@@ -78,7 +78,7 @@ For Part 4, the focus was on implementing a full **notification workflow** for w
 
 ---
 
-## 🧱 Architecture (High-Level)
+## Architecture (High-Level)
 
 - **Language:** Java  
 - **UI Layer:** Activities + Fragments (e.g., `EventsFragment`, `EventFragment`, `MyEventDetailsFragment`, `EntrantInfoFragment`, `NotificationFragment`, `ProfileFragment`)  
@@ -97,7 +97,7 @@ For Part 4, the focus was on implementing a full **notification workflow** for w
 
 ---
 
-## 🔔 Notification & Lottery Flow (Part 4)
+## Notification & Lottery Flow (Part 4)
 
 - When an organizer runs the lottery from **`MyEventDetailsFragment`**:
   - `Event.drawLottery(...)` updates `wonList` and `lostList`.
@@ -120,7 +120,7 @@ For Part 4, the focus was on implementing a full **notification workflow** for w
 
 ---
 
-## ✅ Testing
+## Testing
 
 The project includes **three layers of testing**:
 
@@ -176,12 +176,6 @@ Located under: `app/src/androidTest/java/com/kraken/krakenhax/`
 These tests validate that key **UI elements** for notifications and events behave as expected.
 
 ---
-
-## ▶️ How to Run Tests
-
-From the project root:
-
-### Unit & DB Tests (JUnit + Mockito)
 
 ```bash
 ./gradlew :app:testDebugUnitTest
