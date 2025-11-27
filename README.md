@@ -1,5 +1,5 @@
 # krakenhax
-**CMPUT 301 – Project Part 4:
+**CMPUT 301 – Project Part 4**:
 
 ---
 
