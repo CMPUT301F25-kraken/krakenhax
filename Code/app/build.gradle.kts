@@ -81,6 +81,14 @@ dependencies {
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 
+    // For QR Codes
+    implementation(libs.zxing.android.embedded)
+
+    // Test implementation
+    testImplementation("org.mockito:mockito-core:5.20.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
+    testImplementation("androidx.test:core:1.7.0")
+    testImplementation("androidx.test.ext:junit:1.3.0")
     // UNIT TESTS
     testImplementation(libs.junit)
     testImplementation("junit:junit:4.13.2")
