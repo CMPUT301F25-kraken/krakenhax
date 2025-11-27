@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -47,6 +49,10 @@ public class HistoryFragment extends Fragment {
         // Set up nav controller
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
+        // Set up back button
+        Button back = view.findViewById(R.id.button_history_back);
+        back.setOnClickListener(v -> navController.popBackStack());
+
         // Get the current user object
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
@@ -59,6 +65,7 @@ public class HistoryFragment extends Fragment {
 
         // Get the history list from current user
         history = currentUser.getHistory();
+        history.sort(Comparator.comparing(Action::getTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
 
         // Set up the recycler view
         recyclerView = view.findViewById(R.id.history_recycler_view);
@@ -71,16 +78,6 @@ public class HistoryFragment extends Fragment {
         if (currentUser == null || currentUser.getID() == null) {
             return;
         }
-
-//        db.collection("Profiles").document(currentUser.getID())
-//                .addSnapshotListener((snapshot, e) -> {
-//                    if (snapshot != null && snapshot.exists()) {
-//                        // Update the current user instance
-//                        this.currentUser = snapshot.toObject(Profile.class);
-//                        // Update the UI
-//                        updateRecyclerView();
-//                    }
-//                });
 
         db.collection("Profiles").document(currentUser.getID())
                 .addSnapshotListener((snapshot, e) -> {
@@ -110,10 +107,14 @@ public class HistoryFragment extends Fragment {
             latestHistory = new java.util.ArrayList<>();
         }
 
-        // 2. Update the local reference
+        // 2. Sort history
+        latestHistory.sort(Comparator.comparing(Action::getTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+
+
+        // 3. Update the local reference
         this.history = latestHistory;
 
-        // 3. Update the adapter
+        // 4. Update the adapter
         if (recyclerView.getAdapter() != null) {
             HistoryRecyclerViewAdapter adapter = (HistoryRecyclerViewAdapter) recyclerView.getAdapter();
             adapter.updateData(this.history);
@@ -123,28 +124,5 @@ public class HistoryFragment extends Fragment {
             recyclerView.setAdapter(adapter);
         }
     }
-
-//    private void updateRecyclerView() {
-//        // 1. Safety Check: Ensure user and history exist
-//        if (this.currentUser == null) return;
-//
-//        // 2. Get the history list (handle null case by creating empty list)
-//        if (this.currentUser.getHistory() == null) {
-//            this.history = new java.util.ArrayList<>();
-//        } else {
-//            this.history = this.currentUser.getHistory();
-//        }
-//
-//        // 3. Update Adapter
-//        if (recyclerView != null && recyclerView.getAdapter() != null) {
-//            HistoryRecyclerViewAdapter adapter = (HistoryRecyclerViewAdapter) recyclerView.getAdapter();
-//            adapter.updateData(this.history);
-//        } else if (recyclerView != null) {
-//            // Fallback: If adapter was null for some reason, create it now
-//            HistoryRecyclerViewAdapter adapter = new HistoryRecyclerViewAdapter(this.history);
-//            recyclerView.setAdapter(adapter);
-//        }
-//    }
-
 
 }

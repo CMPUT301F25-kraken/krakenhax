@@ -14,7 +14,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.time.LocalDateTime;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -29,10 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -41,8 +37,8 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class EntrantInfoFragment extends Fragment {
     private final Handler timerHandler = new Handler();
-    private Event event;
     public ProfileViewModel ProfileModel;
+    private Event event;
     private TextView entrantType;
     private RecyclerView profileRecycler;
     private Spinner spinner_list;
@@ -50,9 +46,6 @@ public class EntrantInfoFragment extends Fragment {
     private Runnable entrantListRunnable;
     private Profile currentUser;
     private View notifyOverlay;
-
-    private Profile currentUser;
-
     private NotificationJ notif;
 
     public EntrantInfoFragment() {
@@ -138,6 +131,26 @@ public class EntrantInfoFragment extends Fragment {
             // Pass the most up-to-date event object
             bundle.putParcelable("event", event);
             NavHostFragment.findNavController(this).navigate(R.id.action_EntrantInfoFragment_to_OrganizerMapFragment, bundle);
+        });
+
+        notifyOverlay = view.findViewById(R.id.notifyOverlay);
+        Button topNotifyButton = view.findViewById(R.id.btn_notify);
+        ImageButton btnCloseNotify = view.findViewById(R.id.btnCloseNotify);
+
+        // show popup
+        topNotifyButton.setOnClickListener(v -> {
+            notifyOverlay.setVisibility(View.VISIBLE);
+            sendNotification(view);
+
+        });
+
+        // hide when X pressed or after sending
+        btnCloseNotify.setOnClickListener(v -> {
+            notifyOverlay.setVisibility(View.GONE);
+        });
+
+        view.findViewById(R.id.notifyOverlayDim).setOnClickListener(v -> {
+            notifyOverlay.setVisibility(View.GONE);
         });
 
         return view;
@@ -238,11 +251,11 @@ public class EntrantInfoFragment extends Fragment {
                         }
                     });
                     Profile organizer = profileList.get(0);
-                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear "+ user.getUsername()+", you have been removed from "+ event.getTitle() +".", event.getOrgId(), Timestamp.now(), event.getId(), user.getID(), false);
+                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", event.getOrgId(), Timestamp.now(), event.getId(), user.getID(), false);
                     notifRef.add(notification);
 
                     NotifyUser notifier = new NotifyUser(requireContext());
-                    notifier.sendNotification(user, "Dear "+ user.getUsername()+", you have been removed from "+ event.getTitle() +".");
+                    notifier.sendNotification(user, "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".");
 
 
                 });
@@ -351,7 +364,7 @@ public class EntrantInfoFragment extends Fragment {
 
             for (Profile p : recipients) {
                 if (!p.isNotificationsEnabled()) continue;
-                notif = new NotificationJ(event.getTitle(), message,currentUser.getUsername(),null, event.getId(), p.getUsername(), false);
+                notif = new NotificationJ(event.getTitle(), message, currentUser.getUsername(), null, event.getId(), p.getUsername(), false);
 
                 db.collection("Profiles")
                         .document(p.getID())               // profile’s firestore id
@@ -363,124 +376,11 @@ public class EntrantInfoFragment extends Fragment {
                         });
             }
 
-
             Toast.makeText(requireContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
 
             // close popup
             notifyOverlay.setVisibility(View.GONE);
             editMessage.setText(""); // clear message
-
         });
-    }
-
-    /**
-     * Inflates the layout for this fragment, initializes UI components,
-     * and sets up listeners for the spinner and back button.
-     *
-     * @param inflater           The LayoutInflater object that can be used to inflate any views in the fragment.
-     * @param container          If non-null, this is the parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI.
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_entrant_info, container, false);
-
-        // Get the event object
-        assert getArguments() != null;
-        event = getArguments().getParcelable("event");
-
-        MainActivity mainActivity = (MainActivity) getActivity();
-        assert mainActivity != null;
-        currentUser = mainActivity.currentUser;
-
-        // Create instance of firestore database
-        db = FirebaseFirestore.getInstance();
-
-        // Start the firestore listener for the event
-        startFirestoreListener();
-
-        // Set the event title
-        TextView eventTitle = view.findViewById(R.id.event_title);
-        eventTitle.setText(event.getTitle());
-
-        // Set the spinner to display the event lists
-        spinner_list = view.findViewById(R.id.spinner_list);
-        entrantType = view.findViewById(R.id.entrant_type);
-
-        List<String> statuses = Arrays.asList("Waitlisted", "Won", "Lost", "Accepted", "Cancelled");
-        ArrayAdapter<String> spinAdapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                statuses
-        );
-
-        spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_list.setAdapter(spinAdapter);
-
-        profileRecycler = view.findViewById(R.id.profile_recycler);
-        profileRecycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        // Update the spinner when a different event list is selected
-        spinner_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItem = parent.getItemAtPosition(position).toString();
-                updateRecyclerList(selectedItem);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // Handle case where nothing is selected
-            }
-        });
-
-        // Set up the back button
-        Button backBtn = view.findViewById(R.id.backBtn);
-        backBtn.setOnClickListener(v ->
-                NavHostFragment.findNavController(this).navigateUp()
-        );
-
-        // Button to view the map with entrant locations
-        Button mapBtn = view.findViewById(R.id.btn_map);
-        mapBtn.setOnClickListener(view1 -> {
-            Bundle bundle = new Bundle();
-            // Pass the most up-to-date event object
-            bundle.putParcelable("event", event);
-            NavHostFragment.findNavController(this).navigate(R.id.action_EntrantInfoFragment_to_OrganizerMapFragment, bundle);
-        });
-
-        notifyOverlay = view.findViewById(R.id.notifyOverlay);
-        Button topNotifyButton = view.findViewById(R.id.btn_notify);
-        ImageButton btnCloseNotify = view.findViewById(R.id.btnCloseNotify);
-
-        // show popup
-        topNotifyButton.setOnClickListener(v -> {
-            notifyOverlay.setVisibility(View.VISIBLE);
-            sendNotification(view);
-
-        });
-
-        // hide when X pressed or after sending
-        btnCloseNotify.setOnClickListener(v -> {
-            notifyOverlay.setVisibility(View.GONE);
-        });
-
-        view.findViewById(R.id.notifyOverlayDim).setOnClickListener(v -> {
-            notifyOverlay.setVisibility(View.GONE);
-        });
-
-        return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        // Stop the timer to prevent memory leaks or crashing
-        if (timerHandler != null) {
-            timerHandler.removeCallbacks(entrantListRunnable);
-        }
     }
 }

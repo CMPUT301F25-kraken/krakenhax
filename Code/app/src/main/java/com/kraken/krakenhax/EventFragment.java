@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -44,15 +43,14 @@ import java.util.Locale;
  * The Event Page — displays event details and provides sign-up / cancel / notification functionality.
  */
 public class EventFragment extends Fragment {
+    private final android.os.Handler timerHandler = new android.os.Handler();
     private Profile currentUser;
     private FirebaseFirestore db;
     private ProfileViewModel profileModel;
-
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private NavController navController;
     private Event event;
     private TextView tvWaitlistEntry;
-    private final android.os.Handler timerHandler = new android.os.Handler();
     private Runnable waitlistRunnable;
     private Runnable deadlineRunnable;
     private Runnable updateButtonRunnable;
@@ -77,13 +75,15 @@ public class EventFragment extends Fragment {
         event = getArguments().getParcelable("event");
         assert event != null;
 
+        // Set up the qrImageView (not used in this fragment but initialized here)
+        ImageView qrImageView = view.findViewById(R.id.qr_imageview);
+
         // Set up the nav controller
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
         // Create instance of firestore database
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
-
 
         // Start a firestore listener for the event
         startFirestoreListener();
@@ -182,14 +182,6 @@ public class EventFragment extends Fragment {
      * Updates an event in Firestore.
      */
     private void updateEventInFirestore() {
-//        if (event != null && event.getId() != null) {
-//            db.collection("Events").document(event.getId()).set(event)
-//                    .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
-//                    .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
-//        }
-//        DocumentReference profRef = db.collection("Profiles").document(currentUser.getID());
-//        profRef.set(currentUser);
-        //profRef.update("myWaitlist", FieldValue.arrayUnion(event.getId()));
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).set(event)
                     .addOnSuccessListener(aVoid -> Log.d("Firestore", "Event updated successfully!"))
@@ -215,7 +207,7 @@ public class EventFragment extends Fragment {
      * Prompts the user to give permission to access their location.
      */
     private void requestLocationPermissions() {
-        locationPermissionRequest.launch(new String[] {
+        locationPermissionRequest.launch(new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
@@ -273,9 +265,35 @@ public class EventFragment extends Fragment {
         // Get view
         View view = getView();
         if (view == null) return;
-        //currentUser.addToMyWaitlist(event.getId());
+
+        event.addToWaitList(currentUser);
         updateEventInFirestore();
         updateButtons();
+
+        // Notify user
+        NotifyUser notifyUser = new NotifyUser(requireContext());
+        notifyUser.sendNotification(currentUser,
+                "✅ You have successfully signed up for " + event.getTitle());
+
+        // 3. ROBUST HISTORY UPDATE
+        // Re-fetch the user to ensure we aren't overwriting with stale data
+        db.collection("Profiles").document(currentUser.getID()).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    Profile freshProfile = documentSnapshot.toObject(Profile.class);
+                    if (freshProfile != null) {
+                        // Add action to history
+                        freshProfile.updateHistory(new Action("Join waitlist", "n/a", event.getId()));
+
+                        // Save back to Firestore (only history field)
+                        db.collection("Profiles").document(freshProfile.getID())
+                                .update("history", freshProfile.getHistory())
+                                .addOnSuccessListener(aVoid -> Log.d("EventFragment", "History saved successfully"))
+                                .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history", e));
+
+                        // Update local currentUser reference so UI stays consistent
+                        this.currentUser = freshProfile;
+                    }
+                });
     }
 
     /**
@@ -420,51 +438,6 @@ public class EventFragment extends Fragment {
     }
 
     /**
-     * Adds the entrant to the waitlist for an event.
-     */
-    private void joinWaitlist() {
-        // Get view
-        View view = getView();
-        if (view == null) return;
-
-        event.addToWaitList(currentUser);
-        //currentUser.addToMyWaitlist(event.getId());
-        updateEventInFirestore();
-        updateButtons();
-        // Notify user
-        NotifyUser notifyUser = new NotifyUser(requireContext());
-        notifyUser.sendNotification(currentUser,
-                "✅ You have successfully signed up for " + event.getTitle());
-
-//        // Add action to users history
-//        currentUser.updateHistory(new Action("Join waitlist", null, event.getId()));
-//        // Save to firestore
-//        db.collection("Profiles").document(currentUser.getID()).set(currentUser)
-//                .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history (Join)", e));
-
-        // 3. ROBUST HISTORY UPDATE
-        // Re-fetch the user to ensure we aren't overwriting with stale data
-        db.collection("Profiles").document(currentUser.getID()).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    Profile freshProfile = documentSnapshot.toObject(Profile.class);
-                    if (freshProfile != null) {
-                        // Add action to history
-                        freshProfile.updateHistory(new Action("Join waitlist", "n/a", event.getId()));
-
-                        // Save back to Firestore (only history field)
-                        db.collection("Profiles").document(freshProfile.getID())
-                                .update("history", freshProfile.getHistory())
-                                .addOnSuccessListener(aVoid -> Log.d("EventFragment", "History saved successfully"))
-                                .addOnFailureListener(e -> Log.e("EventFragment", "Failed to save history", e));
-
-                        // Update local currentUser reference so UI stays consistent
-                        this.currentUser = freshProfile;
-                    }
-                });
-
-    }
-
-    /**
      * Returns a location permission request object.
      */
     private ActivityResultLauncher<String[]> requestLocationPermission() {
@@ -509,12 +482,8 @@ public class EventFragment extends Fragment {
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
-
                 }
-
         );
-
-
 
         return locationPermissionRequest;
     }
@@ -697,112 +666,6 @@ public class EventFragment extends Fragment {
                 });
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_event, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // Get the object for the event
-        assert getArguments() != null;
-        event = getArguments().getParcelable("event");
-        assert event != null;
-        ImageView qrImageView = view.findViewById(R.id.qr_imageview);
-        // Set up the nav controller
-        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
-
-        // Create instance of firestore database
-        db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference();
-
-
-        // Start a firestore listener for the event
-        startFirestoreListener();
-
-        // Get the object for the current user
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if (mainActivity != null) {
-            currentUser = mainActivity.currentUser;
-        }
-
-        // Creates an instance of the ProfileViewModel
-        profileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
-
-        // Location permission
-        locationPermissionRequest = requestLocationPermission();
-
-        // Set the event name
-        TextView tvEventName = view.findViewById(R.id.tv_event_name);
-        tvEventName.setText(event.getTitle());
-
-        // Set the event location
-        TextView tvLocation = view.findViewById(R.id.tv_location_field);
-        tvLocation.setText(event.getLocation());
-
-        // Set the event description
-        TextView tvDescription = view.findViewById(R.id.tv_event_description);
-        tvDescription.setText(event.getEventDetails());
-
-        // Set up the waitlist info
-        tvWaitlistEntry = view.findViewById(R.id.tv_waitlist_entry);
-        setWaitlistInfo();
-
-        // Set the event poster
-        ImageView eventImage = view.findViewById(R.id.event_image);
-        setEventPoster(eventImage);
-
-        Button photoDelete = view.findViewById(R.id.delete_event_Photo);
-        if (currentUser.getType().equals("Admin")){
-            photoDelete.setVisibility(View.VISIBLE);
-        } else {
-            photoDelete.setVisibility(View.GONE);
-        }
-        photoDelete.setOnClickListener(v -> {
-
-            event.setPoster(null);
-            deleteEventPic();
-            setEventPoster(eventImage);
-            updateEventInFirestore();
-        });
-
-
-
-
-        // Set up the back button
-        Button buttonBack = view.findViewById(R.id.button_back);
-        buttonBack.setOnClickListener(v -> navController.popBackStack());
-
-        // Set the view event organizer button to show the name of the organizer and navigate to the organizers page
-        Button buttonEventOrganizer = view.findViewById(R.id.button_event_organizer);
-        setOrganizerButton(buttonEventOrganizer);
-
-        // Set tvRegistrationInfo to display the deadline for registration
-        TextView tvRegistrationInfo = view.findViewById(R.id.tv_registration_info);
-        setRegistrationDeadline(tvRegistrationInfo);
-
-        // Set the tvDateTime to show the date and time of the event
-        TextView tvDateTime = view.findViewById(R.id.tv_date_time);
-        setEventDate(tvDateTime);
-
-        // Update buttons for current user state
-        updateButtons();
-
-        // Delete button logic
-        Button deleteButton = view.findViewById(R.id.EventDeleteButton);
-        if (currentUser.getType().equals("Admin") || currentUser.getType().equals("Organizer")) {
-            deleteButton.setVisibility(View.VISIBLE);
-        } else {
-            deleteButton.setVisibility(View.GONE);
-        }
-        deleteButton.setOnClickListener(v -> {
-            deleteEventFromFirestore();
-            navController.popBackStack();
-        });
-
-    }
     public void deleteEventPic() {
         StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
         eventPosterRef.delete().addOnSuccessListener(aVoid -> {
