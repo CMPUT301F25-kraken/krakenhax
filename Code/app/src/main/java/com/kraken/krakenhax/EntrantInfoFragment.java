@@ -287,7 +287,7 @@ public class EntrantInfoFragment extends Fragment {
      */
     private void updateProfileInFirestore(Profile profile) {
         if (profile != null && profile.getID() != null) {
-            db.collection("Profiles").document(profile.getID()).set(profile)
+            db.collection("Profiles").document(profile.getID()).update("history", profile.getHistory())
                     .addOnSuccessListener(aVoid -> Log.d("Firestore", "Updated profile: " + profile.getUsername() + " successfully!"))
                     .addOnFailureListener(e -> Log.e("Firestore", "Error updating profile: " + profile.getUsername(), e));
         }
