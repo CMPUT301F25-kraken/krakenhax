@@ -442,6 +442,7 @@ public class Event implements Parcelable {
             if (!winners.contains(winner)) {
                 winners.add(winner);
                 losers.remove(winner);
+                waitList.remove(winner);
                 newWinnersAdded++;
 
                 // Add action to users history
