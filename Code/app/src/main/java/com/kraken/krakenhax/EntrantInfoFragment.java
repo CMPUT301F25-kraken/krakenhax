@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -153,6 +156,10 @@ public class EntrantInfoFragment extends Fragment {
 
         view.findViewById(R.id.notifyOverlayDim).setOnClickListener(v -> {
             notifyOverlay.setVisibility(View.GONE);
+        });
+        Button export = view.findViewById(R.id.exportBtn);
+        export.setOnClickListener(v-> {
+            exportCsv();
         });
 
         return view;
@@ -366,16 +373,15 @@ public class EntrantInfoFragment extends Fragment {
 
             for (Profile p : recipients) {
                 if (!p.isNotificationsEnabled()) continue;
-                notif = new NotificationJ(event.getTitle(), message, currentUser.getUsername(), null, event.getId(), p.getUsername(), false);
+                notif = new NotificationJ(event.getTitle(), message, currentUser.getUsername(), Timestamp.now(), event.getId(), p.getUsername(), false);
 
                 db.collection("Profiles")
-                        .document(p.getID())               // profile’s firestore id
+                        .document(p.getID())
                         .collection("Notifications")
-                        .add(notif)
-                        .addOnSuccessListener(docRef -> {
-                            // NOW update timestamp to server time
-                            docRef.update("timestamp", FieldValue.serverTimestamp());
-                        });
+                        .add(notif);
+                        //.addOnSuccessListener(docRef -> {
+                           // docRef.update("timestamp", FieldValue.serverTimestamp());
+
             }
 
             Toast.makeText(requireContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
@@ -384,5 +390,64 @@ public class EntrantInfoFragment extends Fragment {
             notifyOverlay.setVisibility(View.GONE);
             editMessage.setText(""); // clear message
         });
+
+    }
+
+    private void exportCsv() {
+
+        if (event == null || event.getWonList() == null || event.getWonList().isEmpty()) {
+            Toast.makeText(getContext(),
+                    "No entrants to export", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        StringBuilder csv = new StringBuilder();
+        csv.append("Name,Email,Phone\n");  // header row
+
+        for (Profile p : event.getWonList()) {
+            String name  = p.getUsername();
+            String email = p.getEmail();
+            String phone = p.getPhoneNumber();
+
+            if (name == null)  name = "N/A";
+            if (email == null) email = "N/A";
+            if (phone == null) phone = "N/A";
+
+            csv.append(name).append(",")
+                    .append(email).append(",")
+                    .append(phone).append("\n");
+        }
+
+        //Save to Downloads on the organizer's phone
+        try {
+            String eventIdPart = event.getTitle();
+            if (eventIdPart == null || eventIdPart.isEmpty()) {
+                eventIdPart = "event";
+            }
+
+            String fileName = "final_entrants_" + eventIdPart + ".csv";
+
+            File downloadsDir = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS);
+            if (!downloadsDir.exists()) {
+                downloadsDir.mkdirs();
+            }
+
+            File file = new File(downloadsDir, fileName);
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(csv.toString().getBytes());
+            fos.flush();
+            fos.close();
+
+            Toast.makeText(getContext(),
+                    "Saved to Downloads/" + fileName,
+                    Toast.LENGTH_LONG).show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(),
+                    "Error saving CSV file", Toast.LENGTH_SHORT).show();
+        }
     }
 }
