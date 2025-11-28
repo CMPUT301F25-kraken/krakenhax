@@ -1,14 +1,19 @@
 package com.kraken.krakenhax;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -17,8 +22,9 @@ import java.util.ArrayList;
  * Contains a list of profiles.
  */
 public class ProfileViewModel extends ViewModel {
-    private MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
+    private final FirebaseFirestore db;
     public CollectionReference profileCollection;
+    private MutableLiveData<ArrayList<Profile>> profileList = new MutableLiveData<>(new ArrayList<>());
 
     /**
      * Required empty public constructor
@@ -27,7 +33,7 @@ public class ProfileViewModel extends ViewModel {
      */
     public ProfileViewModel() {
         // Initialize the Firestore database and get the "Profiles" collection reference.
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db = FirebaseFirestore.getInstance();
         profileCollection = db.collection("Profiles");
 
         // Start listening for real-time updates from Firestore.
@@ -83,6 +89,37 @@ public class ProfileViewModel extends ViewModel {
                 profileList.setValue(profiles);
             }
         });
+    }
+
+    /**
+     * Finds a profile object from a profile ID.
+     */
+    public void lookupProfile(String profileID, OnSuccessListener<Profile> callback) {
+        List<Profile> profiles = profileList.getValue();
+
+        // Look for profile locally
+        if (profiles != null) {
+            for (Profile profile : profiles) {
+                if (Objects.equals(profileID, profile.getID())) {
+                    callback.onSuccess(profile);
+                    return;
+                }
+            }
+        }
+
+        // Look for the profile in firestore if it wasn't found locally
+        db.collection("Profiles").document(profileID).get()
+                .addOnSuccessListener(s -> {
+                    if (s.exists()) {
+                        Profile profile = s.toObject(Profile.class);
+                        callback.onSuccess(profile);
+                    } else {
+                        callback.onSuccess(null); // Profile ID doesn't exist
+                    }
+                }).addOnFailureListener(e -> {
+                    Log.e("ProfileViewModel", "Error looking up profile", e);
+                    callback.onSuccess(null);
+                });
     }
 
 }

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -40,9 +41,10 @@ public class MainActivity extends AppCompatActivity {
     public Profile currentUser;
     public boolean loggedIn;
     public boolean admin;
-    //public ProfileViewModel profileModel;
+    // Shared ViewModels for fragments to use
+    public EventViewModel eventViewModel;
+    public ProfileViewModel profileViewModel;
     private FirebaseFirestore db;
-    //private CollectionReference ProfileRef;
 
     /**
      * Go through every profile in the firestore database and removes the myWaitList from every
@@ -170,8 +172,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
+
     /**
      * Called when the activity is first created. This is where you should do all of your normal static set up:
      * create views, bind data to lists, etc. This method also provides you with a Bundle containing the activity's
@@ -207,6 +208,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        // Initialize shared ViewModels so fragments can access them from the Activity
+        ViewModelProvider provider = new ViewModelProvider(this);
+        eventViewModel = provider.get(EventViewModel.class);
+        profileViewModel = provider.get(ProfileViewModel.class);
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -276,10 +282,10 @@ public class MainActivity extends AppCompatActivity {
                 String eventId = data.getLastPathSegment();
                 if (eventId != null) {
 
-                        navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
-                        Bundle args = new Bundle();
-                        args.putString("eventId", eventId);
-                        navController.navigate(R.id.LoginFragment, args);
+                    navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
+                    Bundle args = new Bundle();
+                    args.putString("eventId", eventId);
+                    navController.navigate(R.id.LoginFragment, args);
                     //}
                 }
             }

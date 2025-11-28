@@ -12,7 +12,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
-import com.squareup.picasso.Target;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -29,25 +29,26 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * ViewModel for managing event data.
  * Handles Firestore interactions and business logic.
  */
 public class EventViewModel extends ViewModel {
-
-    private static MutableLiveData<ArrayList<Event>> eventList;
     private final MutableLiveData<Bitmap> qrCode;
     private final FirebaseFirestore db;
     private final CollectionReference eventCollection;
     private final StorageReference storageRef;
-
     private final MutableLiveData<Bitmap> downloadedBitmap = new MutableLiveData<>();
+    private MutableLiveData<ArrayList<Event>> eventList;
     private Target picassoTarget;
 
     /**
@@ -163,11 +164,13 @@ public class EventViewModel extends ViewModel {
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 downloadedBitmap.setValue(bitmap);
             }
+
             @Override
             public void onBitmapFailed(Exception e, Drawable errorDrawable) {
                 Log.e("Picasso", "Error loading image", e);
                 downloadedBitmap.setValue(null);
             }
+
             @Override
             public void onPrepareLoad(Drawable placeHolderDrawable) {
             }
@@ -276,4 +279,37 @@ public class EventViewModel extends ViewModel {
             }
         }
     }
+
+    /**
+     * Finds the event object from an event ID.
+     */
+    public void lookupEvent(String eventID, OnSuccessListener<Event> callback) {
+        List<Event> events = eventList.getValue();
+
+        // 1. Try to find it in the local list first (Instant)
+        if (events != null) {
+            for (Event event : events) {
+                if (Objects.equals(event.getId(), eventID)) {
+                    callback.onSuccess(event);
+                    return;
+                }
+            }
+        }
+
+        // 2. If not found locally, fetch from Firestore (Asynchronous)
+        db.collection("Events").document(eventID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Event event = documentSnapshot.toObject(Event.class);
+                        callback.onSuccess(event);
+                    } else {
+                        callback.onSuccess(null); // Event ID doesn't exist
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("EventViewModel", "Error looking up event", e);
+                    callback.onSuccess(null);
+                });
+    }
+
 }

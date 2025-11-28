@@ -9,7 +9,6 @@ android {
     namespace = "com.kraken.krakenhax"
     compileSdk = 36
 
-
     defaultConfig {
         applicationId = "com.kraken.krakenhax"
         minSdk = 29
@@ -85,21 +84,17 @@ dependencies {
     implementation(libs.zxing.android.embedded)
 
     // Test implementation
-    testImplementation("org.mockito:mockito-core:5.20.0")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:6.1.0")
-    testImplementation("androidx.test:core:1.7.0")
-    testImplementation("androidx.test.ext:junit:1.3.0")
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.ext.junit)
     // UNIT TESTS
     testImplementation(libs.junit)
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:5.+")
 
     // ANDROID TESTS (UI / instrumentation)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     // FragmentScenario needs debugImplementation
-    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+    debugImplementation(libs.androidx.fragment.testing)
 }

@@ -48,9 +48,7 @@ public class EntrantInfoFragment extends Fragment {
     private FirebaseFirestore db;
     private Runnable entrantListRunnable;
     private View notifyOverlay;
-  
     private Profile currentUser;
-    //private View notifyOverlay;
     private NotificationJ notif;
 
     public EntrantInfoFragment() {
@@ -158,7 +156,7 @@ public class EntrantInfoFragment extends Fragment {
             notifyOverlay.setVisibility(View.GONE);
         });
         Button export = view.findViewById(R.id.exportBtn);
-        export.setOnClickListener(v-> {
+        export.setOnClickListener(v -> {
             exportCsv();
         });
 
@@ -373,15 +371,16 @@ public class EntrantInfoFragment extends Fragment {
 
             for (Profile p : recipients) {
                 if (!p.isNotificationsEnabled()) continue;
-                notif = new NotificationJ(event.getTitle(), message, currentUser.getUsername(), Timestamp.now(), event.getId(), p.getUsername(), false);
+                notif = new NotificationJ(event.getTitle(), message, currentUser.getUsername(), null, event.getId(), p.getUsername(), false);
 
                 db.collection("Profiles")
-                        .document(p.getID())
+                        .document(p.getID())               // profile’s firestore id
                         .collection("Notifications")
-                        .add(notif);
-                        //.addOnSuccessListener(docRef -> {
-                           // docRef.update("timestamp", FieldValue.serverTimestamp());
-
+                        .add(notif)
+                        .addOnSuccessListener(docRef -> {
+                            // NOW update timestamp to server time
+                            docRef.update("timestamp", FieldValue.serverTimestamp());
+                        });
             }
 
             Toast.makeText(requireContext(), "Notification sent!", Toast.LENGTH_SHORT).show();
@@ -406,11 +405,11 @@ public class EntrantInfoFragment extends Fragment {
         csv.append("Name,Email,Phone\n");  // header row
 
         for (Profile p : event.getWonList()) {
-            String name  = p.getUsername();
+            String name = p.getUsername();
             String email = p.getEmail();
             String phone = p.getPhoneNumber();
 
-            if (name == null)  name = "N/A";
+            if (name == null) name = "N/A";
             if (email == null) email = "N/A";
             if (phone == null) phone = "N/A";
 
@@ -450,4 +449,5 @@ public class EntrantInfoFragment extends Fragment {
                     "Error saving CSV file", Toast.LENGTH_SHORT).show();
         }
     }
+
 }
