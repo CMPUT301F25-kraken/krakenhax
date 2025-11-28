@@ -12,7 +12,9 @@ public class NotificationJ {
 
     private boolean read;
 
-    //public NotificationJ() { }
+
+    // needed for firebase, DONT REMOVE!
+    public NotificationJ() { }
 
     public NotificationJ(String title, String body, String sender, Timestamp timestamp, String eventID, String recipient, boolean read) {
         this.title = title;
