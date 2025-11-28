@@ -225,6 +225,17 @@
         android:label="fragment_event"
         tools:layout="@layout/fragment_event">
 
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            android:defaultValue="null"/>
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="https://www.krakenhax.com/events/{eventId}" />
+
+
+
         <!-- Action to navigate from the Event Fragment to Events Fragment -->
         <action
             android:id="@+id/action_EventFragment_to_EventsFragment"

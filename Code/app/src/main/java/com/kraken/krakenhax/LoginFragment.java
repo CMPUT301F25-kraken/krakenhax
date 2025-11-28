@@ -44,6 +44,7 @@ public class LoginFragment extends Fragment {
     private NavController navController;
     private FirebaseFirestore db;
     private String eventId;
+    private String eventIdFromDeepLink;
 
     /**
      * Required empty public constructor

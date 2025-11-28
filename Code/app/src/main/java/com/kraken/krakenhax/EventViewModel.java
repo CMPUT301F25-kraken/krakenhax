@@ -112,8 +112,10 @@ public class EventViewModel extends ViewModel {
      * Generates a QR code bitmap for an event ID.
      */
     public Bitmap generateQR(String eventId) throws WriterException {
+        String deepLinkUrl = "krakenhax://event/" + eventId;
+        Log.d("QRCodeTest", "Deep Link URL: " + deepLinkUrl);
         MultiFormatWriter writer = new MultiFormatWriter();
-        BitMatrix matrix = writer.encode(eventId, BarcodeFormat.QR_CODE, 400, 400);
+        BitMatrix matrix = writer.encode(deepLinkUrl, BarcodeFormat.QR_CODE, 400, 400);
         BarcodeEncoder encoder = new BarcodeEncoder();
         return encoder.createBitmap(matrix);
     }

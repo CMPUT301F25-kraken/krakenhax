@@ -17,6 +17,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
@@ -207,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             createNotificationChannel();
         }
@@ -255,10 +257,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        handleIntent(getIntent()); //Handle the incoming intent for QR code scanning
+    }
+
+    @Override
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         // Ensure fragments read the latest deep link when the activity is reused
-        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && intent.ACTION_VIEW.equals(intent.getAction())) {
+            android.net.Uri data = intent.getData();
+            if (data != null) {
+                String eventId = data.getLastPathSegment();
+                if (eventId != null) {
+
+                        navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
+                        Bundle args = new Bundle();
+                        args.putString("eventId", eventId);
+                        navController.navigate(R.id.LoginFragment, args);
+                    //}
+                }
+            }
+        }
     }
 
 }
