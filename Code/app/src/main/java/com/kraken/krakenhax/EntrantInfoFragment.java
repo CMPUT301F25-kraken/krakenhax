@@ -44,8 +44,10 @@ public class EntrantInfoFragment extends Fragment {
     private Spinner spinner_list;
     private FirebaseFirestore db;
     private Runnable entrantListRunnable;
-    private Profile currentUser;
     private View notifyOverlay;
+  
+    private Profile currentUser;
+    //private View notifyOverlay;
     private NotificationJ notif;
 
     public EntrantInfoFragment() {

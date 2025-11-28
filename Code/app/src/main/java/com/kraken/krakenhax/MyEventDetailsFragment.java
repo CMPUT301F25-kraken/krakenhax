@@ -27,6 +27,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Picasso;
+import com.kraken.krakenhax.NotificationJ;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
+
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -51,7 +55,7 @@ public class MyEventDetailsFragment extends Fragment {
     private Uri filePath;
     private Event event;
     private EventViewModel eventViewModel;
-    private ImageView qrImageView;
+    private ImageView qrCodeImage;
     //private Profile currentUser;
 
     /**
@@ -91,19 +95,20 @@ public class MyEventDetailsFragment extends Fragment {
         imgPoster = view.findViewById(R.id.imgPoster);
         Button btnUploadPoster = view.findViewById(R.id.btnUploadPoster);
         Button btnBack = view.findViewById(R.id.btnBack);
-        Button btnEntrantInfo = view.findViewById(R.id.btn_entrant_info);
+        Button btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
         Button btnLottery = view.findViewById(R.id.btnLottery);
-        qrImageView = view.findViewById(R.id.qr_code_imageview);
         Button saveQrButton = view.findViewById(R.id.save_qr_code_button);
 
 
+        qrCodeImage = view.findViewById(R.id.qr_code_imageview);
+        eventViewModel = new EventViewModel();
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
 //         assert mainActivity != null;
 //         currentUser = mainActivity.currentUser;
 //
 //         if (Objects.equals(currentUser.getType(), "Entrant")) {
-//         btnEntrantInfo.setVisibility(View.GONE);
+//         btnentrantInfo.setVisibility(View.GONE);
 //         btnUploadPoster.setVisibility(View.GONE);
 //         }
 //
@@ -128,17 +133,74 @@ public class MyEventDetailsFragment extends Fragment {
             if (event.getLostList().isEmpty()) {
                 event.drawLottery(event.getWaitList(), event.getWinnerNumber());
             } else {
-                event.drawLottery(event.getLostList(), event.getWinnerNumber() - event.getWonList().size());
+                event.drawLottery(
+                        event.getLostList(),
+                        event.getWinnerNumber() - event.getWonList().size()
+                );
             }
             updateEventInFirestore(event);
-            Toast.makeText(requireContext(), "Lottery drawn successfully!", Toast.LENGTH_SHORT).show();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            for (Profile p : event.getWonList()) {
+                if (p == null) continue;
+                if (!p.isNotificationsEnabled()) continue;
+
+                NotificationJ notif = new NotificationJ(
+                        "You won the lottery!",
+                        "You have been selected to participate in " + event.getTitle() + ".",
+                        event.getOrgId(),          // sender = organizer
+                        null,                      // timestamp will be set server-side
+                        event.getId(),             // event ID
+                        p.getID(),                 // recipient profile ID
+                        false                      // read = false
+                );
+
+                db.collection("Profiles")
+                        .document(p.getID())
+                        .collection("Notifications")
+                        .add(notif)
+                        .addOnSuccessListener(docRef ->
+                                docRef.update("timestamp", FieldValue.serverTimestamp())
+                        );
+            }
+
+            // Notify losers: "You were not selected"
+            for (Profile p : event.getLostList()) {
+                if (p == null) continue;
+                if (!p.isNotificationsEnabled()) continue;
+
+                NotificationJ notif = new NotificationJ(
+                        "Lottery result",
+                        "Unfortunately, you were not selected for " + event.getTitle() + ".",
+                        event.getOrgId(),
+                        null,
+                        event.getId(),
+                        p.getID(),
+                        false
+                );
+
+                db.collection("Profiles")
+                        .document(p.getID())
+                        .collection("Notifications")
+                        .add(notif)
+                        .addOnSuccessListener(docRef ->
+                                docRef.update("timestamp", FieldValue.serverTimestamp())
+                        );
+            }
+
+            // 4. UI feedback
+            Toast.makeText(requireContext(),
+                    "Lottery drawn successfully!",
+                    Toast.LENGTH_SHORT
+            ).show();
         });
 
         btnUploadPoster.setOnClickListener(v -> imagePicker.launch("image/*"));
 
         btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
-        btnEntrantInfo.setOnClickListener(v -> {
+        btnentrantInfo.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             // Pass the most up-to-date event object
             bundle.putParcelable("event", event);
@@ -146,7 +208,7 @@ public class MyEventDetailsFragment extends Fragment {
         });
 
         saveQrButton.setOnClickListener(v -> {
-            eventViewModel.saveImage(requireContext(), qrImageView);
+            eventViewModel.saveImage(requireContext(), qrCodeImage);
             Toast.makeText(requireContext(), "QR code saved to gallery", Toast.LENGTH_SHORT).show();
             Log.d("ImageSave", "QR code saved to gallery");
             saveQrButton.setBackgroundColor(getResources().getColor(R.color.gray));
@@ -163,7 +225,7 @@ public class MyEventDetailsFragment extends Fragment {
         String url = event.getQrCodeURL();
 
         if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
-            qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+            qrCodeImage.setImageResource(R.drawable.outline_beach_access_100);
         } else {
             eventViewModel.urlToBitmap(requireContext(), url);
         }
@@ -171,9 +233,9 @@ public class MyEventDetailsFragment extends Fragment {
 
         eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
             if (bitmap != null) {
-                qrImageView.setImageBitmap(bitmap);
+                qrCodeImage.setImageBitmap(bitmap);
             } else {
-                qrImageView.setImageResource(R.drawable.outline_beach_access_100);
+                qrCodeImage.setImageResource(R.drawable.outline_beach_access_100);
             }
         });
     }

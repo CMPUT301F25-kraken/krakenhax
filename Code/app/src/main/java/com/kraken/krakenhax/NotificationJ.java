@@ -3,7 +3,7 @@ package com.kraken.krakenhax;
 import com.google.firebase.Timestamp;;
 
 public class NotificationJ {
-    private String title;
+    public String title;
     private String body;
     private String sender;
     private Timestamp timestamp;
@@ -32,9 +32,7 @@ public class NotificationJ {
         this.read = read;
     }
 
-    public NotificationJ() {
-        // Required empty public constructor
-    }
+
 
 
     public String getTitle() {
@@ -60,5 +58,32 @@ public class NotificationJ {
     public String getRecipient() {
         return recipient;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setEventID(String eventID) {
+        this.eventID = eventID;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
+    }
+
+
 
 }
