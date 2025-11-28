@@ -70,7 +70,14 @@ public class HistoryFragment extends Fragment {
         // Set up the recycler view
         recyclerView = view.findViewById(R.id.history_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        HistoryRecyclerViewAdapter adapter = new HistoryRecyclerViewAdapter(history);
+        // Pass the Activity-owned ViewModels into the adapter
+        EventViewModel eventViewModel = null;
+        ProfileViewModel profileViewModel = null;
+        if (mainActivity != null) {
+            eventViewModel = mainActivity.eventViewModel;
+            profileViewModel = mainActivity.profileViewModel;
+        }
+        HistoryRecyclerViewAdapter adapter = new HistoryRecyclerViewAdapter(history, eventViewModel, profileViewModel);
         recyclerView.setAdapter(adapter);
     }
 
@@ -120,7 +127,14 @@ public class HistoryFragment extends Fragment {
             adapter.updateData(this.history);
         } else {
             // If adapter is missing, create it
-            HistoryRecyclerViewAdapter adapter = new HistoryRecyclerViewAdapter(this.history);
+            MainActivity mainActivity = (MainActivity) getActivity();
+            EventViewModel eventViewModel = null;
+            ProfileViewModel profileViewModel = null;
+            if (mainActivity != null) {
+                eventViewModel = mainActivity.eventViewModel;
+                profileViewModel = mainActivity.profileViewModel;
+            }
+            HistoryRecyclerViewAdapter adapter = new HistoryRecyclerViewAdapter(this.history, eventViewModel, profileViewModel);
             recyclerView.setAdapter(adapter);
         }
     }

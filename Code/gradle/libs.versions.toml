@@ -23,6 +23,10 @@ secrets = "2.0.1"
 firebaseInstallations = "19.0.1"
 coreSplashscreen = "1.2.0"
 zxingAndroidEmbedded = "4.3.0"
+mockito = "5.20.0"
+mockitoKotlin = "6.1.0"
+androidxTestCore = "1.7.0"
+fragmentTesting = "1.6.2"
 
 [libraries]
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
@@ -47,6 +51,10 @@ navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx",
 firebase-installations = { group = "com.google.firebase", name = "firebase-installations", version.ref = "firebaseInstallations" }
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTestCore" }
+androidx-fragment-testing = { group = "androidx.fragment", name = "fragment-testing", version.ref = "fragmentTesting" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
