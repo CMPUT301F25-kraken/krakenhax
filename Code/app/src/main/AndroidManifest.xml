@@ -58,9 +58,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="https"
-                    android:host="www.krakenhax.com"
-                    android:pathPrefix="/events" />
+                    android:scheme="krakenhax"
+                    android:host="event"/>
             </intent-filter>
         </activity>
     </application>

@@ -94,6 +94,9 @@ public class MyEventDetailsFragment extends Fragment {
         Button btnEntrantInfo = view.findViewById(R.id.btn_entrant_info);
         Button btnLottery = view.findViewById(R.id.btnLottery);
         qrImageView = view.findViewById(R.id.qr_code_imageview);
+        Button saveQrButton = view.findViewById(R.id.save_qr_code_button);
+
+
 //
 //         MainActivity mainActivity = (MainActivity) getActivity();
 //         assert mainActivity != null;
@@ -140,6 +143,13 @@ public class MyEventDetailsFragment extends Fragment {
             // Pass the most up-to-date event object
             bundle.putParcelable("event", event);
             NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_EntrantInfoFragment, bundle);
+        });
+
+        saveQrButton.setOnClickListener(v -> {
+            eventViewModel.saveImage(requireContext(), qrImageView);
+            Toast.makeText(requireContext(), "QR code saved to gallery", Toast.LENGTH_SHORT).show();
+            Log.d("ImageSave", "QR code saved to gallery");
+            saveQrButton.setBackgroundColor(getResources().getColor(R.color.gray));
         });
 
         return view;
