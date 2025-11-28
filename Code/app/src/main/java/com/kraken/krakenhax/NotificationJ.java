@@ -1,8 +1,9 @@
 package com.kraken.krakenhax;
 
-import com.google.firebase.Timestamp;;
+import com.google.firebase.Timestamp;
+import java.io.Serializable;
 
-public class NotificationJ {
+public class NotificationJ implements Serializable {
     public String title;
     private String body;
     private String sender;
@@ -12,7 +13,7 @@ public class NotificationJ {
 
     private boolean read;
 
-    //public NotificationJ() { }
+    public NotificationJ() { }
 
     public NotificationJ(String title, String body, String sender, Timestamp timestamp, String eventID, String recipient, boolean read) {
         this.title = title;

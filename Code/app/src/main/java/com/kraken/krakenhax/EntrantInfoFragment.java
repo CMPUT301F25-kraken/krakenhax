@@ -47,7 +47,7 @@ public class EntrantInfoFragment extends Fragment {
     private View notifyOverlay;
   
     private Profile currentUser;
-    private View notifyOverlay;
+    
     private NotificationJ notif;
 
     public EntrantInfoFragment() {
