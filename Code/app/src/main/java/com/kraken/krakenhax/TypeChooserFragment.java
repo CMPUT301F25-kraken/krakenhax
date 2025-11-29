@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,9 +18,10 @@ import androidx.navigation.Navigation;
  * Packages the type into a bundle and sends it to the SignUpFragment with safe args.
  */
 public class TypeChooserFragment extends Fragment {
-    private Button entrant;
-    private Button organizer;
+    private ImageButton entrant;
+    private ImageButton organizer;
     private NavController navController;
+    private Button back;
 
     /**
      * Required empty public constructor
@@ -56,10 +58,12 @@ public class TypeChooserFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         entrant = view.findViewById(R.id.Entrant_button);
+        back = view.findViewById(R.id.back2log);
         organizer = view.findViewById(R.id.Organizer_button);
-
         navController = Navigation.findNavController(view);
-
+        back.setOnClickListener(v -> {
+            navController.navigate(R.id.action_TypeSelector_to_login);
+        });
         entrant.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putString("UserType", "Entrant");

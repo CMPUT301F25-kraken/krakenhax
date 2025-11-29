@@ -61,8 +61,7 @@ public class NotifyUser {
      * Sends one message to multiple recipients.
      */
     public void sendBroadcast(List<Profile> recipients, String message) {
-        if (recipients == null || message == null) return;
-        for (Profile entrant : recipients) {
+        if (recipients == null || message == null) return;        for (Profile entrant : recipients) {
             sendNotification(entrant, message);
         }
     }

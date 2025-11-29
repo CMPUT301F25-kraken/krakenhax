@@ -17,17 +17,25 @@ import androidx.lifecycle.ViewModelStore;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class NotifAdapterJ extends ArrayAdapter<NotificationJ> {
-    public Profile organizer;
-    public Profile Recipient;
+    //public Profile organizer;
+    //public Profile Recipient;
     public ArrayList<NotificationJ> notifList;
+    public TextView title;
+    public TextView recipient;
+    public TextView dateV;
+    public TextView message;
 
     public NotifAdapterJ(Context context, ArrayList<NotificationJ> notifList) {
         super(context,0, notifList);
@@ -42,39 +50,33 @@ public class NotifAdapterJ extends ArrayAdapter<NotificationJ> {
         if (view == null) {
             view = LayoutInflater.from(getContext()).inflate(R.layout.notification_list_format, parent, false);
         }
-        TextView title = view.findViewById(R.id.TitleDisplay);
-        TextView recipient = view.findViewById(R.id.RecipientDisplay);
-        TextView sender = view.findViewById(R.id.UsernameDisplay);
-        TextView message = view.findViewById(R.id.MessageDisplay);
+        title = view.findViewById(R.id.TitleDisplay);
+        recipient = view.findViewById(R.id.RecipientDisplay);
+        dateV = view.findViewById(R.id.DateView);
+        message = view.findViewById(R.id.MessageDisplay);
 
         NotificationJ notification = getItem(position);
+
         assert notification != null;
-        String senderProfileID = notification.getSender();
-        String recipientProfileID = notification.getRecipient();
+        //Log.d("display Notification", notification.getBody());
+        String recipientUsername = notification.getRecipient();
+        recipientUsername = "Recipient"+ recipientUsername;
+        Log.d("show senderID", "RecipientID:"+recipientUsername);
+        Timestamp ts = notification.getTimestamp();
+        // format timestamp
+        if (notification.getTimestamp() != null) {
 
-        if (senderProfileID != null && !senderProfileID.isEmpty()) {
-            DocumentReference senderRef = FirebaseFirestore.getInstance().collection("Profiles").document(senderProfileID);
-            senderRef.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    Profile senderProfile = documentSnapshot.toObject(Profile.class);
-                    if (senderProfile != null) {
-                        sender.setText(senderProfile.getUsername());
-                    }
-                }
-            });
+            Date date = ts.toDate();
+            SimpleDateFormat sdf =
+                    new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault());
+            dateV.setText(sdf.format(date));
+
+        } else {
+            dateV.setText("");
         }
 
-        if (recipientProfileID != null && !recipientProfileID.isEmpty()) {
-            DocumentReference recipientRef = FirebaseFirestore.getInstance().collection("Profiles").document(recipientProfileID);
-            recipientRef.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    Profile recipientProfile = documentSnapshot.toObject(Profile.class);
-                    if (recipientProfile != null) {
-                        recipient.setText(recipientProfile.getUsername());
-                    }
-                }
-            });
-        }
+
+        recipient.setText(recipientUsername);
         message.setText(notification.getBody());
         title.setText(notification.getTitle());
 

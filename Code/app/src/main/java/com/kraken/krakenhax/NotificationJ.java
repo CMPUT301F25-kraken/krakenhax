@@ -1,8 +1,9 @@
 package com.kraken.krakenhax;
 
-import com.google.firebase.Timestamp;;
+import com.google.firebase.Timestamp;
+import java.io.Serializable;
 
-public class NotificationJ {
+public class NotificationJ implements Serializable {
     public String title;
     private String body;
     private String sender;

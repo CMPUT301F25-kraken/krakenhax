@@ -1,7 +1,6 @@
 package com.kraken.krakenhax;
 
-import android.media.Image;
-import android.net.Uri;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,9 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -28,11 +24,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
-import java.util.Set;
 
 
 /**
@@ -56,6 +52,7 @@ public class AdminListFragment extends Fragment {
     private CollectionReference eventsRef;
     private StorageReference storageRef;
     private FirebaseStorage storage;
+    private static final String TAG = "MainActivityTag";
 
 
     /**
@@ -64,6 +61,7 @@ public class AdminListFragment extends Fragment {
     public AdminListFragment() {
         // Required empty public constructor
     }
+
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -153,6 +151,17 @@ public class AdminListFragment extends Fragment {
                         profileListView.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.GONE);
                         getNotifications(profileList);
+                        NotificationListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                NotificationJ not = notifList.get(position);
+                                ViewNotification dialogFragment = ViewNotification.newInstance(not);
+
+                                dialogFragment.show(getChildFragmentManager(), "ViewNotificationDialog");
+
+                            }
+
+                        });
                         break;
                     default:
                         break;
@@ -167,6 +176,7 @@ public class AdminListFragment extends Fragment {
 
 
     }
+
 
     /**
      * Gets the events from the database.
@@ -247,29 +257,52 @@ public class AdminListFragment extends Fragment {
     }
 
     public void getNotifications(ArrayList<Profile> profileList) {
-        // Get notifications from Firebase Firestore
-        //CollectionReference notificationsRef = db.collection("Notifications");
+        // 1. Clear the list to start fresh.
         notifList.clear();
+
+        // 2. Initialize and set the adapter ONCE with the (currently empty) list.
+        //    The adapter is now connected to the ListView and the notifList.
+        if (NotifAdapter == null) {
+            NotifAdapter = new NotifAdapterJ(requireContext(), notifList);
+            NotificationListView.setAdapter(NotifAdapter);
+        } else {
+            // If adapter already exists, just clear the list and notify
+            NotifAdapter.notifyDataSetChanged();
+        }
+
+
+        // 3. Loop through each profile to attach a listener.
         for (Profile p : profileList) {
-            if (!db.collection("Profile").document(p.getID()).collection("Notifications").get().getResult().isEmpty()) {
-                CollectionReference notifRef = db.collection("Profile").document(p.getID()).collection("Notifications");
-                notifRef.addSnapshotListener((snap, e) -> {
-                    if (e != null) {
-                        Log.e("Firestore", "Listen failed", e);
-                        return;
+            // FIX: Use the correct collection name "Profiles" (capital P).
+            CollectionReference ref = db.collection("Profiles").document(p.getID()).collection("Notifications");
+
+            ref.addSnapshotListener((snap, e) -> {
+                if (e != null){
+                    Log.e("Firestore", "Listen failed for user " + p.getUsername(), e);
+                    return; // Stop if there's an error.
+                }
+
+                if (snap != null && !snap.isEmpty()){
+                    // This loop runs when data is received from Firebase.
+                    for (QueryDocumentSnapshot doc : snap){
+                        NotificationJ notification = doc.toObject(NotificationJ.class);
+                        Log.d("GetNotifications", "Found notification: " + notification.getBody());
+
+                        // Add the new notification to your list.
+                        notifList.add(notification);
                     }
-                    if (snap != null && !snap.isEmpty()) {
-                        for (QueryDocumentSnapshot doc : snap) {
-                            // Use .toObject() for robust deserialization
-                            NotificationJ notification = doc.toObject(NotificationJ.class);
-                            notifList.add(notification);
-                        }
+
+                    // 4. IMPORTANT: Notify the adapter that the data has changed.
+                    //    This tells the ListView to refresh itself.
+                    if (NotifAdapter != null) {
                         NotifAdapter.notifyDataSetChanged();
                     }
-                });
-            }
+                } else {
+                    Log.d("GetNotifications", "No notifications found for user: " + p.getUsername());
+                }
+            });
         }
-        NotifAdapter = new NotifAdapterJ(requireContext(), notifList);
-        NotificationListView.setAdapter(NotifAdapter);
+
     }
+
 }
