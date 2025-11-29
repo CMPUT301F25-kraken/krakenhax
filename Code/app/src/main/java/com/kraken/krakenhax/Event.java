@@ -426,9 +426,12 @@ public class Event implements Parcelable {
      *        the number of replacement winners to select
      */
     private void drawReplacementWinner(int count) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
         if (lostList == null || lostList.isEmpty() || count <= 0) {
             return;
         }
+
         // Shuffle lostList to randomize selection
         ArrayList<Profile> shuffledLostList = new ArrayList<>(lostList);
         Collections.shuffle(shuffledLostList);
@@ -437,8 +440,12 @@ public class Event implements Parcelable {
             Profile replacement = shuffledLostList.get(i);
             wonList.add(replacement);
             lostList.remove(replacement);
-            // Update replacement winner's history
-            replacement.addHistory("Selected as replacement winner for event: " + this.title);
+
+            // Add action to users history
+            replacement.updateHistory(new Action("Selected as replacement winner for event", null, this.getId()));
+            // Save to firestore
+            db.collection("Profiles").document(replacement.getID()).set(replacement)
+                    .addOnFailureListener(e -> Log.e("drawReplacementWinner", "Failed to save replacement winner history", e));
         }
     }
 
