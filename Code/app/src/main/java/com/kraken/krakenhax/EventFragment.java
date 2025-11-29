@@ -344,6 +344,8 @@ public class EventFragment extends Fragment {
                 Button buttonDecline = view.findViewById(R.id.button_decline);
                 Button buttonSignup = view.findViewById(R.id.button_signup);
                 Button deleteButton = view.findViewById(R.id.EventDeleteButton);
+                Log.d("EventFragment", "Current Event's QR code URL: " + event.getQrCodeURL());
+
 
                 if (currentUser.getType().equals("Admin")) {
                     buttonSignup.setVisibility(View.GONE);

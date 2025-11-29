@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.Timestamp;
@@ -96,6 +97,9 @@ public class MyEventDetailsFragment extends Fragment {
         Button btnBack = view.findViewById(R.id.btnBack);
         Button btnentrantInfo = view.findViewById(R.id.btn_entrant_info);
         Button btnLottery = view.findViewById(R.id.btnLottery);
+        Button saveQrButton = view.findViewById(R.id.save_qr_code_button);
+
+
         qrCodeImage = view.findViewById(R.id.qr_code_imageview);
         eventViewModel = new EventViewModel();
 //
@@ -134,7 +138,6 @@ public class MyEventDetailsFragment extends Fragment {
                         event.getWinnerNumber() - event.getWonList().size()
                 );
             }
-
             updateEventInFirestore(event);
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -193,7 +196,6 @@ public class MyEventDetailsFragment extends Fragment {
             ).show();
         });
 
-
         btnUploadPoster.setOnClickListener(v -> imagePicker.launch("image/*"));
 
         btnBack.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
@@ -205,7 +207,37 @@ public class MyEventDetailsFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(R.id.action_MyEventDetailsFragment_to_EntrantInfoFragment, bundle);
         });
 
+        saveQrButton.setOnClickListener(v -> {
+            eventViewModel.saveImage(requireContext(), qrCodeImage);
+            Toast.makeText(requireContext(), "QR code saved to gallery", Toast.LENGTH_SHORT).show();
+            Log.d("ImageSave", "QR code saved to gallery");
+            saveQrButton.setBackgroundColor(getResources().getColor(R.color.gray));
+        });
+
         return view;
+    }
+
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
+        eventViewModel.clearDownloadedBitmap();
+
+        String url = event.getQrCodeURL();
+
+        if (url == null || url.trim().isEmpty() || url.equalsIgnoreCase("null")) {
+            qrCodeImage.setImageResource(R.drawable.outline_beach_access_100);
+        } else {
+            eventViewModel.urlToBitmap(requireContext(), url);
+        }
+        Log.e("QRCODEDEBUG", "URL value = " + url);
+
+        eventViewModel.getDownloadedBitmap().observe(getViewLifecycleOwner(), bitmap -> {
+            if (bitmap != null) {
+                qrCodeImage.setImageBitmap(bitmap);
+            } else {
+                qrCodeImage.setImageResource(R.drawable.outline_beach_access_100);
+            }
+        });
     }
 
     /**

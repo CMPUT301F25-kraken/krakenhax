@@ -455,18 +455,7 @@ The following table summarizes how key user stories and backlog items are implem
 
 ---
 
-## 8. Limitations & Future Work
-
-- **Authentication** is limited; integration with a full authentication provider could be added for production use.
-- **Notification content** is currently simple text. Future work could:
-  - Add richer templates and localized messages.
-  - Include actions (e.g., buttons) within notifications.
-- **Lottery logic** could be extended to handle more complex fairness constraints or tie-breaker rules.
-- **Admin tools** are basic; more advanced dashboards and analytics for engagement and fairness could be added.
-
----
-
-## 9. Conclusion
+## 8. Conclusion
 
 KrakenHax implements a complete event registration system using waitlists, lotteries, and a robust notification pipeline. Part 4 focused on connecting the lottery mechanism with real-time notifications, allowing organizers to communicate with entrants and enabling entrants to control their notification preferences.
 

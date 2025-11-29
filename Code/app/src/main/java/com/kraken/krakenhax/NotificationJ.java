@@ -13,6 +13,8 @@ public class NotificationJ implements Serializable {
 
     private boolean read;
 
+
+    // needed for firebase, DONT REMOVE!
     public NotificationJ() { }
 
     public NotificationJ(String title, String body, String sender, Timestamp timestamp, String eventID, String recipient, boolean read) {

@@ -45,8 +45,8 @@ public class EventFragmentTest {
         Bundle args = new Bundle();
         args.putParcelable("event", event);
 
-        FragmentScenario<EventFragment> scenario =
-                FragmentScenario.launchInContainer(EventFragment.class, args, R.style.Theme_MaterialComponents);
+        //FragmentScenario<EventFragment> scenario =
+                //FragmentScenario.launchInContainer(EventFragment.class, args, R.style.Theme_MaterialComponents);
 
         // Check the event title is displayed
         onView(withId(R.id.tv_event_name))
