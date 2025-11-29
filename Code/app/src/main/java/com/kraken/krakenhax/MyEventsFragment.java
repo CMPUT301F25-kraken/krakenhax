@@ -14,10 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -30,11 +30,8 @@ import java.util.Objects;
 public class MyEventsFragment extends Fragment {
     private FirebaseFirestore db;
     private ArrayList<Event> events;
-    private CollectionReference eventsRef;
     private MyRecyclerViewAdapter adapter;
-    private Button makeEventButton;
     private Profile currentUser;
-
 
     /**
      * Required empty public constructor for fragment instantiation.
@@ -113,43 +110,44 @@ public class MyEventsFragment extends Fragment {
      */
     private void startFirestoreListener() {
         CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
-        eventsRef.addSnapshotListener((snap, e) -> {
-            if (e != null) {
-                Log.e("Firestore", "Listen failed", e);
-                return;
-            }
-            if (snap != null && !snap.isEmpty()) {
-                events.clear();
-                for (QueryDocumentSnapshot doc : snap) {
-                    // Use .toObject() for robust deserialization
-                    Event event = doc.toObject(Event.class);
-                    String orgProfile = event.getOrgId();
-
-                    // Display events organized by the user
-                    if (Objects.equals(orgProfile, currentUser.getID())) {
-                        events.add(event);
+        eventsRef.orderBy("dateCreated", Query.Direction.DESCENDING)
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed", e);
+                        return;
                     }
+                    if (snap != null && !snap.isEmpty()) {
+                        events.clear();
+                        for (QueryDocumentSnapshot doc : snap) {
+                            // Use .toObject() for robust deserialization
+                            Event event = doc.toObject(Event.class);
+                            String orgProfile = event.getOrgId();
 
-                    // Display events that the user is on any event list for
-                    else if (event.getWaitList().contains(currentUser)) {
-                        events.add(event);
-                    } else if (event.getAcceptList().contains(currentUser)) {
-                        events.add(event);
-                    } else if (event.getCancelList().contains(currentUser)) {
-                        events.add(event);
-                    } else if (event.getLostList().contains(currentUser)) {
-                        events.add(event);
-                    } else if (event.getWonList().contains(currentUser)) {
-                        events.add(event);
+                            // Display events organized by the user
+                            if (Objects.equals(orgProfile, currentUser.getID())) {
+                                events.add(event);
+                            }
+
+                            // Display events that the user is on any event list for
+                            else if (event.getWaitList().contains(currentUser)) {
+                                events.add(event);
+                            } else if (event.getAcceptList().contains(currentUser)) {
+                                events.add(event);
+                            } else if (event.getCancelList().contains(currentUser)) {
+                                events.add(event);
+                            } else if (event.getLostList().contains(currentUser)) {
+                                events.add(event);
+                            } else if (event.getWonList().contains(currentUser)) {
+                                events.add(event);
+                            }
+
+                        }
+                        // Sort the events from newest to oldest
+                        events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
+
+                        adapter.notifyDataSetChanged();
                     }
-
-                }
-                // Sort the events from newest to oldest
-                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
-
-                adapter.notifyDataSetChanged();
-            }
-        });
+                });
     }
 
 }
