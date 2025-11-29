@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -60,16 +61,12 @@ public class HistoryFragment extends Fragment {
             currentUser = mainActivity.currentUser;
         }
 
-        // Get the history list from current user
-        history = currentUser.getHistory();
-        history.sort(Comparator.comparing(Action::getTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+        // Start with empty list to avoid showing stale items
+        history = new ArrayList<Action>();
 
         // Set up the recycler view
         recyclerView = view.findViewById(R.id.history_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        // Start with empty list to avoid showing stale items
-        history = new java.util.ArrayList<>();
 
         // Pass the Activity-owned ViewModels into the adapter
         EventViewModel eventViewModel = null;

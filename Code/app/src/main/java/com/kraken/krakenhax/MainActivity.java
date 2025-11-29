@@ -172,6 +172,37 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Helper function to ensure all events have a valid dateCreated field.
+     * If missing or null, sets it to December 31, 1969.
+     */
+    private void cleanUpLegacyEventDates() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsRef = db.collection("Events");
+
+        eventsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                // Check if 'dateCreated' is missing or explicitly null
+                if (!document.contains("dateCreated") || document.get("dateCreated") == null) {
+
+                    // Create Date object for December 31, 1969
+                    java.util.Calendar calendar = java.util.Calendar.getInstance();
+                    calendar.set(1969, java.util.Calendar.DECEMBER, 31, 0, 0, 0);
+
+                    // Convert to Firestore Timestamp
+                    com.google.firebase.Timestamp defaultDate = new com.google.firebase.Timestamp(calendar.getTime());
+
+                    // Update Firestore
+                    eventsRef.document(document.getId()).update("dateCreated", defaultDate)
+                            .addOnSuccessListener(aVoid -> android.util.Log.d("DateCleanup", "Updated event: " + document.getId()))
+                            .addOnFailureListener(e -> android.util.Log.e("DateCleanup", "Failed to update event: " + document.getId(), e));
+                }
+            }
+        }).addOnFailureListener(e -> {
+            android.util.Log.e("DateCleanup", "Error getting events for cleanup", e);
+        });
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -228,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
         //cleanUpLegacyEvents();
         //ensureEventTimeframes();
         //addHistory(); // Migration helper: run manually if needed, do not execute on every app start
+        //cleanUpLegacyEventDates();
 
         // Set up the navigation bar
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_container);

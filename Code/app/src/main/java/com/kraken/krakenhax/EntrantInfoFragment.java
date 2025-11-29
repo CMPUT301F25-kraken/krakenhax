@@ -156,7 +156,7 @@ public class EntrantInfoFragment extends Fragment {
         view.findViewById(R.id.notifyOverlayDim).setOnClickListener(v -> {
             notifyOverlay.setVisibility(View.GONE);
         });
-        Button export = view.findViewById(R.id.exportBtn);
+        Button export = view.findViewById(R.id.button_export);
         export.setOnClickListener(v -> {
             exportCsv();
         });
