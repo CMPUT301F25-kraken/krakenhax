@@ -411,9 +411,34 @@ public class Event implements Parcelable {
             this.wonList.remove(profile);
 
             // Draw one more winner to replace the cancelled profile
-            drawLottery(this.lostList, 1);
+            drawReplacementWinner(1);
         } else {
             Log.d("Event", "Profile must be in wonList to be added to cancelList");
+        }
+    }
+
+    /**
+     * Selects replacement winner(s) from the lostList when a winner cancels.
+     * Moves the selected profile(s) from lostList to wonList and updates their history.
+     * Does NOT update organizer or other profiles' histories.
+     *
+     * @param count
+     *        the number of replacement winners to select
+     */
+    private void drawReplacementWinner(int count) {
+        if (lostList == null || lostList.isEmpty() || count <= 0) {
+            return;
+        }
+        // Shuffle lostList to randomize selection
+        ArrayList<Profile> shuffledLostList = new ArrayList<>(lostList);
+        Collections.shuffle(shuffledLostList);
+        int winnersToDraw = Math.min(count, shuffledLostList.size());
+        for (int i = 0; i < winnersToDraw; i++) {
+            Profile replacement = shuffledLostList.get(i);
+            wonList.add(replacement);
+            lostList.remove(replacement);
+            // Update replacement winner's history
+            replacement.addHistory("Selected as replacement winner for event: " + this.title);
         }
     }
 
