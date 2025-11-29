@@ -6,9 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -72,6 +75,7 @@ public class EventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button notifications = view.findViewById(R.id.notifications);
+        ImageButton filterEventsButton = view.findViewById(R.id.filter_events_button);
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -107,7 +111,19 @@ public class EventsFragment extends Fragment {
             navController.navigate(R.id.action_EventsFragment_to_NotificationFragment);
         });
 
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("Sports");
+        categories.add("Music");
+        categories.add("Art");
 
+        filterEventsButton.setOnClickListener(v -> {
+            FilterDialogFragment filterDialogFragment = new FilterDialogFragment(categories, selectedCategories -> {
+                // Handle the selected categories here
+                Log.d("EventsFragment", "Selected categories: " + selectedCategories);
+            }
+            );
+            filterDialogFragment.show(getParentFragmentManager(), "filter_dialog");
+        });
     }
 
     /**
