@@ -96,11 +96,11 @@ public class Event implements Parcelable {
      * @param title
      *        a String representing the event title
      * @param eventDetails
-     *        a String representing the event details (defaults to empty string)
+     *        a String representing the event details (uses empty string if null)
      * @param location
-     *        a String representing the event location (defaults to empty string)
+     *        a String representing the event location (uses empty string if null)
      * @param radius
-     *        an Integer representing the event's radius (defaults to 0)
+     *        an Integer representing the event's radius (uses 0 if null)
      * @param poster
      *        a String representing the URL or path to the event's poster image
      */
