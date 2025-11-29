@@ -17,12 +17,16 @@ import androidx.lifecycle.ViewModelStore;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class NotifAdapterJ extends ArrayAdapter<NotificationJ> {
     //public Profile organizer;
@@ -30,7 +34,7 @@ public class NotifAdapterJ extends ArrayAdapter<NotificationJ> {
     public ArrayList<NotificationJ> notifList;
     public TextView title;
     public TextView recipient;
-    public TextView sender;
+    public TextView dateV;
     public TextView message;
 
     public NotifAdapterJ(Context context, ArrayList<NotificationJ> notifList) {
@@ -48,20 +52,30 @@ public class NotifAdapterJ extends ArrayAdapter<NotificationJ> {
         }
         title = view.findViewById(R.id.TitleDisplay);
         recipient = view.findViewById(R.id.RecipientDisplay);
-        sender = view.findViewById(R.id.UsernameDisplay);
+        dateV = view.findViewById(R.id.DateView);
         message = view.findViewById(R.id.MessageDisplay);
 
         NotificationJ notification = getItem(position);
 
         assert notification != null;
         //Log.d("display Notification", notification.getBody());
-        String senderUsername = notification.getSender();
-        Log.d("show senderID", "SenderID:"+senderUsername);
         String recipientUsername = notification.getRecipient();
+        recipientUsername = "Recipient"+ recipientUsername;
         Log.d("show senderID", "RecipientID:"+recipientUsername);
+        Timestamp ts = notification.getTimestamp();
+        // format timestamp
+        if (notification.getTimestamp() != null) {
+
+            Date date = ts.toDate();
+            SimpleDateFormat sdf =
+                    new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault());
+            dateV.setText(sdf.format(date));
+
+        } else {
+            dateV.setText("");
+        }
 
 
-        sender.setText(senderUsername);
         recipient.setText(recipientUsername);
         message.setText(notification.getBody());
         title.setText(notification.getTitle());

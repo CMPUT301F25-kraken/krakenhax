@@ -241,7 +241,7 @@ public class EntrantInfoFragment extends Fragment {
                     stringAction = String.format("Removed from %s", finalStrList);
                     profileToRemove.updateHistory(new Action(stringAction, currentUser.getID(), event.getId()));
                     updateProfileInFirestore(profileToRemove);
-                    CollectionReference notifRef = db.collection("Notifications");
+                    CollectionReference notifRef = db.collection("Profiles").document(user.getID()).collection("Notifications");
 
                     final ArrayList<Profile> profileList = new ArrayList<>();
                     ProfileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
@@ -253,7 +253,7 @@ public class EntrantInfoFragment extends Fragment {
                         }
                     });
                     Profile organizer = profileList.get(0);
-                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", event.getOrgId(), Timestamp.now(), event.getId(), user.getID(), false);
+                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", organizer.getID(), Timestamp.now(), event.getId(), user.getID(), false);
                     notifRef.add(notification);
 
                     NotifyUser notifier = new NotifyUser(requireContext());
