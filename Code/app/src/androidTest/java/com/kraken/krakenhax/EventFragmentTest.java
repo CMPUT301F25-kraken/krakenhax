@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.google.firebase.Timestamp;
@@ -19,6 +18,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.Date;
 
+
 /**
  * UI test for EventFragment.
  * Verifies the title and signup button are visible when the fragment is launched.
@@ -26,6 +26,9 @@ import java.util.Date;
 @RunWith(AndroidJUnit4.class)
 public class EventFragmentTest {
 
+    /**
+     * Tests that the event details and signup button are displayed in the EventFragment.
+     */
     @Test
     public void testEventDetailsDisplayed() {
         // Build a fake Event object
@@ -46,7 +49,7 @@ public class EventFragmentTest {
         args.putParcelable("event", event);
 
         //FragmentScenario<EventFragment> scenario =
-         //       FragmentScenario.launchInContainer(EventFragment.class, args, R.style.Theme_MaterialComponents);
+        //       FragmentScenario.launchInContainer(EventFragment.class, args, R.style.Theme_MaterialComponents);
 
         // Check the event title is displayed
         onView(withId(R.id.tv_event_name))
@@ -57,4 +60,5 @@ public class EventFragmentTest {
         onView(withId(R.id.button_signup))
                 .check(matches(isDisplayed()));
     }
+
 }

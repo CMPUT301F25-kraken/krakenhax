@@ -65,7 +65,9 @@ public class EventViewModel extends ViewModel {
     }
 
     /**
-     * Adds an event locally and uploads to Firestore.
+     * Adds an event to the local list and uploads it to Firestore.
+     *
+     * @param event the event to add and upload
      */
     public void addEvent(Event event) {
         ArrayList<Event> currentList = eventList.getValue();
@@ -77,7 +79,10 @@ public class EventViewModel extends ViewModel {
     }
 
     /**
-     * Uploads a poster image for an event and updates Firestore.
+     * Uploads a poster image for an event and updates its Firestore document.
+     *
+     * @param event    the event whose poster is being uploaded
+     * @param filePath the URI of the poster image file
      */
     public void uploadPosterForEvent(Event event, Uri filePath) {
         if (filePath == null || event == null || event.getId() == null) {
@@ -111,7 +116,11 @@ public class EventViewModel extends ViewModel {
     }
 
     /**
-     * Generates a QR code bitmap for an event ID.
+     * Generates a QR code bitmap for the given event ID.
+     *
+     * @param eventId the ID of the event to encode in the QR code
+     * @return a bitmap containing the generated QR code
+     * @throws WriterException if the QR code cannot be generated
      */
     public Bitmap generateQR(String eventId) throws WriterException {
         String deepLinkUrl = "krakenhax://event/" + eventId;
@@ -123,7 +132,11 @@ public class EventViewModel extends ViewModel {
     }
 
     /**
-     * Uploads a QR code image to Firebase Storage and updates Firestore.
+     * Uploads a QR code image to Firebase Storage and updates the event document.
+     *
+     * @param event             the event whose QR code is being uploaded
+     * @param qrCodeBitmap      the QR code bitmap to upload
+     * @param onSuccessListener callback invoked with the download URI on success
      */
     public void uploadQrCode(Event event, Bitmap qrCodeBitmap, OnSuccessListener<Uri> onSuccessListener) {
         if (qrCodeBitmap == null || event == null || event.getId() == null) {
@@ -159,6 +172,12 @@ public class EventViewModel extends ViewModel {
         );
     }
 
+    /**
+     * Downloads an image from the given URL and stores it as a bitmap.
+     *
+     * @param context the context used for loading resources
+     * @param url     the URL of the image to download
+     */
     public void urlToBitmap(Context context, String url) {
         picassoTarget = new Target() {
             @Override
@@ -179,10 +198,18 @@ public class EventViewModel extends ViewModel {
         Picasso.get().load(url).into(picassoTarget);
     }
 
+    /**
+     * Clears the currently downloaded bitmap.
+     */
     public void clearDownloadedBitmap() {
         downloadedBitmap.setValue(null);
     }
 
+    /**
+     * Returns live data containing the last downloaded bitmap.
+     *
+     * @return mutable live data holding the downloaded bitmap
+     */
     public MutableLiveData<Bitmap> getDownloadedBitmap() {
         return downloadedBitmap;
     }
@@ -216,6 +243,8 @@ public class EventViewModel extends ViewModel {
 
     /**
      * Uploads an event document to Firestore.
+     *
+     * @param event the event to upload
      */
     private void uploadEvent(Event event) {
         if (event == null || event.getId() == null) {
@@ -264,6 +293,13 @@ public class EventViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Saves the image displayed in the given {@link ImageView} to the device gallery.
+     *
+     * @param context   the context used to access the {@link ContentResolver}
+     * @param imageView the image view containing the bitmap to save
+     * @return {@code true} if the image was saved successfully; {@code false} otherwise
+     */
     public Boolean saveImage(Context context, ImageView imageView) {
         BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
         Bitmap bitmap = bitmapDrawable.getBitmap();
@@ -310,6 +346,9 @@ public class EventViewModel extends ViewModel {
 
     /**
      * Finds the event object from an event ID.
+     *
+     * @param eventID  the ID of the event to look up
+     * @param callback the callback invoked with the found event or {@code null}
      */
     public void lookupEvent(String eventID, OnSuccessListener<Event> callback) {
         List<Event> events = eventList.getValue();

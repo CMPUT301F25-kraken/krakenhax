@@ -23,18 +23,9 @@ public class DeviceIdentityManager {
     private static final String TAG = "DeviceIdentityManager";
 
     /**
-     * Simple callback interface for async user ID fetch.
-     */
-    public interface LinkedUserCallback {
-        /**
-         * Called with the linked user ID found for this device, or null if no link exists or on error.
-         * @param userId the linked user ID, or null
-         */
-        void onResult(String userId); // userId will be null if not found or on error
-    }
-
-    /**
      * Returns a Task that resolves to the Firebase Installation ID for this app instance.
+     *
+     * @return a {@link Task} that completes with the Firebase Installation ID (FID) string
      */
     public static Task<String> getFIDAsync() {
         return FirebaseInstallations.getInstance().getId();
@@ -42,6 +33,7 @@ public class DeviceIdentityManager {
 
     /**
      * Fetch the userId linked to this device (if any) and provide it via callback.
+     *
      * @param callback receives the userId or null if none/error.
      */
     public static void fetchLinkedUserId(LinkedUserCallback callback) {
@@ -77,6 +69,7 @@ public class DeviceIdentityManager {
     /**
      * Update (or create) the device -> user link. Sets lastSeen every call; sets createdAt only
      * on first creation. Merge semantics to avoid overwriting other future fields.
+     *
      * @param userId The user ID to link this device to.
      */
     public static void updateAccountLink(String userId) {
@@ -122,6 +115,8 @@ public class DeviceIdentityManager {
     /**
      * Clear the association (e.g., on logout). Keeps the document so analytics like createdAt persist.
      * Returns a Task that completes when the server update finishes.
+     *
+     * @return a {@link Task} that completes when the device's user link has been cleared in Firestore
      */
     public static Task<Void> clearAccountLinkAsync() {
         TaskCompletionSource<Void> tcs = new TaskCompletionSource<>();
@@ -163,6 +158,18 @@ public class DeviceIdentityManager {
      */
     public static void clearAccountLink() {
         clearAccountLinkAsync();
+    }
+
+    /**
+     * Simple callback interface for async user ID fetch.
+     */
+    public interface LinkedUserCallback {
+        /**
+         * Called with the linked user ID found for this device, or null if no link exists or on error.
+         *
+         * @param userId the linked user ID, or null
+         */
+        void onResult(String userId); // userId will be null if not found or on error
     }
 
 }

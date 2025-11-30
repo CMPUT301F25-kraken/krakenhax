@@ -12,6 +12,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class EventRepository {
     private final FirebaseFirestore db;
 
+    /**
+     * Creates a new {@code EventRepository} that uses the given Firestore instance.
+     *
+     * @param db the {@link FirebaseFirestore} instance used for all event operations
+     */
     public EventRepository(FirebaseFirestore db) {
         this.db = db;
     }

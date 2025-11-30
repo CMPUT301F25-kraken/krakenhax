@@ -11,26 +11,35 @@ import org.junit.Test;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
+
 /**
  * Unit tests for the Event class.
  * Verifies basic getters/setters, category logic, and timeframe validation.
  *
  */
 public class EventTest {
-
     private Event event;
 
+    /**
+     * Sets up a fresh {@link Event} instance before each test.
+     */
     @Before
     public void setUp() {
         event = new Event("Test Event");
     }
 
+    /**
+     * Verifies that the title setter and getter work as expected.
+     */
     @Test
     public void testTitleSetterGetter() {
         event.setTitle("Drift Wars");
         assertEquals("Drift Wars", event.getTitle());
     }
 
+    /**
+     * Verifies that categories can be added to and removed from an event.
+     */
     @Test
     public void testAddAndRemoveCategory() {
         event.addCategory("Cars");
@@ -39,6 +48,10 @@ public class EventTest {
         assertFalse(event.getCategories().contains("Cars"));
     }
 
+    /**
+     * Ensures that adding more than the allowed number of categories
+     * results in an {@link IllegalArgumentException}.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testTooManyCategoriesThrowsException() {
         for (int i = 0; i < 6; i++) {
@@ -46,6 +59,9 @@ public class EventTest {
         }
     }
 
+    /**
+     * Verifies that a valid timeframe with start and end dates is accepted.
+     */
     @Test
     public void testSetValidTimeframe() {
         ArrayList<ZonedDateTime> timeframe = new ArrayList<>();
@@ -55,6 +71,10 @@ public class EventTest {
         assertEquals(2, event.getTimeframe().size());
     }
 
+    /**
+     * Ensures that an invalid timeframe where the end precedes the start
+     * results in an {@link IllegalArgumentException}.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidTimeframeThrowsException() {
         ArrayList<ZonedDateTime> timeframe = new ArrayList<>();
@@ -63,23 +83,27 @@ public class EventTest {
         //event.setTimeframe(timeframe);
     }
 
+    /**
+     * Confirms that the wait list is initialized and empty by default.
+     */
     @Test
     public void testWaitListNotNull() {
         assertNotNull(event.getWaitList());
         assertTrue(event.getWaitList().isEmpty());
     }
 
-    /**
-    @Test
+//    /**
+//     * Smoke test to verify that {@link Event} parceling works without errors.
+//     */
+//    @Test
+//    public void testParcelWriteRead() {
+//        // basic smoke test — ensures Parcelable runs without crash
+//        android.os.Parcel parcel = android.os.Parcel.obtain();
+//        event.writeToParcel(parcel, 0);
+//        parcel.setDataPosition(0);
+//        Event recreated = Event.CREATOR.createFromParcel(parcel);
+//        assertEquals(event.getTitle(), recreated.getTitle());
+//        parcel.recycle();
+//    }
 
-    public void testParcelWriteRead() {
-        // basic smoke test — ensures Parcelable runs without crash
-        android.os.Parcel parcel = android.os.Parcel.obtain();
-        event.writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Event recreated = Event.CREATOR.createFromParcel(parcel);
-        assertEquals(event.getTitle(), recreated.getTitle());
-        parcel.recycle();
-    }
-    */
 }

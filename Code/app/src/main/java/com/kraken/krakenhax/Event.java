@@ -69,6 +69,7 @@ public class Event implements Parcelable {
 
     /**
      * Constructor for Event class with title argument.
+     * @param title the title of the event
      */
     public Event(String title) {
         this.title = title;

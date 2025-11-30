@@ -39,6 +39,7 @@ public class Profile implements Parcelable {
     /**
      * Constructs a new user profile with the given details.
      *
+     * @param ID          the user's ID
      * @param username    the user's username
      * @param password    the user's password
      * @param type        the role type (entrant, organizer, admin)
@@ -342,13 +343,17 @@ public class Profile implements Parcelable {
         return dateCreated;
     }
 
+    // Utility Methods
+
     /**
      * Checks if the given object is equal to this profile.
+     * <p>
+     * Two profiles are considered equal if they have the same ID and username.
      *
-     * @param o
-     * @return true if the objects are equal, false otherwise
+     * @param o the object to compare with this profile
+     * @return \`true\` if the given object is a \`Profile\` with the same ID and username,
+     * \`false\` otherwise
      */
-    // Utility Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
