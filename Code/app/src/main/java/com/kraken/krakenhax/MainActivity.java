@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             if (destinationId == R.id.LoginFragment || destinationId == R.id.signup || destinationId == R.id.selection_type) {
                 bottom_navigation_bar.setVisibility(View.GONE);
                 admin_navigation_bar.setVisibility(View.GONE);
-            } else if (destinationId == R.id.EventsFragment) {
+            } else if (destinationId == R.id.EventsFragment || (currentUser.getType().equals("Entrant"))|| currentUser.getType().equals("Organizer")) {
                 NavigationUI.setupWithNavController(bottom_navigation_bar, navController);
                 bottom_navigation_bar.setVisibility(View.VISIBLE);
             } else if (destinationId == R.id.adminListFragment) {

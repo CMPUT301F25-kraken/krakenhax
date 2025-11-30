@@ -17,11 +17,28 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Dialog fragment to display a notification.
+ * Allows the admin to view a notification.
+ */
 public class ViewNotification extends DialogFragment {
     public NotificationJ notif;
 
 
+    /**
+     * Required empty public constructor
+     */
+    public ViewNotification() {
+        // Required empty public constructor
+    }
 
+    /**
+     * Creates a new instance of the dialog fragment.
+     * Bundles the notification to be displayed.
+     * @param notification Takes a notification to display.
+     *
+     * @return Returns the new instance of the dialog fragment.
+     */
     public static ViewNotification newInstance(NotificationJ notification){
         Bundle args = new Bundle();
         args.putSerializable("Notification", notification);
@@ -31,7 +48,17 @@ public class ViewNotification extends DialogFragment {
     }
 
 
-
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * Contains the main functionality of the fragment.
+     * Sets up the dialog fragment.
+     * Formats the notification to be displayed.
+     *
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Returns the View for the fragment's UI, or null.
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){

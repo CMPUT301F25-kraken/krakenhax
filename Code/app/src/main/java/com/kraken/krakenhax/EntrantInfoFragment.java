@@ -262,8 +262,8 @@ public class EntrantInfoFragment extends Fragment {
                     NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", organizer.getID(), Timestamp.now(), event.getId(), user.getID(), false);
                     notifRef.add(notification);
 
-                    NotifyUser notifier = new NotifyUser(requireContext());
-                    notifier.sendNotification(user, "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".");
+                    //NotifyUser notifier = new NotifyUser(requireContext());
+                    //notifier.sendNotification(user, "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".");
 
 
                 });

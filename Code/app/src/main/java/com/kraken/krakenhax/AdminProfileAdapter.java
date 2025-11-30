@@ -31,15 +31,17 @@ public class AdminProfileAdapter extends ArrayAdapter<Profile> {
      * Required public constructor
      * Takes context and an arraylist of profiles.
      *
-     * @param context
-     * @param profiles
+     * @param context Takes the context of the fragment that is using the adapter.
+     * @param profiles Takes an arrayList of profile classes to display in the list.
      */
     public AdminProfileAdapter(Context context, ArrayList<Profile> profiles) {
         super(context, 0, profiles);
         this.profiles = profiles;
     }
 
-
+    /**
+     * ViewHolder class to hold the views for the list item.
+     */
 
     public static class ViewHolder {
         public TextView name;
@@ -49,9 +51,11 @@ public class AdminProfileAdapter extends ArrayAdapter<Profile> {
     /**
      * Returns the view for the list item.
      *
-     * @param position
-     * @param convertView
-     * @param parent
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *                 we want.
+     * @param convertView The old view to reuse, if possible.
+     *
+     * @param parent The parent that this view will eventually be attached to
      * @return the view for the list item.
      */
     @NonNull
@@ -85,6 +89,12 @@ public class AdminProfileAdapter extends ArrayAdapter<Profile> {
         return view;
     }
 
+    /**
+     * Loads the profile picture for a profile.
+     *
+     * @param profile Takes a profile to get the picture from.
+     * @param profilePic Takes an ImageView to load the picture into.
+     */
     public void loadProfilePic(Profile profile, ImageView profilePic) {
         String profilePicURL = profile.getPicture();
         if (profilePicURL == null || profilePicURL.isEmpty()) {

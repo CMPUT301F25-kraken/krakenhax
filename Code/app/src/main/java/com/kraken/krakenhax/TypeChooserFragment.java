@@ -53,6 +53,10 @@ public class TypeChooserFragment extends Fragment {
      * Contains the main functionality of the fragment.
      * Sets up the listeners for the buttons.
      * On button click, it navigates to the SignUpFragment with the selected user type.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     *                           The fragment's view.
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     *                           or null if this is a freshly created Fragment.
      */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

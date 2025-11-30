@@ -149,10 +149,10 @@ public class MyEventDetailsFragment extends Fragment {
                 NotificationJ notif = new NotificationJ(
                         "You won the lottery!",
                         "You have been selected to participate in " + event.getTitle() + ".",
-                        event.getOrgId(),          // sender = organizer
+                        currentUser.getUsername(),          // sender = organizer
                         null,                      // timestamp will be set server-side
                         event.getId(),             // event ID
-                        p.getID(),                 // recipient profile ID
+                        p.getUsername(),                 // recipient profile ID
                         false                      // read = false
                 );
 
@@ -173,10 +173,10 @@ public class MyEventDetailsFragment extends Fragment {
                 NotificationJ notif = new NotificationJ(
                         "Lottery result",
                         "Unfortunately, you were not selected for " + event.getTitle() + ".",
-                        event.getOrgId(),
+                        currentUser.getUsername(),
                         null,
                         event.getId(),
-                        p.getID(),
+                        p.getUsername(),
                         false
                 );
 
