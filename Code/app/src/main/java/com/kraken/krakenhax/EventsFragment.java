@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -34,6 +35,7 @@ public class EventsFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
     private FirebaseFirestore db;
     private ArrayList<Event> events;
+    private ArrayList<Event> filteredEvents;
     private Profile currentUser;
 
     /**
@@ -71,12 +73,12 @@ public class EventsFragment extends Fragment {
 
         Button notifications = view.findViewById(R.id.notifications);
 
-
         MainActivity mainActivity = (MainActivity) getActivity();
         if (mainActivity != null) {
             currentUser = mainActivity.currentUser;
         }
         startNotificationListener();
+
         // Set up nav controller
         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
 
@@ -84,12 +86,28 @@ public class EventsFragment extends Fragment {
         RecyclerView recycler_view_event_list = view.findViewById(R.id.recycler_view_events_list);
         recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
         events = new ArrayList<>();
+        filteredEvents = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
-        adapter = new MyRecyclerViewAdapter(events);
+        adapter = new MyRecyclerViewAdapter(filteredEvents);
         recycler_view_event_list.setAdapter(adapter);
 
+        // Set up listener for search bar
+        SearchView searchView = view.findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterList(newText);
+                return false;
+            }
+        });
+
         // Set up a firebase listener to get the events
-        startFirestoreListener();
+        startFirestoreListener(searchView);
 
         // Set an on item click listener for the recycler view
         // When an event is clicked on
@@ -113,7 +131,7 @@ public class EventsFragment extends Fragment {
      * The events should be sorted from newest to oldest based on date created with events with
      * no date created at the very end.
      */
-    private void startFirestoreListener() {
+    private void startFirestoreListener(SearchView searchView) {
         CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.orderBy("dateCreated", Query.Direction.DESCENDING)
                 .addSnapshotListener((snap, e) -> {
@@ -130,6 +148,14 @@ public class EventsFragment extends Fragment {
                         }
                         // Sort the events from newest to oldest
                         events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
+
+                        // Update the recycler view based on the search
+                        if (searchView != null && searchView.getQuery().length() > 0) {
+                            filterList(searchView.getQuery().toString());
+                        } else {
+                            filteredEvents.clear();
+                            filteredEvents.addAll(events);
+                        }
 
                         adapter.notifyDataSetChanged();
                     }
@@ -172,6 +198,25 @@ public class EventsFragment extends Fragment {
     private void showLocalNotification(String message) {
         NotifyUser notifier = new NotifyUser(requireContext());
         notifier.sendNotification(currentUser, message);
+    }
+
+    private void filterList(String text) {
+        filteredEvents.clear();
+        // If the query is blank show all events
+        if (text.isEmpty()) {
+            filteredEvents.addAll(events);
+        } else {
+            String query = text.toLowerCase();
+            // Show all events that contain the query in their title
+            for (Event event : events) {
+                // Filter events by title
+                if (event.getTitle().toLowerCase().contains(query)) {
+                    filteredEvents.add(event);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
 }
