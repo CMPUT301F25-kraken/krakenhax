@@ -1,6 +1,7 @@
 package com.kraken.krakenhax;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -59,17 +61,13 @@ public class HistoryFragment extends Fragment {
             currentUser = mainActivity.currentUser;
         }
 
-        // Set up firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        startFirestoreListener(db);
-
-        // Get the history list from current user
-        history = currentUser.getHistory();
-        history.sort(Comparator.comparing(Action::getTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
+        // Start with empty list to avoid showing stale items
+        history = new ArrayList<Action>();
 
         // Set up the recycler view
         recyclerView = view.findViewById(R.id.history_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         // Pass the Activity-owned ViewModels into the adapter
         EventViewModel eventViewModel = null;
         ProfileViewModel profileViewModel = null;
@@ -79,6 +77,10 @@ public class HistoryFragment extends Fragment {
         }
         HistoryRecyclerViewAdapter adapter = new HistoryRecyclerViewAdapter(history, eventViewModel, profileViewModel);
         recyclerView.setAdapter(adapter);
+
+        // Set up firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        startFirestoreListener(db);
     }
 
     private void startFirestoreListener(FirebaseFirestore db) {
@@ -86,16 +88,28 @@ public class HistoryFragment extends Fragment {
             return;
         }
 
+        Log.d("HistoryCheck", "Listening on profile ID: " + currentUser.getID());
+
+
         db.collection("Profiles").document(currentUser.getID())
                 .addSnapshotListener((snapshot, e) -> {
                     if (snapshot != null && snapshot.exists()) {
                         this.currentUser = snapshot.toObject(Profile.class);
 
                         // --- DIAGNOSTIC LOG ---
+                        Log.d("HistoryCheck", snapshot.getData().get("history").toString());
+                        if (this.currentUser == null) {
+                            Log.e("HistoryCheck", "Deserialized currentUser is null");
+                            return;
+                        }
+                        Log.d("HistoryCheck", "Snapshot ID: " + snapshot.getId());
                         if (this.currentUser.getHistory() == null) {
-                            android.util.Log.e("HistoryCheck", "History is NULL after Firestore load");
+                            Log.e("HistoryCheck", "History is NULL after Firestore load");
                         } else {
-                            android.util.Log.d("HistoryCheck", "History size: " + this.currentUser.getHistory().size());
+                            Log.d("HistoryCheck", "History size: " + this.currentUser.getHistory().size());
+                            for (Action a : this.currentUser.getHistory()) {
+                                Log.d("HistoryCheck", "Action ts: " + a.getTimestamp());
+                            }
                         }
                         // ----------------------
 
@@ -116,7 +130,6 @@ public class HistoryFragment extends Fragment {
 
         // 2. Sort history
         latestHistory.sort(Comparator.comparing(Action::getTimestamp, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
-
 
         // 3. Update the local reference
         this.history = latestHistory;

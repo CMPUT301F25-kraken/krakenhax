@@ -37,6 +37,7 @@ import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -378,13 +379,26 @@ public class EventFragment extends Fragment {
 
                         // Creating a notification so the entrant sees a record of the cancellation
                         if (currentUser.isNotificationsEnabled()) {
+                            Timestamp curTime = Timestamp.now();
+                            final ArrayList<Profile> profileList = new ArrayList<>();
+                            ProfileViewModel ProfileModel;
+
+                            ProfileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+                            ProfileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+                                for (Profile profile : profiles) {
+                                    if (profile.getID().equals(event.getOrgId())) {
+                                        profileList.add(profile);
+                                    }
+                                }
+                            });
+                            Profile organizer = profileList.get(0);
                             NotificationJ notification = new NotificationJ(
                                     "You cancelled your spot",
                                     "You have cancelled your participation in " + event.getTitle() + ".",
-                                    event.getOrgId(),          // sender = organizer / event owner
-                                    null,                      // timestamp set by server
+                                    organizer.getUsername(),          // sender = organizer / event owner
+                                    curTime,                      // timestamp set by server
                                     event.getId(),
-                                    currentUser.getID(),
+                                    currentUser.getUsername(),
                                     false
                             );
 
@@ -392,9 +406,9 @@ public class EventFragment extends Fragment {
                                     .document(currentUser.getID())
                                     .collection("Notifications")
                                     .add(notification)
-                                    .addOnSuccessListener(docRef ->
-                                            docRef.update("timestamp", FieldValue.serverTimestamp())
-                                    )
+                                    //.addOnSuccessListener(docRef ->
+                                    //        docRef.update("timestamp", FieldValue.serverTimestamp())
+                                    //)
                                     .addOnFailureListener(e ->
                                             Log.e("EventFragment", "Failed to create cancellation notification", e)
                                     );

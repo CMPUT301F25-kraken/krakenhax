@@ -23,6 +23,10 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A simple {@link Fragment} subclass for notifications.
+ * Displays a list of notifications for the current user.
+ */
 
 public class NotificationFragment extends Fragment {
 
@@ -33,6 +37,28 @@ public class NotificationFragment extends Fragment {
     private FirebaseFirestore db;
     private Profile currentUser;
 
+    /**
+     * Required empty public constructor.
+     */
+    public NotificationFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Inflates the notification layout and initializes UI bindings, Firestore references,
+     * and event listeners for updating profile details, profile image, notifications,
+     * and sign-out. Also populates the inputs from the current user's profile.
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notification, container, false);
@@ -63,6 +89,13 @@ public class NotificationFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Opens the event associated with the given notification.
+     * If no event is linked to the notification, a toast message is displayed.
+     * If the event cannot be loaded, an error message is displayed.
+     *
+     * @param notif the notification to open the event for
+     */
     private void openEvent(NotificationJ notif) {
         String eventId = notif.getEventID();
 
@@ -100,6 +133,10 @@ public class NotificationFragment extends Fragment {
                 });
     }
 
+    /**
+     * Keeps the notification list up to date with the database.
+     * Listens for changes in the notifications collection for the current user.
+     */
     private void startNotificationListListener() {
         notifListener = db.collection("Profiles")
                 .document(currentUser.getID()).collection("Notifications")
@@ -139,7 +176,9 @@ public class NotificationFragment extends Fragment {
                 });
     }
 
-
+    /**
+     * Removes the notification list listener when the fragment is destroyed.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();

@@ -20,6 +20,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -33,11 +34,8 @@ public class EventsFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
     private FirebaseFirestore db;
     private ArrayList<Event> events;
-    private CollectionReference eventsRef;
-
     private Profile currentUser;
 
-    private ListenerRegistration notificationListener;
     /**
      * Required empty public constructor for fragment instantiation.
      */
@@ -103,7 +101,7 @@ public class EventsFragment extends Fragment {
             navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
         });
 
-        notifications.setOnClickListener( v ->{
+        notifications.setOnClickListener(v -> {
             navController.navigate(R.id.action_EventsFragment_to_NotificationFragment);
         });
 
@@ -112,28 +110,32 @@ public class EventsFragment extends Fragment {
 
     /**
      * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
+     * The events should be sorted from newest to oldest based on date created with events with
+     * no date created at the very end.
      */
     private void startFirestoreListener() {
-        eventsRef = db.collection("Events"); // Corrected to capital 'E'
-        eventsRef.addSnapshotListener((snap, e) -> {
-            if (e != null) {
-                Log.e("Firestore", "Listen failed", e);
-                return;
-            }
-            if (snap != null && !snap.isEmpty()) {
-                events.clear();
-                for (QueryDocumentSnapshot doc : snap) {
-                    // Use .toObject() for robust deserialization
-                    Event event = doc.toObject(Event.class);
-                    events.add(event);
-                }
-                // Sort the events from newest to oldest
-                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+        CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
+        eventsRef.orderBy("dateCreated", Query.Direction.DESCENDING)
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed", e);
+                        return;
+                    }
+                    if (snap != null && !snap.isEmpty()) {
+                        events.clear();
+                        for (QueryDocumentSnapshot doc : snap) {
+                            // Use .toObject() for robust deserialization
+                            Event event = doc.toObject(Event.class);
+                            events.add(event);
+                        }
+                        // Sort the events from newest to oldest
+                        events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
 
-                adapter.notifyDataSetChanged();
-            }
-        });
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
+
     private void startNotificationListener() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -141,7 +143,10 @@ public class EventsFragment extends Fragment {
         // Get current profile id
         String profileId = currentUser.getID();
 
-        notificationListener = db.collection("Profiles")
+        // only unread
+        // Show local notification on THIS device
+        // Mark as read so we don't show it again
+        ListenerRegistration notificationListener = db.collection("Profiles")
                 .document(profileId)
                 .collection("Notifications")
                 .whereEqualTo("read", false)   // only unread
@@ -163,6 +168,7 @@ public class EventsFragment extends Fragment {
                     }
                 });
     }
+
     private void showLocalNotification(String message) {
         NotifyUser notifier = new NotifyUser(requireContext());
         notifier.sendNotification(currentUser, message);

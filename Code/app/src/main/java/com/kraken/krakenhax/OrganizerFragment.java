@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -96,29 +97,30 @@ public class OrganizerFragment extends Fragment {
      */
     private void startFirestoreListener(String organizerID) {
         CollectionReference eventsRef = db.collection("Events");
-        eventsRef.addSnapshotListener((snap, e) -> {
-            if (e != null) {
-                Log.e("Firestore", "Listen failed", e);
-                return;
-            }
-            if (snap != null && !snap.isEmpty()) {
-                events.clear();
-                for (QueryDocumentSnapshot doc : snap) {
-                    // Use .toObject() for robust deserialization
-                    Event event = doc.toObject(Event.class);
-
-                    // Display events organized by the organizer
-                    if (event.getOrgId() != null && event.getOrgId().equals(organizerID)) {
-                        events.add(event);
+        eventsRef.orderBy("dateCreated", Query.Direction.DESCENDING)
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed", e);
+                        return;
                     }
+                    if (snap != null && !snap.isEmpty()) {
+                        events.clear();
+                        for (QueryDocumentSnapshot doc : snap) {
+                            // Use .toObject() for robust deserialization
+                            Event event = doc.toObject(Event.class);
 
-                }
-                // Sort the events from newest to oldest
-                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+                            // Display events organized by the organizer
+                            if (event.getOrgId() != null && event.getOrgId().equals(organizerID)) {
+                                events.add(event);
+                            }
 
-                adapter.notifyDataSetChanged();
-            }
-        });
+                        }
+                        // Sort the events from newest to oldest
+                        events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
+
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
 
 }
