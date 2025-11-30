@@ -438,7 +438,7 @@ public class Event implements Parcelable {
             wonList.add(replacement);
             lostList.remove(replacement);
             // Update replacement winner's history
-            replacement.addHistory("Selected as replacement winner for event: " + this.title);
+            //replacement.addHistory("Selected as replacement winner for event: " + this.title);
         }
     }
 
