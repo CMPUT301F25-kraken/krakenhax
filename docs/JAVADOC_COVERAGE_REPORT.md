@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-**Overall Javadoc Coverage Score: 71.2%**
+**Overall Javadoc Coverage Score: 69.8%**
 
 This report provides a comprehensive analysis of the Javadoc documentation coverage for the KrakenHax Android application. The analysis includes all 36 Java source files in the main source directory, evaluating classes, interfaces, constructors, and methods (including private methods).
 
@@ -27,7 +27,7 @@ This report provides a comprehensive analysis of the Javadoc documentation cover
 
 | File | Classes | Methods | Constructors | Overall |
 |------|---------|---------|--------------|---------|
-| Action.java | ✅ 0/1 | 6/11 | 1/2 | 50.0% |
+| Action.java | ❌ 0/1 | 6/11 | 1/2 | 50.0% |
 | AdminListFragment.java | ✅ 1/1 | 5/7 | 1/1 | 77.8% |
 | AdminProfileAdapter.java | ✅ 1/1 | 3/3 | 1/1 | 100% |
 | CreateEventFragment.java | ✅ 1/1 | 3/3 | 0/0 | 100% |
@@ -312,7 +312,7 @@ The following files demonstrate excellent Javadoc coverage and quality:
 
 ## Conclusion
 
-The KrakenHax project has **moderate to good** Javadoc coverage at **71.2%**. The core model classes (`Event`, `Profile`, `NotificationJ`) are well-documented, which is excellent for maintainability. The main areas requiring attention are:
+The KrakenHax project has **moderate to good** Javadoc coverage at **69.8%**. The core model classes (`Event`, `Profile`, `NotificationJ`) are well-documented, which is excellent for maintainability. The main areas requiring attention are:
 
 1. **Fragment classes** - Several fragments lack documentation on their UI methods
 2. **Private methods** - Only 21.1% coverage on private methods
