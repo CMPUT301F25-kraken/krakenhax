@@ -1,6 +1,8 @@
 # Javadoc Comment Coverage Analysis Report
 ## KrakenHax Android Studio Project
 
+**Analysis Date**: November 30, 2025
+
 ---
 
 ## Executive Summary
@@ -33,7 +35,7 @@ This report provides a thorough analysis of Javadoc comment coverage across all 
 
 ---
 
-## Complete List of Missing Method/Constructor Javadocs
+## Methods Missing Javadocs (Current List as of Analysis Date)
 
 ### Action.java (12 missing)
 - `Action()` - empty constructor
@@ -266,8 +268,13 @@ All 9 test files have class-level Javadocs:
 
 The KrakenHax project has **73% Javadoc coverage overall**:
 - **Class-level coverage is good at 86%** - only 5 classes missing
-- **Method-level coverage needs improvement at ~65%**
+- **Method-level coverage needs improvement at ~65%** (estimated: ~210 documented out of ~320 total public methods)
 - **Documentation quality is generally good** with a few errors to fix
+
+### Coverage Calculation Methodology:
+- Class coverage = (documented classes / total classes) × 100
+- Method coverage was estimated by reviewing all public methods and constructors across 45 Java files
+- Private methods were not included in the coverage count
 
 The model classes (Profile, Event, NotificationJ) are excellently documented and serve as examples of best practices. UI components (Fragments, Adapters) need additional documentation attention.
 
