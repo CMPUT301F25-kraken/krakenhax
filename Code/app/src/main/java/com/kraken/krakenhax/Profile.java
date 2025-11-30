@@ -351,8 +351,8 @@ public class Profile implements Parcelable {
      * Two profiles are considered equal if they have the same ID and username.
      *
      * @param o the object to compare with this profile
-     * @return \`true\` if the given object is a \`Profile\` with the same ID and username,
-     * \`false\` otherwise
+     * @return {@code true} if the given object is a {@code Profile} with the same ID and username,
+     * {@code false} otherwise
      */
     @Override
     public boolean equals(Object o) {

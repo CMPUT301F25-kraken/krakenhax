@@ -176,6 +176,13 @@ public class MyEventsFragment extends Fragment {
                 });
     }
 
+
+    /**
+     * Filters the full list of events based on the provided text query and
+     * updates the adapter to display only matching events.
+     *
+     * @param text The search query used to filter events by title.
+     */
     private void filterList(String text) {
         filteredEvents.clear();
         // If the query is blank show all events

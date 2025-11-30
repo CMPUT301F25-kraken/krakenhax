@@ -315,7 +315,7 @@ public class Event implements Parcelable {
     }
 
     /**
-     * Sets the URL poster of the event poster.
+     * Sets the URL of the event poster.
      * @param poster
      *        a String of the event poster's URL
      */
