@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+
 /**
  * Fragment class to handle the sign-up process.
  * Creates new organizers or Entrants.
@@ -194,4 +195,5 @@ public class SignUpFragment extends Fragment {
                     Toast.makeText(getContext(), "Sign up failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
+
 }

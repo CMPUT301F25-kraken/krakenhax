@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
  * Fragment to view a profile.
  * Allows the admin to delete a profile.
  */
-
 public class ViewProfiles extends Fragment {
-
+    public Profile profile;
     private FirebaseFirestore db;
     private CollectionReference profileRef;
     private Button backButton;
@@ -45,7 +45,6 @@ public class ViewProfiles extends Fragment {
     private TextView email;
     private TextView phone;
     private ImageView profilePic;
-    public Profile profile;
     private NavController navController;
 
     /**
@@ -58,14 +57,13 @@ public class ViewProfiles extends Fragment {
     /**
      * Called to have the fragment instantiate its user interface view.
      *
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
+     *                           from a previous saved state as given here.
      * @return The View for the fragment's UI, or null.
      */
     @Override
@@ -82,9 +80,9 @@ public class ViewProfiles extends Fragment {
      * Sets up the listener for the back button.
      * Loads the profile picture.
      *
-     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
+     *                           from a previous saved state as given here.
      */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -140,6 +138,7 @@ public class ViewProfiles extends Fragment {
                     .into(profilePic);
         }
     }
+
     /**
      * Deletes the profile picture from firebase storage.
      */
@@ -239,15 +238,12 @@ public class ViewProfiles extends Fragment {
                     eventsRef.document(event.getId()).delete()
                             .addOnSuccessListener(aVoid -> Log.d("deleteAccount", "Event: " + event.getTitle() + " successfully deleted."))
                             .addOnFailureListener(e -> Log.e("deleteAccount", "Failed to delete event: " + event.getTitle() + ".", e));
-
-                    // If an event was deleted we need to check each profiles myWaitlist list and remove it if necessary
                 }
             }
 
-//            // Delete event from profiles
-//            if (!deletedEventIDs.isEmpty()) {
-//                removeEventFromProfileMyWaitlists(deletedEventIDs);
-//            }
-        }).addOnFailureListener(e -> Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e));
+        }).addOnFailureListener(
+                e -> Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e)
+        );
     }
+
 }

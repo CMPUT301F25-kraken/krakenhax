@@ -14,6 +14,7 @@ import com.google.firebase.installations.FirebaseInstallations;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * Manages linking a physical device (via Firebase Installation ID) to a user account and
  * restoring an existing session if present.
@@ -163,4 +164,5 @@ public class DeviceIdentityManager {
     public static void clearAccountLink() {
         clearAccountLinkAsync();
     }
+
 }

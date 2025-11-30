@@ -2,7 +2,6 @@ package com.kraken.krakenhax;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import com.google.firebase.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
 
 /**
  * Dialog fragment to display a notification.
@@ -46,7 +46,6 @@ public class ViewNotification extends DialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
-
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -103,6 +102,5 @@ public class ViewNotification extends DialogFragment {
 
 
     }
+
 }
-
-

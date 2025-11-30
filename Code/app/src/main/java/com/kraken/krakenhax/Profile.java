@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
  * Represents a user profile within the KrakenHax application.
  * Profiles can belong to entrants, organizers, or administrators.
@@ -38,10 +39,11 @@ public class Profile implements Parcelable {
     /**
      * Constructs a new user profile with the given details.
      *
-     * @param username the user's username
-     * @param password the user's password
-     * @param type     the role type (entrant, organizer, admin)
-     * @param email    the user's email address
+     * @param username    the user's username
+     * @param password    the user's password
+     * @param type        the role type (entrant, organizer, admin)
+     * @param email       the user's email address
+     * @param phoneNumber the user's phone number (optional)
      * @throws IllegalArgumentException if any parameter is null or empty
      */
     public Profile(String ID, String username, String password, String type, String email, String phoneNumber) {
@@ -452,4 +454,5 @@ public class Profile implements Parcelable {
         }
         this.history.add(newAction);
     }
+
 }

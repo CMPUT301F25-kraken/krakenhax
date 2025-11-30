@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
  * ViewModel for managing event data.
  * Handles Firestore interactions and business logic.
@@ -184,6 +185,33 @@ public class EventViewModel extends ViewModel {
 
     public MutableLiveData<Bitmap> getDownloadedBitmap() {
         return downloadedBitmap;
+    }
+
+    /**
+     * Returns the live list of all events.
+     *
+     * @return mutable live data containing the current list of events
+     */
+    public MutableLiveData<ArrayList<Event>> getEventList() {
+        return eventList;
+    }
+
+    /**
+     * Returns the live data holding the generated QR code bitmap.
+     *
+     * @return mutable live data containing the last generated QR code
+     */
+    public MutableLiveData<Bitmap> getQrCode() {
+        return qrCode;
+    }
+
+    /**
+     * Sets the current QR code bitmap value.
+     *
+     * @param bitmap the QR code bitmap to set
+     */
+    public void setQrCode(Bitmap bitmap) {
+        qrCode.setValue(bitmap);
     }
 
     /**

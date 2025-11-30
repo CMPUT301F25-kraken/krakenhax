@@ -130,6 +130,8 @@ public class EventsFragment extends Fragment {
      * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
      * The events should be sorted from newest to oldest based on date created with events with
      * no date created at the very end.
+     *
+     * @param searchView The search view used to filter events by text query.
      */
     private void startFirestoreListener(SearchView searchView) {
         CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
@@ -162,6 +164,10 @@ public class EventsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Starts a Firestore listener for unread notifications of the current user
+     * and shows them as local notifications while marking them as read.
+     */
     private void startNotificationListener() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -195,11 +201,22 @@ public class EventsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Displays a local notification for the current user with the given message.
+     *
+     * @param message The message text to display in the notification.
+     */
     private void showLocalNotification(String message) {
         NotifyUser notifier = new NotifyUser(requireContext());
         notifier.sendNotification(currentUser, message);
     }
 
+    /**
+     * Filters the full list of events based on the provided text query and
+     * updates the adapter to display only matching events.
+     *
+     * @param text The search query used to filter events by title.
+     */
     private void filterList(String text) {
         filteredEvents.clear();
         // If the query is blank show all events

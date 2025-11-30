@@ -1,7 +1,6 @@
 package com.kraken.krakenhax;
 
 import android.app.AlertDialog;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,22 +14,20 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Picasso;
-import com.kraken.krakenhax.NotificationJ;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FieldValue;
-
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -43,20 +40,14 @@ import java.util.Locale;
  */
 public class MyEventDetailsFragment extends Fragment {
     private Profile currentUser;
-    private FirebaseStorage storage;
     private FirebaseFirestore db;
     private StorageReference storageRef;
     private ImageView imgPoster;
-    private Button btnUploadPoster;
-    private Button btnBack;
-    private Button btnentrantInfo;
-    private Button btnLottery;
     private ActivityResultLauncher<String> imagePicker;
     private Uri filePath;
     private Event event;
     private EventViewModel eventViewModel;
     private ImageView qrCodeImage;
-    //private Profile currentUser;
 
     /**
      * Required empty public constructor for fragment instantiation.
@@ -211,13 +202,21 @@ public class MyEventDetailsFragment extends Fragment {
             eventViewModel.saveImage(requireContext(), qrCodeImage);
             Toast.makeText(requireContext(), "QR code saved to gallery", Toast.LENGTH_SHORT).show();
             Log.d("ImageSave", "QR code saved to gallery");
-            saveQrButton.setBackgroundColor(getResources().getColor(R.color.gray));
+            saveQrButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray));
         });
 
         return view;
     }
 
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    /**
+     * Called immediately after the fragment's view has been created.
+     * Initializes the {@link EventViewModel}, loads the event QR code image,
+     * and observes bitmap updates to display the QR code or a fallback image.
+     *
+     * @param view               The view returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
+     */
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
         eventViewModel.clearDownloadedBitmap();
@@ -390,7 +389,13 @@ public class MyEventDetailsFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Updates the given event in the Firestore "Events" collection.
+     * If the event or its ID is null, the operation is skipped.
+     * Logs the result of the update operation.
+     *
+     * @param event The event object containing the latest data to be saved.
+     */
     private void updateEventInFirestore(Event event) {
         if (event != null && event.getId() != null) {
             db.collection("Events").document(event.getId()).set(event)
@@ -398,4 +403,5 @@ public class MyEventDetailsFragment extends Fragment {
                     .addOnFailureListener(e -> Log.w("Firestore", "Error updating event", e));
         }
     }
+
 }

@@ -29,6 +29,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         this.profileList = profileList;
     }
 
+    /**
+     * Sets a listener that will be notified when a profile remove action is requested.
+     *
+     * @param listener Listener to handle remove button clicks.
+     */
     public void setOnRemoveClickListener(OnRemoveClickListener listener) {
         this.listener = listener;
     }
@@ -71,7 +76,15 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         return profileList.size();
     }
 
+    /**
+     * Listener interface for remove button click events on a profile item.
+     */
     public interface OnRemoveClickListener {
+        /**
+         * Called when the remove button is clicked for an item.
+         *
+         * @param position Adapter position of the item to remove.
+         */
         void onRemoveClick(int position);
     }
 
