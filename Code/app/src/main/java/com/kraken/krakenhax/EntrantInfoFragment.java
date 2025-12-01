@@ -258,6 +258,8 @@ public class EntrantInfoFragment extends Fragment {
                             }
                         }
                     });
+
+
                     Profile organizer = profileList.get(0);
                     NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", organizer.getID(), Timestamp.now(), event.getId(), user.getID(), false);
                     notifRef.add(notification);
@@ -332,7 +334,7 @@ public class EntrantInfoFragment extends Fragment {
         ArrayAdapter<String> groupAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                new String[]{"Waitlisted", "Enrolled", "Cancelled"}
+                new String[]{"Waitlisted", "Enrolled","Won", "Cancelled"}
         );
 
         spinnerGroup.setAdapter(groupAdapter);
@@ -359,6 +361,9 @@ public class EntrantInfoFragment extends Fragment {
                     recipients = event.getWaitList();
                     break;
                 case "Enrolled":
+                    recipients = event.getAcceptList();
+                    break;
+                case "Won":
                     recipients = event.getWonList();
                     break;
                 case "Cancelled":
@@ -405,7 +410,7 @@ public class EntrantInfoFragment extends Fragment {
         StringBuilder csv = new StringBuilder();
         csv.append("Name,Email,Phone\n");  // header row
 
-        for (Profile p : event.getWonList()) {
+        for (Profile p : event.getAcceptList()) {
             String name = p.getUsername();
             String email = p.getEmail();
             String phone = p.getPhoneNumber();
