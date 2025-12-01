@@ -19,6 +19,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -136,7 +137,7 @@ public class EventsFragment extends Fragment {
             FilterDialogFragment filterDialogFragment = new FilterDialogFragment(categories, (selectedCategories, availability) -> {
                 // Handle the selected categories here
                 Log.d("EventsFragment", "Selected categories: " + selectedCategories);
-                applyFilter(selectedCategories);
+                applyFilter(selectedCategories, availability);
             }, true
             );
             filterDialogFragment.show(getParentFragmentManager(), "filter_dialog");
@@ -149,25 +150,29 @@ public class EventsFragment extends Fragment {
      *
      * @param selectedCategories The list of categories to filter by.
      */
-    private void applyFilter(ArrayList<String> selectedCategories) {
-        // Clear the current display list
-        events.clear();
+    private void applyFilter(ArrayList<String> selectedCategories, ArrayList<Timestamp> availability) {
+        Filter filter = new Filter(currentUser, allEvents);
 
-        // If no categories are selected, or the list is null, show all events
-        if (selectedCategories == null || selectedCategories.isEmpty()) {
-            events.addAll(allEvents);
-        } else {
-            // Otherwise, apply the filter
-            Filter filter = new Filter(currentUser, allEvents);
-            filter.getCategories().addAll(selectedCategories); // Set the categories for the filter
-            filter.setFilter(); // Run the filtering logic
-            events.addAll(filter.getFilteredEvents()); // Add the filtered events to the display list
+        // Apply categories if any
+        if (selectedCategories != null && !selectedCategories.isEmpty()) {
+            filter.getCategories().addAll(selectedCategories);
         }
 
-        // Notify the adapter that the data has changed to refresh the UI
+        // Apply dates if provided
+        if (availability != null && !availability.isEmpty()) {
+            filter.setAvailability(availability);
+        }
+
+        filter.setFilter(); // Run the filtering logic
+
+        events.clear();
+        events.addAll(filter.getFilteredEvents());
+
+        // Apply search query on top
         SearchView searchView = getView().findViewById(R.id.search_view);
         filterList(searchView.getQuery().toString());
     }
+
 
     /**
      * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
