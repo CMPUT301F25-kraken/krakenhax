@@ -19,6 +19,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -61,7 +62,9 @@ public class CreateEventFragment extends Fragment {
     private Uri filePath;
     private ImageView eventPoster;
     private Button confirmButton;
+    private Button categoriesButton;
     private NavController navController;
+    private NestedScrollView nestedScrollView;
 
     /**
      * Inflates the layout for this fragment and initializes all the UI view components.
@@ -87,6 +90,8 @@ public class CreateEventFragment extends Fragment {
         eventPoster = view.findViewById(R.id.imagePosterView);
         uploadPosterButton = view.findViewById(R.id.UploadPosterButton);
         confirmButton = view.findViewById(R.id.ConfirmEditsButton);
+        nestedScrollView = view.findViewById(R.id.nestedScrollView);
+        categoriesButton = view.findViewById(R.id.categories_button);
         return view;
     }
 
@@ -231,6 +236,16 @@ public class CreateEventFragment extends Fragment {
                     Log.d("EditText", "afterTextChanged: " + s);
                 }
             }
+        });
+
+        categoriesButton.setOnClickListener(v -> {
+            FilterDialogFragment filterDialogFragment = new FilterDialogFragment(event.getAvailableCategories(), selectedCategories -> {
+                // Handle the selected categories here
+                Log.d("CreateEventFragment", "Selected categories: " + selectedCategories);
+                event.setCategories(selectedCategories);
+            }
+            );
+            filterDialogFragment.show(getParentFragmentManager(), "filter_dialog");
         });
 
         geolocationSwitch.setOnClickListener(v -> {

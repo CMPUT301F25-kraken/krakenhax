@@ -11,6 +11,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -42,8 +43,7 @@ public class Event implements Parcelable {
     private Timestamp dateTime;
     private String qrCodeURL;
     private Timestamp dateCreated;
-
-
+    private static final ArrayList<String> availableCategories = new ArrayList<String>(Arrays.asList("music", "art", "photography", "academics", "language", "technology", "career", "fitness", "sports", "volunteer", "cooking", "baking", "games", "professional", "networking", "community"));
     /**
      * Constructor for Event class.
      */
@@ -169,12 +169,15 @@ public class Event implements Parcelable {
      * TODO: decide whether 5 categories is enough, or too many??
      */
     public void setCategories(ArrayList<String> categories) {
-        if (categories.size() <= 5) {
-            this.categories = categories;
-        }
-        else {
+        if (categories.size() > 5) {
             throw new IllegalArgumentException("Categories cannot be more than 5");
         }
+        for (String category: categories) {
+            if (!availableCategories.contains(category)) {
+                throw new IllegalArgumentException("Category does not exist");
+            }
+        }
+        this.categories = categories;
     }
 
     /**
@@ -186,11 +189,11 @@ public class Event implements Parcelable {
      *        TODO: decide whether 5 categories is enough, or too many??
      */
     public void addCategory(String category) {
-        if (categories.size() < 5) {
+        if (categories.size() < 5 && availableCategories.contains(category)) {
             categories.add(category);
         }
         else {
-            throw new IllegalArgumentException("Categories cannot be more than 5");
+            throw new IllegalArgumentException("Categories is more than 5 or contains a category that does not exist");
         }
     }
 
@@ -211,6 +214,10 @@ public class Event implements Parcelable {
         } else {
             categories.remove(category);
         }
+    }
+
+    public ArrayList<String> getAvailableCategories() {
+        return availableCategories;
     }
 
     /**
@@ -438,7 +445,7 @@ public class Event implements Parcelable {
             wonList.add(replacement);
             lostList.remove(replacement);
             // Update replacement winner's history
-            replacement.addHistory("Selected as replacement winner for event: " + this.title);
+            //replacement.addHistory("Selected as replacement winner for event: " + this.title);
         }
     }
 

@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.content.DialogInterface;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -24,6 +25,8 @@ public class FilterDialogFragment extends DialogFragment {
 
     private ArrayList<String> categories;
     private OnFilterListener listener;
+    private static final int MAX_CATEGORIES = 5;
+
 
 
     public FilterDialogFragment(ArrayList<String> categories, OnFilterListener listener) {
@@ -42,6 +45,18 @@ public class FilterDialogFragment extends DialogFragment {
            chip.setText(category);
            chip.setCheckable(true);
            chip.setClickable(true);
+           chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+               int checkedCount = 0;
+               for (int i = 0; i < chipGroup.getChildCount(); i++) {
+                   if (((Chip) chipGroup.getChildAt(i)).isChecked()) {
+                       checkedCount++;
+                   }
+               }
+               if (isChecked && checkedCount > MAX_CATEGORIES) {
+                   buttonView.setChecked(false);
+                   Toast.makeText(getContext(), "Cannot select more than 5 categories", Toast.LENGTH_SHORT).show();
+               }
+           });
            chipGroup.addView(chip);
         }
 
