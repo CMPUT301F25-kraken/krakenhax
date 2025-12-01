@@ -23,6 +23,7 @@ public class FilterDialogFragment extends DialogFragment {
         void onSave(ArrayList<String> selectedCategories);
     }
 
+    private Event event;
     private ArrayList<String> categories;
     private OnFilterListener listener;
     private static final int MAX_CATEGORIES = 5;

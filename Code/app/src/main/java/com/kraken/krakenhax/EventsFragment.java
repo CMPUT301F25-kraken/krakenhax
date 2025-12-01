@@ -109,10 +109,8 @@ public class EventsFragment extends Fragment {
             navController.navigate(R.id.action_EventsFragment_to_NotificationFragment);
         });
 
-        ArrayList<String> categories = new ArrayList<>();
-        categories.add("Sports");
-        categories.add("Music");
-        categories.add("Art");
+        Event event = new Event();
+        ArrayList<String> categories = event.getAvailableCategories();
 
         filterEventsButton.setOnClickListener(v -> {
             FilterDialogFragment filterDialogFragment = new FilterDialogFragment(categories, selectedCategories -> {
