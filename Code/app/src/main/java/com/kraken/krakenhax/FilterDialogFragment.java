@@ -15,7 +15,6 @@ import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 
-
 /**
  * Dialog fragment that displays a chip list of categories and lets the user
  * select up to a maximum number of categories to filter events.
