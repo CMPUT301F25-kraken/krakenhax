@@ -6,9 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -20,6 +24,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -33,11 +38,10 @@ public class EventsFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
     private FirebaseFirestore db;
     private ArrayList<Event> events;
-    private CollectionReference eventsRef;
-
+    private ArrayList<Event> allEvents;
+    private ArrayList<Event> searchFilterEvents;
     private Profile currentUser;
 
-    private ListenerRegistration notificationListener;
     /**
      * Required empty public constructor for fragment instantiation.
      */
@@ -72,6 +76,7 @@ public class EventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button notifications = view.findViewById(R.id.notifications);
+        ImageButton filterEventsButton = view.findViewById(R.id.filter_events_button);
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -86,12 +91,29 @@ public class EventsFragment extends Fragment {
         RecyclerView recycler_view_event_list = view.findViewById(R.id.recycler_view_events_list);
         recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
         events = new ArrayList<>();
+        allEvents = new ArrayList<>();
+        searchFilterEvents = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
-        adapter = new MyRecyclerViewAdapter(events);
+        adapter = new MyRecyclerViewAdapter(searchFilterEvents);
         recycler_view_event_list.setAdapter(adapter);
 
+        // Set up listener for search bar
+        SearchView searchView = view.findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterList(newText);
+                return false;
+            }
+        });
+
         // Set up a firebase listener to get the events
-        startFirestoreListener();
+        startFirestoreListener(searchView);
 
         // Set an on item click listener for the recycler view
         // When an event is clicked on
@@ -103,37 +125,92 @@ public class EventsFragment extends Fragment {
             navController.navigate(R.id.action_EventsFragment_to_EventFragment, bundle);
         });
 
-        notifications.setOnClickListener( v ->{
+        notifications.setOnClickListener(v -> {
             navController.navigate(R.id.action_EventsFragment_to_NotificationFragment);
         });
 
+        Event event = new Event();
+        ArrayList<String> categories = event.getAvailableCategories();
 
+        filterEventsButton.setOnClickListener(v -> {
+            FilterDialogFragment filterDialogFragment = new FilterDialogFragment(categories, selectedCategories -> {
+                // Handle the selected categories here
+                Log.d("EventsFragment", "Selected categories: " + selectedCategories);
+                applyFilter(selectedCategories);
+            });
+            filterDialogFragment.show(getParentFragmentManager(), "filter_dialog");
+        });
+    }
+
+    /**
+     * Filters the event list based on the selected categories.
+     * If no categories are selected, it displays all events.
+     *
+     * @param selectedCategories The list of categories to filter by.
+     */
+    private void applyFilter(ArrayList<String> selectedCategories) {
+        // Clear the current display list
+        events.clear();
+
+        // If no categories are selected, or the list is null, show all events
+        if (selectedCategories == null || selectedCategories.isEmpty()) {
+            events.addAll(allEvents);
+        } else {
+            // Otherwise, apply the filter
+            Filter filter = new Filter(currentUser, allEvents);
+            filter.getCategories().addAll(selectedCategories); // Set the categories for the filter
+            filter.setFilter(); // Run the filtering logic
+            events.addAll(filter.getFilteredEvents()); // Add the filtered events to the display list
+        }
+
+        // Notify the adapter that the data has changed to refresh the UI
+        adapter.notifyDataSetChanged();
     }
 
     /**
      * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
+     * The events should be sorted from newest to oldest based on date created with events with
+     * no date created at the very end.
+     *
+     * @param searchView The search view used to filter events by text query.
      */
-    private void startFirestoreListener() {
-        eventsRef = db.collection("Events"); // Corrected to capital 'E'
-        eventsRef.addSnapshotListener((snap, e) -> {
-            if (e != null) {
-                Log.e("Firestore", "Listen failed", e);
-                return;
-            }
-            if (snap != null && !snap.isEmpty()) {
-                events.clear();
-                for (QueryDocumentSnapshot doc : snap) {
-                    // Use .toObject() for robust deserialization
-                    Event event = doc.toObject(Event.class);
-                    events.add(event);
-                }
-                // Sort the events from newest to oldest
-                events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.naturalOrder())));
+    private void startFirestoreListener(SearchView searchView) {
+        CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
+        eventsRef.orderBy("dateCreated", Query.Direction.DESCENDING)
+                .addSnapshotListener((snap, e) -> {
+                    if (e != null) {
+                        Log.e("Firestore", "Listen failed", e);
+                        return;
+                    }
+                    if (snap != null && !snap.isEmpty()) {
+                        events.clear();
+                        for (QueryDocumentSnapshot doc : snap) {
+                            // Use .toObject() for robust deserialization
+                            Event event = doc.toObject(Event.class);
+                            allEvents.add(event);
+                        }
+                        // Sort the events from newest to oldest
+                        allEvents.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
+                        events.clear();
+                        events.addAll(allEvents);
 
-                adapter.notifyDataSetChanged();
-            }
-        });
+                        // Update the recycler view based on the search
+                        if (searchView != null && searchView.getQuery().length() > 0) {
+                            filterList(searchView.getQuery().toString());
+                        } else {
+                            searchFilterEvents.clear();
+                            searchFilterEvents.addAll(events);
+                        }
+
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
+
+    /**
+     * Starts a Firestore listener for unread notifications of the current user
+     * and shows them as local notifications while marking them as read.
+     */
     private void startNotificationListener() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -141,7 +218,10 @@ public class EventsFragment extends Fragment {
         // Get current profile id
         String profileId = currentUser.getID();
 
-        notificationListener = db.collection("Profiles")
+        // only unread
+        // Show local notification on THIS device
+        // Mark as read so we don't show it again
+        ListenerRegistration notificationListener = db.collection("Profiles")
                 .document(profileId)
                 .collection("Notifications")
                 .whereEqualTo("read", false)   // only unread
@@ -163,9 +243,40 @@ public class EventsFragment extends Fragment {
                     }
                 });
     }
+
+    /**
+     * Displays a local notification for the current user with the given message.
+     *
+     * @param message The message text to display in the notification.
+     */
     private void showLocalNotification(String message) {
         NotifyUser notifier = new NotifyUser(requireContext());
         notifier.sendNotification(currentUser, message);
+    }
+
+    /**
+     * Filters the full list of events based on the provided text query and
+     * updates the adapter to display only matching events.
+     *
+     * @param text The search query used to filter events by title.
+     */
+    private void filterList(String text) {
+        searchFilterEvents.clear();
+        // If the query is blank show all events
+        if (text.isEmpty()) {
+            searchFilterEvents.addAll(events);
+        } else {
+            String query = text.toLowerCase();
+            // Show all events that contain the query in their title
+            for (Event event : events) {
+                // Filter events by title
+                if (event.getTitle().toLowerCase().contains(query)) {
+                    searchFilterEvents.add(event);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
 }

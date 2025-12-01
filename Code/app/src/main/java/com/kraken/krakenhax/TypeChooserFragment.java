@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,14 +13,16 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+
 /**
  * Selects the type of user. Entrants or organizers.
  * Packages the type into a bundle and sends it to the SignUpFragment with safe args.
  */
 public class TypeChooserFragment extends Fragment {
-    private Button entrant;
-    private Button organizer;
+    private ImageButton entrant;
+    private ImageButton organizer;
     private NavController navController;
+    private Button back;
 
     /**
      * Required empty public constructor
@@ -51,15 +54,21 @@ public class TypeChooserFragment extends Fragment {
      * Contains the main functionality of the fragment.
      * Sets up the listeners for the buttons.
      * On button click, it navigates to the SignUpFragment with the selected user type.
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     *                           The fragment's view.
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     *                           or null if this is a freshly created Fragment.
      */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         entrant = view.findViewById(R.id.Entrant_button);
+        back = view.findViewById(R.id.back2log);
         organizer = view.findViewById(R.id.Organizer_button);
-
         navController = Navigation.findNavController(view);
-
+        back.setOnClickListener(v -> {
+            navController.navigate(R.id.action_TypeSelector_to_login);
+        });
         entrant.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             bundle.putString("UserType", "Entrant");

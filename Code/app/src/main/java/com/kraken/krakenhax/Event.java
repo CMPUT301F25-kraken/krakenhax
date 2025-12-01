@@ -11,7 +11,9 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+
 
 /**
  * Represents an event in the KrakenHax application.
@@ -42,8 +44,7 @@ public class Event implements Parcelable {
     private Timestamp dateTime;
     private String qrCodeURL;
     private Timestamp dateCreated;
-
-
+    private static final ArrayList<String> availableCategories = new ArrayList<String>(Arrays.asList("music", "art", "photography", "academics", "language", "technology", "career", "fitness", "sports", "volunteer", "cooking", "baking", "games", "professional", "networking", "community"));
     /**
      * Constructor for Event class.
      */
@@ -68,6 +69,7 @@ public class Event implements Parcelable {
 
     /**
      * Constructor for Event class with title argument.
+     * @param title the title of the event
      */
     public Event(String title) {
         this.title = title;
@@ -88,7 +90,22 @@ public class Event implements Parcelable {
         this.dateCreated = Timestamp.now();
     }
 
-    /** Lightweight constructor for fake/local events */
+    /**
+     * Lightweight constructor for creating fake/local events.
+     *
+     * @param id
+     *        a String representing the unique identifier for the event
+     * @param title
+     *        a String representing the event title
+     * @param eventDetails
+     *        a String representing the event details (uses empty string if null)
+     * @param location
+     *        a String representing the event location (uses empty string if null)
+     * @param radius
+     *        an Integer representing the event's radius (uses 0 if null)
+     * @param poster
+     *        a String representing the URL or path to the event's poster image
+     */
     public Event(String id,
                  String title,
                  String eventDetails,
@@ -151,15 +168,18 @@ public class Event implements Parcelable {
      *        an ArrayList of Strings representing the event categories
      * @throws IllegalArgumentException
      *        if the categories ArrayList is more than 5
-     * TODO: decide whether 5 categories is enough, or too many??
      */
+    //TODO: decide whether 5 categories is enough, or too many??
     public void setCategories(ArrayList<String> categories) {
-        if (categories.size() <= 5) {
-            this.categories = categories;
-        }
-        else {
+        if (categories.size() > 5) {
             throw new IllegalArgumentException("Categories cannot be more than 5");
         }
+        for (String category: categories) {
+            if (!availableCategories.contains(category)) {
+                throw new IllegalArgumentException("Category does not exist");
+            }
+        }
+        this.categories = categories;
     }
 
     /**
@@ -168,14 +188,14 @@ public class Event implements Parcelable {
      *        a String representing the category to be added
      * @throws IllegalArgumentException
      *        if the categories ArrayList is more than 5
-     *        TODO: decide whether 5 categories is enough, or too many??
      */
+    //TODO: decide whether 5 categories is enough, or too many??
     public void addCategory(String category) {
-        if (categories.size() < 5) {
+        if (categories.size() < 5 && availableCategories.contains(category)) {
             categories.add(category);
         }
         else {
-            throw new IllegalArgumentException("Categories cannot be more than 5");
+            throw new IllegalArgumentException("Categories is more than 5 or contains a category that does not exist");
         }
     }
 
@@ -196,6 +216,10 @@ public class Event implements Parcelable {
         } else {
             categories.remove(category);
         }
+    }
+
+    public ArrayList<String> getAvailableCategories() {
+        return availableCategories;
     }
 
     /**
@@ -270,29 +294,37 @@ public class Event implements Parcelable {
         Radius = radius;
     }
 
+    /**
+     * Returns the unique identifier of the event.
+     * @return
+     *        a String representing the event's unique ID
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Sets the unique identifier of the event.
+     * @param id
+     *        a String representing the event's unique ID
+     */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * Returns the poster of the event.
+     * Returns the URL for the event poster.
      * @return
-     *        a Bitmap representing the event's poster
-     * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
+     *        a String of the event poster's URL
      */
     public String getPoster() {
         return poster;
     }
 
     /**
-     * Sets the poster of the event.
+     * Sets the URL of the event poster.
      * @param poster
-     *        a Bitmap representing the event's poster
-     * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
+     *        a String of the event poster's URL
      */
     public void setPoster(String poster) {
         this.poster = poster;
@@ -327,7 +359,6 @@ public class Event implements Parcelable {
      *
      * @return the ArrayList for this event's CancelList
      */
-
     public ArrayList<Profile> getCancelList() { return cancelList; }
 
     /**
@@ -336,7 +367,6 @@ public class Event implements Parcelable {
      *
      * @return the ArrayList for this event's WonList
      */
-
     public ArrayList<Profile> getWonList() { return wonList; }
 
     /**
@@ -345,7 +375,6 @@ public class Event implements Parcelable {
      *
      * @return the ArrayList for this event's LostList
      */
-
     public ArrayList<Profile> getLostList() { return lostList; }
 
     /**
@@ -356,6 +385,13 @@ public class Event implements Parcelable {
      */
     public ArrayList<Profile> getAcceptList() { return acceptList; }
 
+    /**
+     * Adds a profile to the AcceptList if they are currently in the WonList.
+     * When a profile accepts their invitation, they are moved from the WonList to the AcceptList.
+     *
+     * @param profile
+     *        the Profile to be added to the AcceptList
+     */
     public void addToAcceptList(Profile profile)  {
         if (this.wonList.contains(profile)) {
             this.acceptList.add(profile);
@@ -365,15 +401,68 @@ public class Event implements Parcelable {
         }
     }
 
+    /**
+     * Adds a profile to the CancelList if they are currently in the WonList.
+     * When a winner cancels, they are moved from WonList to CancelList and a replacement
+     * winner is drawn from the LostList.
+     *
+     * @param profile
+     *        the Profile to be added to the CancelList
+     */
     public void addToCancelList(Profile profile) {
         if (this.wonList.contains(profile)) {
             this.cancelList.add(profile);
             this.wonList.remove(profile);
+
+            // Draw one more winner to replace the cancelled profile
+            drawReplacementWinner(1);
         } else {
             Log.d("Event", "Profile must be in wonList to be added to cancelList");
         }
     }
 
+    /**
+     * Selects replacement winner(s) from the lostList when a winner cancels.
+     * Moves the selected profile(s) from lostList to wonList and updates their history.
+     * Does NOT update organizer or other profiles' histories.
+     *
+     * @param count
+     *        the number of replacement winners to select
+     */
+    private void drawReplacementWinner(int count) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        if (lostList == null || lostList.isEmpty() || count <= 0) {
+            return;
+        }
+
+        // Shuffle lostList to randomize selection
+        ArrayList<Profile> shuffledLostList = new ArrayList<>(lostList);
+        Collections.shuffle(shuffledLostList);
+        int winnersToDraw = Math.min(count, shuffledLostList.size());
+        for (int i = 0; i < winnersToDraw; i++) {
+            Profile replacement = shuffledLostList.get(i);
+            wonList.add(replacement);
+            lostList.remove(replacement);
+
+            // Add action to users history
+            replacement.updateHistory(new Action("Selected as replacement winner for event", null, this.getId()));
+            // Save to firestore
+            db.collection("Profiles").document(replacement.getID()).set(replacement)
+                    .addOnFailureListener(e -> Log.e("drawReplacementWinner", "Failed to save replacement winner history", e));
+        }
+    }
+
+    /**
+     * Adds a profile to the WaitList for this event.
+     * If a waitlist capacity is set and the waitlist is full, an exception is thrown.
+     * Duplicate profiles are not allowed.
+     *
+     * @param profile
+     *        the Profile to be added to the WaitList
+     * @throws IllegalArgumentException
+     *        if the waitlist is full or the profile is already on the waitlist
+     */
     public void addToWaitList(Profile profile) {
         if (this.waitListCap <= 0) {
             this.waitList.add(profile);
@@ -386,36 +475,14 @@ public class Event implements Parcelable {
         }
     }
 
-    public void addToWonList(Profile profile) {
-        if (wonList.size() >= this.WinnerNumber) {
-            throw new IllegalArgumentException("Wonlist is full");
-        } else {
-            this.wonList.add(profile);
-        }
-    }
-
-    public void addToLostList(Profile profile) {
-        this.lostList.add(profile);
-    }
-
-    public void removeFromAcceptList(Profile profile) {
-        this.acceptList.remove(profile);
-    }
-
-    public void removeFromCancelList(Profile profile) {
-        this.cancelList.remove(profile);
-    }
-
+    /**
+     * Removes a profile from the WaitList.
+     *
+     * @param profile
+     *        the Profile to be removed from the WaitList
+     */
     public void removeFromWaitList(Profile profile) {
         this.waitList.remove(profile);
-    }
-
-    public void removeFromWonList(Profile profile) {
-        this.wonList.remove(profile);
-    }
-
-    public void removeFromLostList(Profile profile) {
-        this.lostList.remove(profile);
     }
 
     /**
@@ -490,66 +557,160 @@ public class Event implements Parcelable {
         }
     }
 
+    /**
+     * Sets the maximum capacity for the waitlist.
+     * A value of 0 or less indicates no capacity limit.
+     *
+     * @param cap
+     *        an integer representing the maximum number of entrants allowed on the waitlist
+     */
     public void setWaitListCap(int cap) {
         this.waitListCap = cap;
     }
 
+    /**
+     * Returns the maximum capacity for the waitlist.
+     *
+     * @return an integer representing the waitlist capacity (0 or less means unlimited)
+     */
     public int getWaitListCap() {
         return this.waitListCap;
     }
 
+    /**
+     * Sets the number of winners to be selected in the lottery draw.
+     *
+     * @param num
+     *        an integer representing the number of winners to select
+     */
     public void setWinnerNumber(int num) {
         this.WinnerNumber = num;
     }
 
+    /**
+     * Returns the number of winners to be selected in the lottery draw.
+     *
+     * @return an integer representing the number of winners
+     */
     public int getWinnerNumber() {
         return this.WinnerNumber;
     }
 
+    /**
+     * Sets whether geolocation verification is required for this event.
+     *
+     * @param use
+     *        a boolean indicating if geolocation should be used (true) or not (false)
+     */
     public void setUseGeolocation(boolean use) {
         this.useGeolocation = use;
     }
 
+    /**
+     * Returns whether geolocation verification is required for this event.
+     *
+     * @return a boolean indicating if geolocation is used
+     */
     public boolean getUseGeolocation() {
         return this.useGeolocation;
     }
 
+    /**
+     * Sets the organizer ID for this event.
+     *
+     * @param orgId
+     *        a String representing the unique ID of the organizer
+     */
     public void setOrgId(String orgId) {
         this.orgId = orgId;
     }
 
+    /**
+     * Returns the organizer ID for this event.
+     *
+     * @return a String representing the organizer's unique ID
+     */
     public String getOrgId() {
         return this.orgId;
     }
 
+    /**
+     * Sets the QR code URL for this event.
+     *
+     * @param qrCodeURL
+     *        a String representing the URL or path to the QR code image
+     */
     public void setQrCodeURL(String qrCodeURL) {
         this.qrCodeURL = qrCodeURL;
     }
 
+    /**
+     * Returns the QR code URL for this event.
+     *
+     * @return a String representing the QR code URL
+     */
     public String getQrCodeURL() {
         return qrCodeURL;
     }
 
+    /**
+     * Sets the date and time when the event takes place.
+     *
+     * @param dateTime
+     *        a Timestamp representing the event's scheduled date and time
+     */
     public void setDateTime(Timestamp dateTime) {
         this.dateTime = dateTime;
     }
 
+    /**
+     * Returns the date and time when the event takes place.
+     *
+     * @return a Timestamp representing the event's scheduled date and time
+     */
     public Timestamp getDateTime() {
         return dateTime;
     }
 
+    /**
+     * Returns the date and time when this event was created.
+     *
+     * @return a Timestamp representing the event creation date
+     */
     public Timestamp getDateCreated() {
         return dateCreated;
     }
 
+    /**
+     * Callback interface for asynchronously retrieving the event organizer.
+     * Used with the {@link #lookupOrganizer(OrganizerCallback)} method to handle
+     * the asynchronous Firebase query results.
+     */
     public interface OrganizerCallback {
+        /**
+         * Called when the organizer is successfully found.
+         *
+         * @param organizer
+         *        the Profile of the organizer, or null if not found
+         */
         void onOrganizerFound(Profile organizer);
 
+        /**
+         * Called when an error occurs during the lookup.
+         *
+         * @param e
+         *        the Exception that occurred
+         */
         void onError(Exception e);
     }
 
     /**
      * Looks up the organizer for the event from the organizer ID.
+     * Asynchronously retrieves the organizer's Profile from Firebase Firestore
+     * and returns it via the provided callback.
+     *
+     * @param callback
+     *        the OrganizerCallback to handle the result or error
      */
     public void lookupOrganizer(OrganizerCallback callback) {
         if (this.getOrgId() == null) {
@@ -583,7 +744,6 @@ public class Event implements Parcelable {
      *
      * @param in The Parcel in which the object should be written.
      */
-
     protected Event(Parcel in) {
         title = in.readString();
         categories = in.createStringArrayList();
@@ -602,7 +762,6 @@ public class Event implements Parcelable {
      * <p>This is required for passing {@code Event} objects between Android components,
      * such as when navigating between fragments or activities.</p>
      */
-
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
@@ -624,7 +783,6 @@ public class Event implements Parcelable {
      * @param dest  The Parcel object in which the Event data should be written.
      * @param flags Additional flags about how the object should be written.
      */
-
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(title);
@@ -641,4 +799,3 @@ public class Event implements Parcelable {
     }
 
 }
-

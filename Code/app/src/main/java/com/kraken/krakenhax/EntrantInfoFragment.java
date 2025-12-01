@@ -51,6 +51,9 @@ public class EntrantInfoFragment extends Fragment {
     private Profile currentUser;
     private NotificationJ notif;
 
+    /**
+     * Default empty public constructor required for fragment instantiation.
+     */
     public EntrantInfoFragment() {
         // Required empty public constructor
     }
@@ -155,7 +158,7 @@ public class EntrantInfoFragment extends Fragment {
         view.findViewById(R.id.notifyOverlayDim).setOnClickListener(v -> {
             notifyOverlay.setVisibility(View.GONE);
         });
-        Button export = view.findViewById(R.id.exportBtn);
+        Button export = view.findViewById(R.id.button_export);
         export.setOnClickListener(v -> {
             exportCsv();
         });
@@ -163,6 +166,10 @@ public class EntrantInfoFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Called when the view hierarchy associated with this fragment is being
+     * destroyed. Stops the timer to avoid leaks.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -173,7 +180,10 @@ public class EntrantInfoFragment extends Fragment {
     }
 
     /**
-     * Sets the recycler view to display the selected event list.
+     * Updates the recycler view to show entrants that match the given status.
+     * Periodically refreshes the list using a timer.
+     *
+     * @param status the entrant status list to display (e.g., Waitlisted, Won)
      */
     private void updateRecyclerList(String status) {
         // STOP ANY PREVIOUS TIMER BEFORE STARTING A NEW ONE
@@ -246,7 +256,7 @@ public class EntrantInfoFragment extends Fragment {
                     stringAction = String.format("Removed from %s", finalStrList);
                     profileToRemove.updateHistory(new Action(stringAction, currentUser.getID(), event.getId()));
                     updateProfileInFirestore(profileToRemove);
-                    CollectionReference notifRef = db.collection("Notifications");
+                    CollectionReference notifRef = db.collection("Profiles").document(user.getID()).collection("Notifications");
 
                     final ArrayList<Profile> profileList = new ArrayList<>();
                     ProfileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
@@ -257,12 +267,14 @@ public class EntrantInfoFragment extends Fragment {
                             }
                         }
                     });
+
+
                     Profile organizer = profileList.get(0);
-                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", event.getOrgId(), Timestamp.now(), event.getId(), user.getID(), false);
+                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", organizer.getID(), Timestamp.now(), event.getId(), user.getID(), false);
                     notifRef.add(notification);
 
-                    NotifyUser notifier = new NotifyUser(requireContext());
-                    notifier.sendNotification(user, "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".");
+                    //NotifyUser notifier = new NotifyUser(requireContext());
+                    //notifier.sendNotification(user, "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".");
 
 
                 });
@@ -325,13 +337,19 @@ public class EntrantInfoFragment extends Fragment {
                 });
     }
 
+    /**
+     * Configures and sends a notification to a selected group of entrants
+     * based on the chosen status in the notification popup.
+     *
+     * @param view the root view containing the notification UI elements
+     */
     public void sendNotification(View view) {
         Spinner spinnerGroup = view.findViewById(R.id.spinnerGroup);
 
         ArrayAdapter<String> groupAdapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                new String[]{"Waitlisted", "Enrolled", "Cancelled"}
+                new String[]{"Waitlisted", "Enrolled","Won", "Cancelled"}
         );
 
         spinnerGroup.setAdapter(groupAdapter);
@@ -358,6 +376,9 @@ public class EntrantInfoFragment extends Fragment {
                     recipients = event.getWaitList();
                     break;
                 case "Enrolled":
+                    recipients = event.getAcceptList();
+                    break;
+                case "Won":
                     recipients = event.getWonList();
                     break;
                 case "Cancelled":
@@ -392,6 +413,10 @@ public class EntrantInfoFragment extends Fragment {
 
     }
 
+    /**
+     * Exports the list of winning entrants to a CSV file in the device's
+     * Downloads directory.
+     */
     private void exportCsv() {
 
         if (event == null || event.getWonList() == null || event.getWonList().isEmpty()) {
@@ -404,7 +429,7 @@ public class EntrantInfoFragment extends Fragment {
         StringBuilder csv = new StringBuilder();
         csv.append("Name,Email,Phone\n");  // header row
 
-        for (Profile p : event.getWonList()) {
+        for (Profile p : event.getAcceptList()) {
             String name = p.getUsername();
             String email = p.getEmail();
             String phone = p.getPhoneNumber();

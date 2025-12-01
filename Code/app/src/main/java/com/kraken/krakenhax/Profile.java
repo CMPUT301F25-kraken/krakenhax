@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
  * Represents a user profile within the KrakenHax application.
  * Profiles can belong to entrants, organizers, or administrators.
@@ -38,10 +39,12 @@ public class Profile implements Parcelable {
     /**
      * Constructs a new user profile with the given details.
      *
-     * @param username the user's username
-     * @param password the user's password
-     * @param type     the role type (entrant, organizer, admin)
-     * @param email    the user's email address
+     * @param ID          the user's ID
+     * @param username    the user's username
+     * @param password    the user's password
+     * @param type        the role type (entrant, organizer, admin)
+     * @param email       the user's email address
+     * @param phoneNumber the user's phone number (optional)
      * @throws IllegalArgumentException if any parameter is null or empty
      */
     public Profile(String ID, String username, String password, String type, String email, String phoneNumber) {
@@ -74,6 +77,11 @@ public class Profile implements Parcelable {
         // Empty
     }
 
+    /**
+     * Constructs a new instance of the Profile class from a Parcel.
+     *
+     * @param in the Parcel to read from
+     */
     protected Profile(Parcel in) {
         username = in.readString();
         password = in.readString();
@@ -89,6 +97,10 @@ public class Profile implements Parcelable {
         history = in.createTypedArrayList(Action.CREATOR);
     }
 
+    /**
+     * Creates a new instance of the Profile class from a Parcel.
+     *
+     */
     public static final Creator<Profile> CREATOR = new Creator<Profile>() {
         @Override
         public Profile createFromParcel(Parcel in) {
@@ -101,30 +113,65 @@ public class Profile implements Parcelable {
         }
     };
 
+    /**
+     * Gets the user's bookmarked events.
+     *
+     * @return the user's bookmarked events
+     */
     public ArrayList<String> getBookmarkedEvents() {
         return bookmarkedEvents;
     }
 
+    /**
+     * Gets the user's latitude.
+     *
+     * @return the user's latitude
+     */
     public double getLatitude() {
         return latitude;
     }
 
+    /**
+     * Sets the user's latitude.
+     *
+     * @param latitude the new latitude
+     */
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
+    /**
+     * Gets the user's longitude.
+     *
+     * @return the user's longitude
+     */
     public double getLongitude() {
         return longitude;
     }
 
+    /**
+     * Sets the user's longitude.
+     *
+     * @param longitude the new longitude
+     */
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
+    /**
+     * Adds an event to the user's bookmarked events.
+     *
+     * @param eventId the ID of the event to add
+     */
     public void addToBookmarkedEvents(String eventId) {
         bookmarkedEvents.add(eventId);
     }
 
+    /**
+     * Removes an event from the user's bookmarked events.
+     *
+     * @param event_id the ID of the event to remove
+     */
     public void removeFromBookmarkedEvents(String event_id) {
         this.bookmarkedEvents.remove(event_id);
     }
@@ -251,33 +298,62 @@ public class Profile implements Parcelable {
         this.ID = ID;
     }
 
+    /**
+     * Sets the user's profile picture URL.
+     *
+     * @param pictureURL the new profile picture URL
+     */
     public void setPicture(String pictureURL) {
         this.pictureURL = pictureURL;
     }
 
+    /**
+     * Returns the user's profile picture URL.
+     *
+     * @return the user's profile picture URL
+     */
     public String getPicture() {
         return this.pictureURL;
     }
 
+    /**
+     * Returns the notifications enabled status.
+     *
+     * @return the notifications enabled status
+     */
     public boolean isNotificationsEnabled() {
         return notificationsEnabled;
     }
 
+    /**
+     * Sets the notifications enabled status.
+     *
+     * @param enabled the new notifications enabled status
+     */
     public void setNotificationsEnabled(boolean enabled) {
         this.notificationsEnabled = enabled;
     }
 
+    /**
+     * Returns the date the profile was created.
+     *
+     * @return the date the profile was created
+     */
     public Timestamp getDateCreated() {
         return dateCreated;
     }
 
+    // Utility Methods
+
     /**
      * Checks if the given object is equal to this profile.
+     * <p>
+     * Two profiles are considered equal if they have the same ID and username.
      *
-     * @param o
-     * @return true if the objects are equal, false otherwise
+     * @param o the object to compare with this profile
+     * @return {@code true} if the given object is a {@code Profile} with the same ID and username,
+     * {@code false} otherwise
      */
-    // Utility Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -351,6 +427,11 @@ public class Profile implements Parcelable {
         dest.writeTypedList(history);
     }
 
+    /**
+     * Returns the history list.
+     *
+     * @return the history list
+     */
     public List<Action> getHistory() {
         if (history == null) {
             history = new ArrayList<>();
@@ -358,14 +439,25 @@ public class Profile implements Parcelable {
         return history;
     }
 
+    /**
+     * Sets the history list.
+     *
+     * @param history the history list
+     */
     public void setHistory(List<Action> history) {
         this.history = history;
     }
 
+    /**
+     * Adds an action to the history list.
+     *
+     * @param newAction the action to add
+     */
     public void updateHistory(Action newAction) {
         if (this.history == null) {
             this.history = new ArrayList<>();
         }
         this.history.add(newAction);
     }
+
 }

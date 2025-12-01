@@ -18,6 +18,11 @@ import java.util.List;
 public class NotifyUser {
     private final Context context;
 
+    /**
+     * Creates a new instance that can send notifications using the given context.
+     *
+     * @param context the context used to display toasts and system notifications
+     */
     public NotifyUser(Context context) {
         this.context = context;
     }
@@ -58,11 +63,13 @@ public class NotifyUser {
     }
 
     /**
-     * Sends one message to multiple recipients.
+     * Sends the same notification message to multiple recipients.
+     *
+     * @param recipients the list of profiles that should receive the notification
+     * @param message    the message text to send to each recipient
      */
     public void sendBroadcast(List<Profile> recipients, String message) {
-        if (recipients == null || message == null) return;
-        for (Profile entrant : recipients) {
+        if (recipients == null || message == null) return;        for (Profile entrant : recipients) {
             sendNotification(entrant, message);
         }
     }

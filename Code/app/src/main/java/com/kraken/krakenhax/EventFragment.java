@@ -31,16 +31,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.kraken.krakenhax.NotificationJ;
 
 /**
  * The Event Page — displays event details and provides sign-up / cancel / notification functionality.
@@ -50,7 +49,6 @@ public class EventFragment extends Fragment {
     private Profile currentUser;
     private FirebaseFirestore db;
     private ProfileViewModel profileModel;
-
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private NavController navController;
     private Event event;
@@ -61,15 +59,34 @@ public class EventFragment extends Fragment {
     private StorageReference storageRef;
     private EventViewModel eventViewModel;
 
+
+    /**
+     * Creates a new instance of {@link EventFragment}.
+     */
     public EventFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Inflates the layout for this fragment.
+     *
+     * @param inflater           the LayoutInflater used to inflate views
+     * @param container          the parent view that the fragment UI will attach to
+     * @param savedInstanceState the previously saved state, if any
+     * @return the root view for the fragment's layout
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_event, container, false);
     }
 
+    /**
+     * Called when the fragment's view has been created.
+     * Initializes UI components, view models, and listeners.
+     *
+     * @param view               the fragment's root view
+     * @param savedInstanceState the previously saved state, if any
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -169,6 +186,7 @@ public class EventFragment extends Fragment {
 
         // Set the tvDateTime to show the date and time of the event
         TextView tvDateTime = view.findViewById(R.id.tv_date_time);
+        TextView categoriesTextView = view.findViewById(R.id.categories_event_textview);
         setEventDate(tvDateTime);
 
         // Update buttons for current user state
@@ -185,8 +203,24 @@ public class EventFragment extends Fragment {
             deleteEventFromFirestore();
             navController.popBackStack();
         });
+
+        //Display the categories of the event
+        if (event.getCategories() != null) {
+            StringBuilder categories = new StringBuilder();
+            categories.append("Categories: ");
+            for (String category : event.getCategories()) {
+                categories.append(category).append(", ");
+            }
+            if (categories.length() > 2) {
+                categories.delete(categories.length() - 2, categories.length());
+            }
+            categoriesTextView.setText(categories.toString());
+        }
     }
 
+    /**
+     * Cleans up resources when the view is destroyed, including removing callbacks.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -230,7 +264,7 @@ public class EventFragment extends Fragment {
      * Prompts the user to give permission to access their location.
      */
     private void requestLocationPermissions() {
-        locationPermissionRequest.launch(new String[] {
+        locationPermissionRequest.launch(new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
@@ -295,6 +329,9 @@ public class EventFragment extends Fragment {
         doStuff();
     }
 
+    /**
+     * Handles post-join actions such as notifications and history updates.
+     */
     private void doStuff() {
         // Notify user
         NotifyUser notifyUser = new NotifyUser(requireContext());
@@ -350,6 +387,8 @@ public class EventFragment extends Fragment {
                 if (currentUser.getType().equals("Admin")) {
                     buttonSignup.setVisibility(View.GONE);
                     deleteButton.setVisibility(View.VISIBLE);
+                }else {
+                    deleteButton.setVisibility(View.GONE);
                 }
 
                 if (event.getWonList().contains(currentUser)) {
@@ -378,13 +417,26 @@ public class EventFragment extends Fragment {
 
                         // Creating a notification so the entrant sees a record of the cancellation
                         if (currentUser.isNotificationsEnabled()) {
+                            Timestamp curTime = Timestamp.now();
+                            final ArrayList<Profile> profileList = new ArrayList<>();
+                            ProfileViewModel ProfileModel;
+
+                            ProfileModel = new ViewModelProvider(requireActivity()).get(ProfileViewModel.class);
+                            ProfileModel.getProfileList().observe(getViewLifecycleOwner(), profiles -> {
+                                for (Profile profile : profiles) {
+                                    if (profile.getID().equals(event.getOrgId())) {
+                                        profileList.add(profile);
+                                    }
+                                }
+                            });
+                            Profile organizer = profileList.get(0);
                             NotificationJ notification = new NotificationJ(
                                     "You cancelled your spot",
                                     "You have cancelled your participation in " + event.getTitle() + ".",
-                                    event.getOrgId(),          // sender = organizer / event owner
-                                    null,                      // timestamp set by server
+                                    organizer.getUsername(),          // sender = organizer / event owner
+                                    curTime,                      // timestamp set by server
                                     event.getId(),
-                                    currentUser.getID(),
+                                    currentUser.getUsername(),
                                     false
                             );
 
@@ -392,9 +444,9 @@ public class EventFragment extends Fragment {
                                     .document(currentUser.getID())
                                     .collection("Notifications")
                                     .add(notification)
-                                    .addOnSuccessListener(docRef ->
-                                            docRef.update("timestamp", FieldValue.serverTimestamp())
-                                    )
+                                    //.addOnSuccessListener(docRef ->
+                                    //        docRef.update("timestamp", FieldValue.serverTimestamp())
+                                    //)
                                     .addOnFailureListener(e ->
                                             Log.e("EventFragment", "Failed to create cancellation notification", e)
                                     );
@@ -478,6 +530,8 @@ public class EventFragment extends Fragment {
 
     /**
      * Returns a location permission request object.
+     *
+     * @return the ActivityResultLauncher used to request location permissions
      */
     private ActivityResultLauncher<String[]> requestLocationPermission() {
         // Get view
@@ -560,7 +614,9 @@ public class EventFragment extends Fragment {
     }
 
     /**
-     * Sets the event poster.
+     * Sets the event poster image on the UI.
+     *
+     * @param eventImage the ImageView in which to display the poster
      */
     private void setEventPoster(ImageView eventImage) {
         String posterURL = event.getPoster();
@@ -577,8 +633,10 @@ public class EventFragment extends Fragment {
     }
 
     /**
-     * Sets the organizer button to display the name of the organizer and navigate to the organizers
+     * Sets the organizer button to display the name of the organizer and navigate to the organizer's
      * page when pressed.
+     *
+     * @param buttonEventOrganizer the button that opens the organizer's page
      */
     private void setOrganizerButton(Button buttonEventOrganizer) {
         String organizerID = event.getOrgId();
@@ -603,6 +661,8 @@ public class EventFragment extends Fragment {
 
     /**
      * Displays a countdown of the time remaining until the registration deadline for an event closes.
+     *
+     * @param tvRegistrationInfo the TextView in which to display the countdown
      */
     private void setRegistrationDeadline(TextView tvRegistrationInfo) {
         // Get view
@@ -667,6 +727,8 @@ public class EventFragment extends Fragment {
 
     /**
      * Sets the datetime field to display the date and time an event will take place.
+     *
+     * @param tvDateTime the TextView in which to display the event date and time
      */
     private void setEventDate(TextView tvDateTime) {
         if (event.getDateTime() != null) {
@@ -701,6 +763,9 @@ public class EventFragment extends Fragment {
                 });
     }
 
+    /**
+     * Deletes the event poster image from Firebase Storage.
+     */
     public void deleteEventPic() {
         StorageReference eventPosterRef = storageRef.child("event_posters/" + event.getId() + ".jpg");
         eventPosterRef.delete().addOnSuccessListener(aVoid -> {
@@ -709,4 +774,5 @@ public class EventFragment extends Fragment {
             Log.e("Firebase", "Delete event poster failed", e);
         });
     }
+
 }

@@ -82,6 +82,7 @@ dependencies {
 
     // For QR Codes
     implementation(libs.zxing.android.embedded)
+    implementation("com.google.android.material:material:1.12.0")
 
     // Test implementation
     testImplementation(libs.mockito.core)

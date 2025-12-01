@@ -1,8 +1,8 @@
 package com.kraken.krakenhax;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -11,9 +11,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.junit.runner.RunWith;
+
 
 /**
  * Database-layer tests for NotificationRepository using Mockito.
@@ -39,6 +40,9 @@ public class NotificationRepositoryTest {
     private NotificationRepository notificationRepository;
     private NotificationJ notification;
 
+    /**
+     * Sets up the NotificationRepository and Firestore mocks before each test.
+     */
     @Before
     public void setUp() {
         notificationRepository = new NotificationRepository(mockDb);
@@ -63,6 +67,9 @@ public class NotificationRepositoryTest {
         when(mockTask.addOnSuccessListener(any())).thenReturn(mockTask);
     }
 
+    /**
+     * Verifies that saveNotificationForProfile uses the correct Firestore collection path.
+     */
     @Test
     public void testSaveNotificationForProfileUsesCorrectPath() {
         notificationRepository.saveNotificationForProfile(notification);
@@ -72,4 +79,5 @@ public class NotificationRepositoryTest {
         verify(mockProfileDoc).collection("Notifications");
         verify(mockNotificationsCollection).add(notification);
     }
+
 }

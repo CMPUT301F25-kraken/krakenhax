@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+
 /**
  * Fragment class to handle the sign-up process.
  * Creates new organizers or Entrants.
@@ -36,6 +37,7 @@ public class SignUpFragment extends Fragment {
     private CollectionReference profileCollection;
     private String userType;
     private NavController navController;
+    private Button Back;
 
     /**
      * Required empty public constructor
@@ -93,6 +95,7 @@ public class SignUpFragment extends Fragment {
 
         // Find views
         signupButton = view.findViewById(R.id.signup_button);
+        Back = view.findViewById(R.id.Back2Sel);
         usernameEditText = view.findViewById(R.id.UsernameSetText);
         passwordEditText = view.findViewById(R.id.PasswordSetText);
         emailEditText = view.findViewById(R.id.EmailSetText);
@@ -136,6 +139,9 @@ public class SignUpFragment extends Fragment {
                     profileViewModel.getProfileList().removeObserver(this);
                 }
             });
+        });
+        Back.setOnClickListener(v ->{
+            navController.navigate(R.id.action_signup_to_TypeSelection);
         });
     }
 
@@ -189,4 +195,5 @@ public class SignUpFragment extends Fragment {
                     Toast.makeText(getContext(), "Sign up failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
+
 }

@@ -1,6 +1,6 @@
 package com.kraken.krakenhax;
 
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,8 +28,12 @@ import java.util.List;
 import java.util.Objects;
 
 
+/**
+ * Fragment to view a profile.
+ * Allows the admin to delete a profile.
+ */
 public class ViewProfiles extends Fragment {
-
+    public Profile profile;
     private FirebaseFirestore db;
     private CollectionReference profileRef;
     private Button backButton;
@@ -37,13 +41,11 @@ public class ViewProfiles extends Fragment {
     private Button deleteAccountButton;
     private StorageReference storageRef;
     private CollectionReference eventsRef;
-    private Uri filePath;
     private TextView username;
     private TextView email;
     private TextView phone;
     private ImageView profilePic;
-    public Profile profile;
-
+    private NavController navController;
 
     /**
      * Required empty public constructor
@@ -52,15 +54,40 @@ public class ViewProfiles extends Fragment {
 
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     * @return The View for the fragment's UI, or null.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_view_profile, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
+     * has returned, but before any saved state has been restored.
+     * Contains the main functionality of the fragment.
+     * Sets up the listener for the delete button.
+     * Sets up the listener for the delete account button.
+     * Sets up the listener for the back button.
+     * Loads the profile picture.
+     *
+     * @param view               The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
+     */
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
-
+        //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        navController = Navigation.findNavController(view);
         assert getArguments() != null;
         profile = getArguments().getParcelable("profile");
         assert profile != null;
@@ -93,14 +120,11 @@ public class ViewProfiles extends Fragment {
             navController.navigate(R.id.action_ViewProfiles_to_AdminListFragment);
         });
         backButton.setOnClickListener(v -> navController.navigate(R.id.action_ViewProfiles_to_AdminListFragment));
-
-
-
-
-
-
     }
 
+    /**
+     * Loads the profile picture for a profile.
+     */
     public void loadProfilePic() {
         String profilePicURL = profile.getPicture();
         if (profilePicURL == null || profilePicURL.isEmpty()) {
@@ -114,6 +138,10 @@ public class ViewProfiles extends Fragment {
                     .into(profilePic);
         }
     }
+
+    /**
+     * Deletes the profile picture from firebase storage.
+     */
     public void deleteProfilePic() {
         StorageReference profilePicRef = storageRef.child("profile_pictures/" + profile.getID() + ".jpg");
         profilePicRef.delete().addOnSuccessListener(aVoid -> {
@@ -124,6 +152,13 @@ public class ViewProfiles extends Fragment {
             Log.e("Firebase", "Delete profile picture failed", e);
         });
     }
+
+    /**
+     * Deletes the account from the database.
+     * Deletes the profile picture.
+     * Removes the user from the waitlists/wonlists/cancellists/lostlists/acceptlists that they are on.
+     * calls function that deletes events that the user has created.
+     */
     public void deleteAccount() {
         String profileID = profile.getID();
 
@@ -182,6 +217,12 @@ public class ViewProfiles extends Fragment {
                 Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e)
         );
     }
+
+    /**
+     * Deletes events that the user has created.
+     *
+     * @param profileID Takes the profileID of the user to delete events for.
+     */
     public void deleteEvents(String profileID) {
         // Delete events that the user has created
         List<String> deletedEventIDs = new ArrayList<String>();
@@ -197,15 +238,12 @@ public class ViewProfiles extends Fragment {
                     eventsRef.document(event.getId()).delete()
                             .addOnSuccessListener(aVoid -> Log.d("deleteAccount", "Event: " + event.getTitle() + " successfully deleted."))
                             .addOnFailureListener(e -> Log.e("deleteAccount", "Failed to delete event: " + event.getTitle() + ".", e));
-
-                    // If an event was deleted we need to check each profiles myWaitlist list and remove it if necessary
                 }
             }
 
-//            // Delete event from profiles
-//            if (!deletedEventIDs.isEmpty()) {
-//                removeEventFromProfileMyWaitlists(deletedEventIDs);
-//            }
-        }).addOnFailureListener(e -> Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e));
+        }).addOnFailureListener(
+                e -> Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e)
+        );
     }
+
 }

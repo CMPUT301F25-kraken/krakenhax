@@ -1,164 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nestedScrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/EventAddressEditText"
-        android:layout_width="215dp"
-        android:layout_height="80dp"
-        android:hint="Event Address"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EventDescriptionEditText"
-        app:layout_constraintVertical_bias="0.375" />
-
-    <ImageView
-        android:id="@+id/imagePosterView"
-        android:layout_width="412dp"
-        android:layout_height="198dp"
-        android:background="@color/gray"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/outline_attractions_100" />
-
-    <EditText
-        android:id="@+id/EventNameEditText"
-        android:layout_width="150dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="5dp"
-        android:hint="Event Name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imagePosterView" />
-
-    <Button
-        android:id="@+id/button_registration_date_time"
-        android:layout_width="118dp"
-        android:layout_height="35dp"
-        android:backgroundTint="@color/white"
-        android:text="Registration Date, Time"
-        android:textColor="@color/gray"
-        android:textSize="7sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/button_event_date_time"
-        android:layout_width="118dp"
-        android:layout_height="35dp"
-        android:backgroundTint="@color/white"
-        android:text="Event Date, Time"
-        android:textColor="@color/gray"
-        android:textSize="7sp"
-        app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/UploadPosterButton"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:clickable="true"
-        app:backgroundTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.954"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/baseline_upload_24"
-        app:tint="@color/black" />
+        android:background="@color/white">
 
-    <TextView
-        android:id="@+id/UploadPosterText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="336dp"
-        android:layout_marginTop="4dp"
-        android:text="Upload poster..."
-        android:textColor="@color/black"
-        android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="@+id/imagePosterView"
-        app:layout_constraintTop_toBottomOf="@+id/UploadPosterButton" />
+        <EditText
+            android:id="@+id/EventAddressEditText"
+            android:layout_width="215dp"
+            android:layout_height="80dp"
+            android:hint="Event Address"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/EventDescriptionEditText"
+            app:layout_constraintVertical_bias="0.51" />
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/EventDescriptionEditText"
-        android:layout_width="389dp"
-        android:layout_height="180dp"
-        android:layout_marginTop="5dp"
-        android:gravity="top|start"
-        android:hint="Event Description"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EventNameEditText" />
+        <ImageView
+            android:id="@+id/imagePosterView"
+            android:layout_width="412dp"
+            android:layout_height="198dp"
+            android:background="@color/gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/outline_attractions_100" />
 
-    <EditText
-        android:id="@+id/WinnerNumberEditText"
-        android:layout_width="179dp"
-        android:layout_height="72dp"
-        android:hint="Number of Winners"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.068"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EventDescriptionEditText"
-        app:layout_constraintVertical_bias="0.059" />
+        <EditText
+            android:id="@+id/EventNameEditText"
+            android:layout_width="150dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="5dp"
+            android:hint="Event Name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imagePosterView" />
 
-    <EditText
-        android:id="@+id/EventCapEditText"
-        android:layout_width="179dp"
-        android:layout_height="72dp"
-        android:hint="Waiting List Cap (Optional)"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.931"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EventDescriptionEditText"
-        app:layout_constraintVertical_bias="0.059" />
+        <Button
+            android:id="@+id/button_registration_date_time"
+            android:layout_width="118dp"
+            android:layout_height="35dp"
+            android:backgroundTint="@color/white"
+            android:text="Registration Date, Time"
+            android:textColor="@color/gray"
+            android:textSize="7sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <Switch
-        android:id="@+id/GeolocationSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Use Geolocation"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EventAddressEditText"
-        app:layout_constraintVertical_bias="0.132" />
+        <Button
+            android:id="@+id/button_event_date_time"
+            android:layout_width="118dp"
+            android:layout_height="35dp"
+            android:backgroundTint="@color/white"
+            android:text="Event Date, Time"
+            android:textColor="@color/gray"
+            android:textSize="7sp"
+            app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/ConfirmEditsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Confirm"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/GeolocationSwitch" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/UploadPosterButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            app:backgroundTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/imagePosterView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.954"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/baseline_upload_24"
+            app:tint="@color/black" />
 
-    <Button
-        android:id="@+id/BackButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:backgroundTint="@color/loginTextColor"
-        android:text="Back"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/UploadPosterText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="336dp"
+            android:layout_marginTop="4dp"
+            android:text="Upload poster..."
+            android:textColor="@color/black"
+            android:textSize="10sp"
+            app:layout_constraintStart_toStartOf="@+id/imagePosterView"
+            app:layout_constraintTop_toBottomOf="@+id/UploadPosterButton" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/EventDescriptionEditText"
+            android:layout_width="389dp"
+            android:layout_height="180dp"
+            android:layout_marginTop="5dp"
+            android:gravity="top|start"
+            android:hint="Event Description"
+            android:inputType="textMultiLine"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/EventNameEditText" />
+
+        <EditText
+            android:id="@+id/WinnerNumberEditText"
+            android:layout_width="179dp"
+            android:layout_height="72dp"
+            android:hint="Number of Winners"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.068"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/EventDescriptionEditText"
+            app:layout_constraintVertical_bias="0.138" />
+
+        <EditText
+            android:id="@+id/EventCapEditText"
+            android:layout_width="179dp"
+            android:layout_height="72dp"
+            android:hint="Waiting List Cap (Optional)"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.931"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/EventDescriptionEditText"
+            app:layout_constraintVertical_bias="0.138" />
+
+        <Switch
+            android:id="@+id/GeolocationSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use Geolocation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/EventAddressEditText"
+            app:layout_constraintVertical_bias="0.615" />
+
+        <Button
+            android:id="@+id/ConfirmEditsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confirm"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/GeolocationSwitch"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <Button
+            android:id="@+id/BackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="@color/loginTextColor"
+            android:text="Back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/categories_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="128dp"
+            android:text="select categories"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/EventAddressEditText" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
