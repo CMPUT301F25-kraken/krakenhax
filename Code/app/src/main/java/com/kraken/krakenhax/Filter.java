@@ -6,7 +6,11 @@ import java.sql.Time;
 import java.util.ArrayList;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class Filter {
@@ -59,6 +63,7 @@ public class Filter {
                     score++;
                 }
             }
+            /**
             boolean dateMatchFound = false;
             for (Timestamp userAvailability : this.availability) {
                 for (Timestamp eventDay : event.getTimeframe()) {
@@ -68,6 +73,27 @@ public class Filter {
                     }
                 }
             }
+             **/
+            if (score > 0) {
+                matchScore.put(event, score);
+            }
+        }
+        // Create a list from the elements of the HashMap
+        List<Map.Entry<Event, Integer>> sortedEntries = new ArrayList<>(matchScore.entrySet());
+        // Sort the list in descending order of scores. [18]
+        Collections.sort(sortedEntries, new Comparator<Map.Entry<Event, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Event, Integer> e1, Map.Entry<Event, Integer> e2) {
+                // For descending order
+                return e2.getValue().compareTo(e1.getValue());
+            }
+        });
+        // Clear the existing filteredEvents list. [3, 4, 5, 6, 7]
+        this.filteredEvents.clear();
+
+        // Add the sorted events to the filteredEvents list
+        for (Map.Entry<Event, Integer> entry : sortedEntries) {
+            this.filteredEvents.add(entry.getKey());
         }
     }
 
@@ -91,6 +117,16 @@ public class Filter {
     }
     public void addAvailability(Timestamp availability) {
         this.availability.add(availability);
+    }
+
+    public ArrayList<String> getCategories() {
+        return categories;
+    }
+    public void setCategories(ArrayList<String> categories) {
+        this.categories = categories;
+    }
+    public void addCategory(String category) {
+        this.categories.add(category);
     }
 
 }
