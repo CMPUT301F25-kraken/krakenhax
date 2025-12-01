@@ -20,7 +20,7 @@
 - Logan Pope  
 - Markus Henze  
 - Jacob McCormick  
-- Willian Grant  
+- William Grant  
 - Shahbaz Qureshi  
 
 ---
