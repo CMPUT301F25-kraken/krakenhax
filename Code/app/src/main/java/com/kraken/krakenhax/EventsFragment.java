@@ -6,9 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -34,6 +37,7 @@ public class EventsFragment extends Fragment {
     private MyRecyclerViewAdapter adapter;
     private FirebaseFirestore db;
     private ArrayList<Event> events;
+    private ArrayList<Event> allEvents;
     private Profile currentUser;
 
     /**
@@ -70,6 +74,7 @@ public class EventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button notifications = view.findViewById(R.id.notifications);
+        ImageButton filterEventsButton = view.findViewById(R.id.filter_events_button);
 
 
         MainActivity mainActivity = (MainActivity) getActivity();
@@ -84,6 +89,7 @@ public class EventsFragment extends Fragment {
         RecyclerView recycler_view_event_list = view.findViewById(R.id.recycler_view_events_list);
         recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
         events = new ArrayList<>();
+        allEvents = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
         adapter = new MyRecyclerViewAdapter(events);
         recycler_view_event_list.setAdapter(adapter);
@@ -105,7 +111,42 @@ public class EventsFragment extends Fragment {
             navController.navigate(R.id.action_EventsFragment_to_NotificationFragment);
         });
 
+        Event event = new Event();
+        ArrayList<String> categories = event.getAvailableCategories();
 
+        filterEventsButton.setOnClickListener(v -> {
+            FilterDialogFragment filterDialogFragment = new FilterDialogFragment(categories, selectedCategories -> {
+                // Handle the selected categories here
+                Log.d("EventsFragment", "Selected categories: " + selectedCategories);
+                applyFilter(selectedCategories);
+            });
+            filterDialogFragment.show(getParentFragmentManager(), "filter_dialog");
+        });
+    }
+
+    /**
+     * Filters the event list based on the selected categories.
+     * If no categories are selected, it displays all events.
+     *
+     * @param selectedCategories The list of categories to filter by.
+     */
+    private void applyFilter(ArrayList<String> selectedCategories) {
+        // Clear the current display list
+        events.clear();
+
+        // If no categories are selected, or the list is null, show all events
+        if (selectedCategories == null || selectedCategories.isEmpty()) {
+            events.addAll(allEvents);
+        } else {
+            // Otherwise, apply the filter
+            Filter filter = new Filter(currentUser, allEvents);
+            filter.getCategories().addAll(selectedCategories); // Set the categories for the filter
+            filter.setFilter(); // Run the filtering logic
+            events.addAll(filter.getFilteredEvents()); // Add the filtered events to the display list
+        }
+
+        // Notify the adapter that the data has changed to refresh the UI
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -126,10 +167,12 @@ public class EventsFragment extends Fragment {
                         for (QueryDocumentSnapshot doc : snap) {
                             // Use .toObject() for robust deserialization
                             Event event = doc.toObject(Event.class);
-                            events.add(event);
+                            allEvents.add(event);
                         }
                         // Sort the events from newest to oldest
-                        events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
+                        allEvents.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
+                        events.clear();
+                        events.addAll(allEvents);
 
                         adapter.notifyDataSetChanged();
                     }

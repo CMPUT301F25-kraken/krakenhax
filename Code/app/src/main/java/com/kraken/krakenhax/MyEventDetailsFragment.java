@@ -284,6 +284,7 @@ public class MyEventDetailsFragment extends Fragment {
         TextView tvEventName = view.findViewById(R.id.tv_event_name);
         TextView tvDescription = view.findViewById(R.id.tv_event_description);
         TextView tvLocation2 = view.findViewById(R.id.tv_location_field2);
+        TextView categoriesTexview = view.findViewById(R.id.categories_my_event_textview);
 
         // Set text
         tvEventName.setText(event.getTitle());
@@ -363,6 +364,16 @@ public class MyEventDetailsFragment extends Fragment {
         } else {
             tvDateTime.setText("ERROR: This event is missing a date and time");
         }
+        // Set the categories text
+        if (event.getCategories() != null && !event.getCategories().isEmpty()) {
+            StringBuilder categoriesText = new StringBuilder("Categories: ");
+            for (String category : event.getCategories()) {
+                categoriesText.append(category).append(", ");
+            }
+            categoriesText.delete(categoriesText.length() - 2, categoriesText.length());
+            categoriesTexview.setText(categoriesText.toString());
+        }
+
     }
 
     /**

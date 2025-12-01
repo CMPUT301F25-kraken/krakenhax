@@ -170,6 +170,7 @@ public class EventFragment extends Fragment {
 
         // Set the tvDateTime to show the date and time of the event
         TextView tvDateTime = view.findViewById(R.id.tv_date_time);
+        TextView categoriesTextView = view.findViewById(R.id.categories_event_textview);
         setEventDate(tvDateTime);
 
         // Update buttons for current user state
@@ -186,6 +187,19 @@ public class EventFragment extends Fragment {
             deleteEventFromFirestore();
             navController.popBackStack();
         });
+
+        //Display the categories of the event
+        if (event.getCategories() != null) {
+            StringBuilder categories = new StringBuilder();
+            categories.append("Categories: ");
+            for (String category : event.getCategories()) {
+                categories.append(category).append(", ");
+            }
+            if (categories.length() > 2) {
+                categories.delete(categories.length() - 2, categories.length());
+            }
+            categoriesTextView.setText(categories.toString());
+        }
     }
 
     @Override
