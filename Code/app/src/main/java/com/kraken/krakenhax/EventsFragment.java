@@ -164,7 +164,8 @@ public class EventsFragment extends Fragment {
         }
 
         // Notify the adapter that the data has changed to refresh the UI
-        adapter.notifyDataSetChanged();
+        SearchView searchView = getView().findViewById(R.id.search_view);
+        filterList(searchView.getQuery().toString());
     }
 
     /**
