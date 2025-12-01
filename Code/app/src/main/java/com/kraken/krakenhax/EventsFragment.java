@@ -133,11 +133,12 @@ public class EventsFragment extends Fragment {
         ArrayList<String> categories = event.getAvailableCategories();
 
         filterEventsButton.setOnClickListener(v -> {
-            FilterDialogFragment filterDialogFragment = new FilterDialogFragment(categories, selectedCategories -> {
+            FilterDialogFragment filterDialogFragment = new FilterDialogFragment(categories, (selectedCategories, availability) -> {
                 // Handle the selected categories here
                 Log.d("EventsFragment", "Selected categories: " + selectedCategories);
                 applyFilter(selectedCategories);
-            });
+            }, true
+            );
             filterDialogFragment.show(getParentFragmentManager(), "filter_dialog");
         });
     }

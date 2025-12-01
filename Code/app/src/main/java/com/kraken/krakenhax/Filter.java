@@ -57,23 +57,21 @@ public class Filter {
     public void setFilter() {
         HashMap<Event, Integer> matchScore = new HashMap<Event, Integer>();
         for (Event event : events) {
+            Boolean isAvailable = false;
+            for (Timestamp availableDay : this.availability) {
+                if (isSameDay(event.getDateTime(), availableDay)) {
+                    break;
+                }
+            }
+            if (!isAvailable) {
+                continue;
+            }
             int score = 0;
             for (String userCategory : this.categories) {
                 if (event.getCategories().contains(userCategory)) {
                     score++;
                 }
             }
-            /**
-            boolean dateMatchFound = false;
-            for (Timestamp userAvailability : this.availability) {
-                for (Timestamp eventDay : event.getTimeframe()) {
-                    if (isSameDay(userAvailability, eventDay)) {
-                        score++;
-                        dateMatchFound = true;
-                    }
-                }
-            }
-             **/
             if (score > 0) {
                 matchScore.put(event, score);
             }
