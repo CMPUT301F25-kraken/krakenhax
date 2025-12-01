@@ -45,6 +45,7 @@ public class Event implements Parcelable {
     private String qrCodeURL;
     private Timestamp dateCreated;
     private static final ArrayList<String> availableCategories = new ArrayList<String>(Arrays.asList("music", "art", "photography", "academics", "language", "technology", "career", "fitness", "sports", "volunteer", "cooking", "baking", "games", "professional", "networking", "community"));
+
     /**
      * Constructor for Event class.
      */

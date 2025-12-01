@@ -137,7 +137,7 @@ public class MyEventDetailsFragment extends Fragment {
                 if (p == null) continue;
                 if (!p.isNotificationsEnabled()) continue;
 
-                NotificationJ notif = new NotificationJ(
+                Notification notif = new Notification(
                         "You won the lottery!",
                         "You have been selected to participate in " + event.getTitle() + ".",
                         currentUser.getUsername(),          // sender = organizer
@@ -161,7 +161,7 @@ public class MyEventDetailsFragment extends Fragment {
                 if (p == null) continue;
                 if (!p.isNotificationsEnabled()) continue;
 
-                NotificationJ notif = new NotificationJ(
+                Notification notif = new Notification(
                         "Lottery result",
                         "Unfortunately, you were not selected for " + event.getTitle() + ".",
                         currentUser.getUsername(),

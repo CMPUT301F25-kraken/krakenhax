@@ -7,11 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -204,6 +202,8 @@ public class EventsFragment extends Fragment {
                         // Update the recycler view based on the search
                         if (searchView != null && searchView.getQuery().length() > 0) {
                             filterList(searchView.getQuery().toString());
+                            // Apply the current filter to the search results
+
                         } else {
                             searchFilterEvents.clear();
                             searchFilterEvents.addAll(events);

@@ -6,7 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 
 /**
- * Repository for saving NotificationJ objects into Firestore.
+ * Repository for saving Notification objects into Firestore.
  */
 public class NotificationRepository {
     private final FirebaseFirestore db;
@@ -24,7 +24,7 @@ public class NotificationRepository {
      * Store a notification in the recipient's Profile subcollection:
      * Profiles/{recipientId}/Notifications/{autoId}
      */
-    public void saveNotificationForProfile(NotificationJ notification) {
+    public void saveNotificationForProfile(Notification notification) {
         if (notification == null || notification.getRecipient() == null) return;
 
         String recipientId = notification.getRecipient();

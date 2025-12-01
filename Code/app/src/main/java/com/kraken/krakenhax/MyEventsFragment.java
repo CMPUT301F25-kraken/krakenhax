@@ -109,7 +109,12 @@ public class MyEventsFragment extends Fragment {
 
             // Navigate to the correct event details fragment depending on the account type
             if (Objects.equals(currentUser.getType(), "Organizer")) {
-                NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_MyEventDetailsFragment, bundle);
+                if(Objects.equals(currentUser.getID(), clickedEvent.getOrgId())) {
+                    NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_MyEventDetailsFragment, bundle);
+                }else {
+                    NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_EventFragment, bundle);
+                }
+
             } else if (Objects.equals(currentUser.getType(), "Entrant")) {
                 NavHostFragment.findNavController(this).navigate(R.id.action_MyEventsFragment_to_EventFragment, bundle);
             } else if (Objects.equals(currentUser.getType(), "Guest")) {

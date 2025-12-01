@@ -36,7 +36,7 @@ import java.util.ArrayList;
 public class AdminListFragment extends Fragment {
     private final ArrayList<Profile> EntrantList = new ArrayList<>();
     private final ArrayList<Profile> OrganizerList = new ArrayList<>();
-    private final ArrayList<NotificationJ> notifList = new ArrayList<>();
+    private final ArrayList<Notification> notifList = new ArrayList<>();
     public ProfileViewModel profileModel;
     public FirebaseFirestore db;
     public AdminProfileAdapter adminProfileAdapter;
@@ -171,7 +171,7 @@ public class AdminListFragment extends Fragment {
                         NotificationListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                NotificationJ not = notifList.get(position);
+                                Notification not = notifList.get(position);
                                 ViewNotification dialogFragment = ViewNotification.newInstance(not);
 
                                 dialogFragment.show(getChildFragmentManager(), "ViewNotificationDialog");
@@ -310,7 +310,7 @@ public class AdminListFragment extends Fragment {
                 if (snap != null && !snap.isEmpty()){
                     // This loop runs when data is received from Firebase.
                     for (QueryDocumentSnapshot doc : snap){
-                        NotificationJ notification = doc.toObject(NotificationJ.class);
+                        Notification notification = doc.toObject(Notification.class);
                         Log.d("GetNotifications", "Found notification: " + notification.getBody());
                         notifList.add(notification);
                     }

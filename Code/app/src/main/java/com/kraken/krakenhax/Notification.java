@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Notification class. Holds a notification that is serializable
  */
-public class NotificationJ implements Serializable {
+public class Notification implements Serializable {
     public String title;
     private String body;
     private String sender;
@@ -21,7 +21,8 @@ public class NotificationJ implements Serializable {
      * Empty Constructor for the notification.
      * Note: Needed for firebase, DON'T REMOVE!
      */
-    public NotificationJ() { }
+    public Notification() {
+    }
 
     /**
      * Constructor for notification class.
@@ -33,7 +34,7 @@ public class NotificationJ implements Serializable {
      * @param recipient String variable for the recipient username
      * @param read Boolean variable to show if the user has read the notification
      */
-    public NotificationJ(String title, String body, String sender, Timestamp timestamp, String eventID, String recipient, boolean read) {
+    public Notification(String title, String body, String sender, Timestamp timestamp, String eventID, String recipient, boolean read) {
         this.title = title;
         this.body = body;
         this.sender = sender;

@@ -38,7 +38,7 @@ public class NotificationRepositoryTest {
     Task<DocumentReference> mockTask;
 
     private NotificationRepository notificationRepository;
-    private NotificationJ notification;
+    private Notification notification;
 
     /**
      * Sets up the NotificationRepository and Firestore mocks before each test.
@@ -47,7 +47,7 @@ public class NotificationRepositoryTest {
     public void setUp() {
         notificationRepository = new NotificationRepository(mockDb);
 
-        notification = new NotificationJ(
+        notification = new Notification(
                 "Test Title",
                 "Body",
                 "sender123",

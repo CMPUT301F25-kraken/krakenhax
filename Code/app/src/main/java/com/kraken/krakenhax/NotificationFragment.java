@@ -29,7 +29,7 @@ import java.util.List;
  */
 public class NotificationFragment extends Fragment {
     private RecyclerView rv;
-    private NotifAdapterS adapter;
+    private NotifAdapter adapter;
     private ListenerRegistration notifListener;
     private FirebaseFirestore db;
     private Profile currentUser;
@@ -68,7 +68,7 @@ public class NotificationFragment extends Fragment {
         rv = view.findViewById(R.id.recyclerNotifications);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        adapter = new NotifAdapterS(notif -> {
+        adapter = new NotifAdapter(notif -> {
             openEvent(notif);
 
         });
@@ -104,7 +104,7 @@ public class NotificationFragment extends Fragment {
      *
      * @param notif the notification to open the event for
      */
-    private void openEvent(NotificationJ notif) {
+    private void openEvent(Notification notif) {
         String eventId = notif.getEventID();
 
         if (eventId == null || eventId.isEmpty()) {
@@ -161,9 +161,9 @@ public class NotificationFragment extends Fragment {
 
                     Log.d("firestore", "Notifications docs: " + snap.size());
                     if (e != null || snap == null) return;
-                    List<NotificationJ> list = new ArrayList<>();
+                    List<Notification> list = new ArrayList<>();
                     for (DocumentSnapshot doc : snap.getDocuments()) {
-                        NotificationJ n = doc.toObject(NotificationJ.class);
+                        Notification n = doc.toObject(Notification.class);
                         if (n == null) {
                             Log.w("Firestore", "toObject returned null for doc " + doc.getId());
                             continue;

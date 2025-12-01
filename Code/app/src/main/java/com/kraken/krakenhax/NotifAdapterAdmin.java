@@ -22,8 +22,8 @@ import java.util.Locale;
 /**
  * ArrayAdapter to display a list of all notifications to the admin.
  */
-public class NotifAdapterAdmin extends ArrayAdapter<NotificationJ> {
-    public ArrayList<NotificationJ> notifList;
+public class NotifAdapterAdmin extends ArrayAdapter<Notification> {
+    public ArrayList<Notification> notifList;
     public TextView title;
     public TextView recipient;
     public TextView dateV;
@@ -34,7 +34,7 @@ public class NotifAdapterAdmin extends ArrayAdapter<NotificationJ> {
      * @param context Gets the context for where the list is being generated.
      * @param notifList Requires an arrayList of notifications to pull from.
      */
-    public NotifAdapterAdmin(Context context, ArrayList<NotificationJ> notifList) {
+    public NotifAdapterAdmin(Context context, ArrayList<Notification> notifList) {
         super(context,0, notifList);
         this.notifList = notifList;
 
@@ -64,7 +64,7 @@ public class NotifAdapterAdmin extends ArrayAdapter<NotificationJ> {
         dateV = view.findViewById(R.id.DateView);
         message = view.findViewById(R.id.MessageDisplay);
 
-        NotificationJ notification = getItem(position);
+        Notification notification = getItem(position);
         assert notification != null;
 
         String recipientUsername = notification.getRecipient();

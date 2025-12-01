@@ -171,7 +171,14 @@ public class EventFragment extends Fragment {
             setEventPoster(eventImage);
             updateEventInFirestore();
         });
-
+        Button details = view.findViewById(R.id.details);
+        details.setOnClickListener(v-> {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("How the lottery works?")
+                    .setMessage("When you signup for this event, you get waitlisted. After the signup deadline the organizer triggers lottery and a previously specified amount of people are randomly selected. If you are selected you will get a notification and you can either accept or deny. If you're not accepted, dont worry, there might still be a chance if someone else denies!")
+                    .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                    .show();
+        });
         // Set up the back button
         Button buttonBack = view.findViewById(R.id.button_back);
         buttonBack.setOnClickListener(v -> navController.popBackStack());
@@ -387,6 +394,8 @@ public class EventFragment extends Fragment {
                 if (currentUser.getType().equals("Admin")) {
                     buttonSignup.setVisibility(View.GONE);
                     deleteButton.setVisibility(View.VISIBLE);
+                }else {
+                    deleteButton.setVisibility(View.GONE);
                 }
 
                 if (event.getWonList().contains(currentUser)) {
@@ -428,7 +437,7 @@ public class EventFragment extends Fragment {
                                 }
                             });
                             Profile organizer = profileList.get(0);
-                            NotificationJ notification = new NotificationJ(
+                            Notification notification = new Notification(
                                     "You cancelled your spot",
                                     "You have cancelled your participation in " + event.getTitle() + ".",
                                     organizer.getUsername(),          // sender = organizer / event owner
