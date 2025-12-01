@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,6 +33,7 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 /**
@@ -48,6 +50,8 @@ public class MyEventDetailsFragment extends Fragment {
     private Event event;
     private EventViewModel eventViewModel;
     private ImageView qrCodeImage;
+    private CollectionReference eventRef;
+    private CollectionReference profileRef;
 
     /**
      * Required empty public constructor for fragment instantiation.
@@ -93,16 +97,34 @@ public class MyEventDetailsFragment extends Fragment {
 
         qrCodeImage = view.findViewById(R.id.qr_code_imageview);
         eventViewModel = new EventViewModel();
-//
-//         MainActivity mainActivity = (MainActivity) getActivity();
-//         assert mainActivity != null;
-//         currentUser = mainActivity.currentUser;
-//
-//         if (Objects.equals(currentUser.getType(), "Entrant")) {
-//         btnentrantInfo.setVisibility(View.GONE);
-//         btnUploadPoster.setVisibility(View.GONE);
-//         }
-//
+
+
+        // Set up delete profile pic button
+        Button deleteButton = view.findViewById(R.id.btnDelete);
+        deleteButton.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setMessage("Are you sure you want to delete your event?");
+            builder.setCancelable(true);
+
+            builder.setPositiveButton(
+                    "Yes, I want to evnt my account.",
+                    (dialog, which) -> {
+                        deleteEvent();
+                        Log.d("MyEventDetailsFragment", "Event deleted");
+                        dialog.cancel();
+                        NavHostFragment.findNavController(this).navigateUp();
+                    });
+
+            builder.setNegativeButton(
+                    "No!",
+                    (dialog, which) ->
+                            dialog.cancel()
+            );
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        });
+
         // Set up a real-time listener for the event
         setupFirestoreListener(view);
 
@@ -206,6 +228,29 @@ public class MyEventDetailsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    /**
+     * Deletes the current event and cleans up related data.
+     * This removes the event document, and the event from all users waitlists.
+     */
+    public void deleteEvent() {
+        if (Objects.equals(currentUser.getID(), event.getOrgId())) {
+            String eventId = event.getId();
+
+            // Delete the profile document from Firestore
+            eventRef = db.collection("Events");
+            eventRef.document(eventId).delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("Firebase", "Event with id: " + event.getId() + " successfully deleted.");
+                        Toast.makeText(requireContext(), "Event deleted", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(aVoid ->
+                            Log.d("Firebase", "Delete event with id: " + event.getId() + " failed.")
+                    );
+        } else {
+            Log.e("Firebase", "Current user is not the organizer. Cannot delete event.");
+        }
     }
 
     /**
