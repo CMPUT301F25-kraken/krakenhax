@@ -13,6 +13,7 @@ import com.google.firebase.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 
 
 public class HistoryRecyclerViewAdapter extends RecyclerView.Adapter<HistoryRecyclerViewAdapter.MyViewHolder> {
@@ -71,7 +72,7 @@ public class HistoryRecyclerViewAdapter extends RecyclerView.Adapter<HistoryRecy
         // Use eventViewModel and profileViewModel provided by the Activity (may be null in some edge cases)
 
         // Helper fallback text when we can't resolve names
-        java.util.function.Supplier<String> fallback = () -> String.format("%s Related event ID: %s Related profile ID: %s", action.getAction(), action.getAssociatedEventID(), action.getAssociatedUserID());
+        Supplier<String> fallback = () -> String.format("%s Related event ID: %s Related profile ID: %s", action.getAction(), action.getAssociatedEventID(), action.getAssociatedUserID());
 
         switch (action.getAction()) {
             // From entrants perspective

@@ -106,11 +106,11 @@
             app:layout_constraintTop_toBottomOf="@+id/entrant_type" />
 
         <Button
-            android:id="@+id/exportBtn"
+            android:id="@+id/button_export"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="Export FInal List"
+            android:text="Export Final List"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

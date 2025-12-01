@@ -344,6 +344,10 @@ public class CreateEventFragment extends Fragment {
                     Toast.makeText(getContext(), "Please select a timeframe for the event", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (event.getDateTime() == null) {
+                    Toast.makeText(getContext(), "Please select a date and time for the event", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 // All checks passed, proceed with saving the event
                 try {

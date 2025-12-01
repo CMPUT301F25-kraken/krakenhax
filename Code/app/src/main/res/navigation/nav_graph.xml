@@ -200,6 +200,9 @@
         <action
             android:id="@+id/action_TypeSelector_to_SignUp"
             app:destination="@+id/signup" />
+        <action
+            android:id="@+id/action_TypeSelector_to_login"
+            app:destination="@+id/LoginFragment"/>
     </fragment>
 
     <!-- Destination for Sign Up Fragment -->
@@ -216,6 +219,9 @@
         <action
             android:id="@+id/action_SignUp_to_Events"
             app:destination="@+id/EventsFragment" />
+        <action
+            android:id="@+id/action_signup_to_TypeSelection"
+            app:destination="@+id/selection_type"/>
     </fragment>
 
     <!-- Destination for Event Fragment -->
