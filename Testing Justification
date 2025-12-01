@@ -4,7 +4,7 @@ This project includes a mix of **unit tests**, **database/repository tests using
 
 ---
 
-## 1. Local Unit Tests (`src/test/java/com/kraken/krakenhax`)
+## 1. Local Unit Tests
 
 ### 1.1 `ProfileTest`
 
@@ -160,7 +160,7 @@ This is the DB layer behind sending and viewing notifications for winners, loser
 
 ---
 
-## 3. Instrumented / UI Tests (`src/androidTest/java/com/kraken/krakenhax`)
+## 3. Instrumented / UI Tests
 
 ### 3.1 `ExampleInstrumentedTest`
 
@@ -187,7 +187,7 @@ This combination still exercises the **same logic** that the fragments call and 
 
 ---
 
-## 4. Mapping to CMPUT 301 Requirements
+## 4. Mapping to CMPUT 301 Project Requirements
 
 | Requirement Type                    | Files That Cover It                                                               | Notes                                                                                                                    |
 | ----------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
