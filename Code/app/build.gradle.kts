@@ -82,8 +82,7 @@ dependencies {
 
     // For QR Codes
     implementation(libs.zxing.android.embedded)
-    implementation("com.google.android.material:material:1.12.0")
-
+    implementation("com.google.android.material:material:1.13.0")
     // Test implementation
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
@@ -98,4 +97,5 @@ dependencies {
 
     // FragmentScenario needs debugImplementation
     debugImplementation(libs.androidx.fragment.testing)
+
 }
