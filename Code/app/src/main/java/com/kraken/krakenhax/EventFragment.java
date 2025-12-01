@@ -387,6 +387,8 @@ public class EventFragment extends Fragment {
                 if (currentUser.getType().equals("Admin")) {
                     buttonSignup.setVisibility(View.GONE);
                     deleteButton.setVisibility(View.VISIBLE);
+                }else {
+                    deleteButton.setVisibility(View.GONE);
                 }
 
                 if (event.getWonList().contains(currentUser)) {
