@@ -57,6 +57,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:backgroundTint="@color/declineButton"
+        android:text="Delete Event"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imgPoster"
         android:layout_width="150dp"
@@ -107,22 +119,6 @@
         android:text="Event Description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
-
-    <CheckBox
-        android:id="@+id/cb_bookmark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:outlineAmbientShadowColor="@color/LoginButtonColor"
-        android:outlineSpotShadowColor="@color/LoginButtonColor"
-        android:shadowColor="@color/LoginButtonColor"
-        android:text="Bookmark"
-        android:textColorHighlight="@color/LoginButtonColor"
-        android:textColorHint="@color/LoginButtonColor"
-        android:textColorLink="@color/LoginButtonColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_entrant_info"
