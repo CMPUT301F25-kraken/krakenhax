@@ -72,13 +72,14 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_events">
 
 
-    <androidx.recyclerview.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_events_list"
-            android:layout_width="410dp"
-            android:layout_height="581dp"
-            android:layout_marginTop="72dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/filter_events_text" />
 
         <ImageButton
             android:id="@+id/filter_events_button"
