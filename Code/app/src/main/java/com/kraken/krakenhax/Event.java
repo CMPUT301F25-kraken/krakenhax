@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+
 /**
  * Represents an event in the KrakenHax application.
  * Stores event metadata such as title, categories, timeframe, description, location,
@@ -68,6 +69,7 @@ public class Event implements Parcelable {
 
     /**
      * Constructor for Event class with title argument.
+     * @param title the title of the event
      */
     public Event(String title) {
         this.title = title;
@@ -166,8 +168,8 @@ public class Event implements Parcelable {
      *        an ArrayList of Strings representing the event categories
      * @throws IllegalArgumentException
      *        if the categories ArrayList is more than 5
-     * TODO: decide whether 5 categories is enough, or too many??
      */
+    //TODO: decide whether 5 categories is enough, or too many??
     public void setCategories(ArrayList<String> categories) {
         if (categories.size() > 5) {
             throw new IllegalArgumentException("Categories cannot be more than 5");
@@ -186,8 +188,8 @@ public class Event implements Parcelable {
      *        a String representing the category to be added
      * @throws IllegalArgumentException
      *        if the categories ArrayList is more than 5
-     *        TODO: decide whether 5 categories is enough, or too many??
      */
+    //TODO: decide whether 5 categories is enough, or too many??
     public void addCategory(String category) {
         if (categories.size() < 5 && availableCategories.contains(category)) {
             categories.add(category);
@@ -311,20 +313,18 @@ public class Event implements Parcelable {
     }
 
     /**
-     * Returns the poster of the event.
+     * Returns the URL for the event poster.
      * @return
-     *        a Bitmap representing the event's poster
-     * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
+     *        a String of the event poster's URL
      */
     public String getPoster() {
         return poster;
     }
 
     /**
-     * Sets the poster of the event.
+     * Sets the URL of the event poster.
      * @param poster
-     *        a Bitmap representing the event's poster
-     * TODO: Research Bitmaps to see if any other logic needed for getter and setter.
+     *        a String of the event poster's URL
      */
     public void setPoster(String poster) {
         this.poster = poster;
@@ -359,7 +359,6 @@ public class Event implements Parcelable {
      *
      * @return the ArrayList for this event's CancelList
      */
-
     public ArrayList<Profile> getCancelList() { return cancelList; }
 
     /**
@@ -368,7 +367,6 @@ public class Event implements Parcelable {
      *
      * @return the ArrayList for this event's WonList
      */
-
     public ArrayList<Profile> getWonList() { return wonList; }
 
     /**
@@ -377,7 +375,6 @@ public class Event implements Parcelable {
      *
      * @return the ArrayList for this event's LostList
      */
-
     public ArrayList<Profile> getLostList() { return lostList; }
 
     /**
@@ -747,7 +744,6 @@ public class Event implements Parcelable {
      *
      * @param in The Parcel in which the object should be written.
      */
-
     protected Event(Parcel in) {
         title = in.readString();
         categories = in.createStringArrayList();
@@ -766,7 +762,6 @@ public class Event implements Parcelable {
      * <p>This is required for passing {@code Event} objects between Android components,
      * such as when navigating between fragments or activities.</p>
      */
-
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
@@ -788,7 +783,6 @@ public class Event implements Parcelable {
      * @param dest  The Parcel object in which the Event data should be written.
      * @param flags Additional flags about how the object should be written.
      */
-
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(title);

@@ -203,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Creates the notification channel used for app notifications on Android 8.0 and above.
+     * Requests the POST_NOTIFICATIONS permission if it has not been granted.
+     */
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -274,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
             if (destinationId == R.id.LoginFragment || destinationId == R.id.signup || destinationId == R.id.selection_type) {
                 bottom_navigation_bar.setVisibility(View.GONE);
                 admin_navigation_bar.setVisibility(View.GONE);
-            } else if (destinationId == R.id.EventsFragment || (currentUser.getType().equals("Entrant"))|| currentUser.getType().equals("Organizer")) {
+            } else if (destinationId == R.id.EventsFragment || (currentUser.getType().equals("Entrant")) || currentUser.getType().equals("Organizer")) {
                 NavigationUI.setupWithNavController(bottom_navigation_bar, navController);
                 bottom_navigation_bar.setVisibility(View.VISIBLE);
             } else if (destinationId == R.id.adminListFragment) {
@@ -294,12 +298,24 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Called when the activity has completed its creation. Handles any incoming
+     * intent, such as deep links or QR code scan results.
+     *
+     * @param savedInstanceState the previously saved state, or {@code null} if none.
+     */
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         handleIntent(getIntent()); //Handle the incoming intent for QR code scanning
     }
 
+    /**
+     * Called when a new intent is delivered to this activity while it is already running.
+     * Ensures that deep links or QR code intents are handled properly.
+     *
+     * @param intent the new {@link Intent} delivered to the activity.
+     */
     @Override
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
@@ -307,6 +323,13 @@ public class MainActivity extends AppCompatActivity {
         handleIntent(intent);
     }
 
+    /**
+     * Handles incoming intents for deep links or QR code scans.
+     * If the intent contains an event ID, navigates to the login fragment
+     * with the event ID passed as an argument.
+     *
+     * @param intent the {@link Intent} to handle, which may contain an event deep link.
+     */
     private void handleIntent(Intent intent) {
         if (intent != null && intent.ACTION_VIEW.equals(intent.getAction())) {
             android.net.Uri data = intent.getData();

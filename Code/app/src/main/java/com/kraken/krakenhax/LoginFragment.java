@@ -318,4 +318,5 @@ public class LoginFragment extends Fragment {
             return event;
         });
     }
+
 }

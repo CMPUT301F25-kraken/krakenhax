@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,8 +14,7 @@ import androidx.annotation.Nullable;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
 
 /**
  * Profile adapter for the Admin list of profiles.
@@ -24,7 +22,6 @@ import java.util.Set;
 public class AdminProfileAdapter extends ArrayAdapter<Profile> {
     private ArrayList<Profile> profiles;
     private Profile profile;
-
 
 
     /**
@@ -108,9 +105,5 @@ public class AdminProfileAdapter extends ArrayAdapter<Profile> {
                     .into(profilePic);
         }
     }
-
-
-
-
 
 }

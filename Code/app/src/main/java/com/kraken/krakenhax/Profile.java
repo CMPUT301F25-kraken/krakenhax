@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
  * Represents a user profile within the KrakenHax application.
  * Profiles can belong to entrants, organizers, or administrators.
@@ -38,10 +39,12 @@ public class Profile implements Parcelable {
     /**
      * Constructs a new user profile with the given details.
      *
-     * @param username the user's username
-     * @param password the user's password
-     * @param type     the role type (entrant, organizer, admin)
-     * @param email    the user's email address
+     * @param ID          the user's ID
+     * @param username    the user's username
+     * @param password    the user's password
+     * @param type        the role type (entrant, organizer, admin)
+     * @param email       the user's email address
+     * @param phoneNumber the user's phone number (optional)
      * @throws IllegalArgumentException if any parameter is null or empty
      */
     public Profile(String ID, String username, String password, String type, String email, String phoneNumber) {
@@ -340,13 +343,17 @@ public class Profile implements Parcelable {
         return dateCreated;
     }
 
+    // Utility Methods
+
     /**
      * Checks if the given object is equal to this profile.
+     * <p>
+     * Two profiles are considered equal if they have the same ID and username.
      *
-     * @param o
-     * @return true if the objects are equal, false otherwise
+     * @param o the object to compare with this profile
+     * @return {@code true} if the given object is a {@code Profile} with the same ID and username,
+     * {@code false} otherwise
      */
-    // Utility Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -452,4 +459,5 @@ public class Profile implements Parcelable {
         }
         this.history.add(newAction);
     }
+
 }

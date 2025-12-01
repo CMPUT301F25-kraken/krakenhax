@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+
 /**
  * Selects the type of user. Entrants or organizers.
  * Packages the type into a bundle and sends it to the SignUpFragment with safe args.
