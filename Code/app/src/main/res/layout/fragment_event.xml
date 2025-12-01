@@ -19,6 +19,15 @@
         app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
         app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
 
+    <Button
+        android:id="@+id/details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/LoginButtonColor"
+        android:text="How it works?"
+        app:layout_constraintBottom_toBottomOf="@+id/button_back"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <TextView
         android:id="@+id/tv_location_field"
         android:layout_width="wrap_content"
@@ -146,22 +155,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
-
-    <CheckBox
-        android:id="@+id/cb_bookmark"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:outlineAmbientShadowColor="@color/LoginButtonColor"
-        android:outlineSpotShadowColor="@color/LoginButtonColor"
-        android:shadowColor="@color/LoginButtonColor"
-        android:text="Bookmark"
-        android:textColorHighlight="@color/LoginButtonColor"
-        android:textColorHint="@color/LoginButtonColor"
-        android:textColorLink="@color/LoginButtonColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView5"
