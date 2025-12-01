@@ -7,28 +7,18 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import com.google.android.material.datepicker.MaterialDatePicker;
-
-import com.google.firebase.Timestamp;
-
-
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-
-import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.firebase.Timestamp;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-
 
 /**
  * Dialog fragment that displays a chip list of categories and lets the user
@@ -119,23 +109,23 @@ public class FilterDialogFragment extends DialogFragment {
 
 
         for (String category : categories) {
-           Chip chip = new Chip(getContext());
-           chip.setText(category);
-           chip.setCheckable(true);
-           chip.setClickable(true);
-           chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-               int checkedCount = 0;
-               for (int i = 0; i < chipGroup.getChildCount(); i++) {
-                   if (((Chip) chipGroup.getChildAt(i)).isChecked()) {
-                       checkedCount++;
-                   }
-               }
-               if (isChecked && checkedCount > MAX_CATEGORIES) {
-                   buttonView.setChecked(false);
-                   Toast.makeText(getContext(), "Cannot select more than 5 categories", Toast.LENGTH_SHORT).show();
-               }
-           });
-           chipGroup.addView(chip);
+            Chip chip = new Chip(getContext());
+            chip.setText(category);
+            chip.setCheckable(true);
+            chip.setClickable(true);
+            chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int checkedCount = 0;
+                for (int i = 0; i < chipGroup.getChildCount(); i++) {
+                    if (((Chip) chipGroup.getChildAt(i)).isChecked()) {
+                        checkedCount++;
+                    }
+                }
+                if (isChecked && checkedCount > MAX_CATEGORIES) {
+                    buttonView.setChecked(false);
+                    Toast.makeText(getContext(), "Cannot select more than 5 categories", Toast.LENGTH_SHORT).show();
+                }
+            });
+            chipGroup.addView(chip);
         }
 
         return new AlertDialog.Builder(requireContext())

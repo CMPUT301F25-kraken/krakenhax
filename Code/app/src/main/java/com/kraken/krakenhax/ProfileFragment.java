@@ -216,9 +216,13 @@ public class ProfileFragment extends Fragment {
 
         // Set up history button
         ImageButton buttonHistory = view.findViewById(R.id.button_history);
-        buttonHistory.setOnClickListener(
-                v -> navController.navigate(R.id.action_ProfileFragment_to_HistoryFragment)
-        );
+        if (profile.getType().equals("Admin")) {
+            buttonHistory.setVisibility(View.INVISIBLE);
+        } else {
+            buttonHistory.setOnClickListener(
+                    v -> navController.navigate(R.id.action_ProfileFragment_to_HistoryFragment)
+            );
+        }
 
         return view;
     }

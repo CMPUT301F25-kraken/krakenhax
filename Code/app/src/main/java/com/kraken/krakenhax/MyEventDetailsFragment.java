@@ -25,14 +25,12 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -250,8 +248,7 @@ public class MyEventDetailsFragment extends Fragment {
                     .addOnFailureListener(aVoid ->
                             Log.d("Firebase", "Delete event with id: " + event.getId() + " failed.")
                     );
-        } else
-        {
+        } else {
             Log.e("Firebase", "Current user is not the organizer. Cannot delete event.");
         }
     }

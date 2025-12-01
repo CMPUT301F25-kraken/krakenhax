@@ -1,247 +1,257 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout4"
+    android:id="@+id/EventFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/loginBackground"
-    tools:context=".EventFragment">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/tv_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Location:"
-        app:layout_constraintEnd_toEndOf="@+id/tv_registration_info"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frameLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/loginBackground"
+        tools:context=".EventFragment">
 
-    <Button
-        android:id="@+id/details"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/LoginButtonColor"
-        android:text="How it works?"
-        app:layout_constraintBottom_toBottomOf="@+id/button_back"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Location:"
+            app:layout_constraintEnd_toEndOf="@+id/tv_registration_info"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
+            app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
 
-    <TextView
-        android:id="@+id/tv_location_field"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="20dp"
-        android:text="Example Location"
-        app:layout_constraintStart_toEndOf="@+id/tv_location"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />
+        <Button
+            android:id="@+id/details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/LoginButtonColor"
+            android:text="How it works?"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tv_event_name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Event Name"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/event_image"
-        app:layout_constraintTop_toTopOf="@+id/event_image" />
+        <TextView
+            android:id="@+id/tv_location_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Example Location"
+            app:layout_constraintStart_toEndOf="@+id/tv_location"
+            app:layout_constraintTop_toTopOf="@+id/tv_location" />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/event_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="35dp"
-        android:background="@color/white"
-        android:scaleType="centerCrop"
-        android:src="@drawable/outline_attractions_100"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_back"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.RoundedImageView" />
+        <TextView
+            android:id="@+id/tv_event_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Event Name"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/event_image"
+            app:layout_constraintTop_toTopOf="@+id/event_image" />
 
-    <Button
-        android:id="@+id/button_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:backgroundTint="@color/LoginButtonColor"
-        android:text="Back"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/event_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/white"
+            android:scaleType="centerCrop"
+            android:src="@drawable/outline_attractions_100"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_back"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.RoundedImageView" />
+
+        <Button
+            android:id="@+id/button_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:backgroundTint="@color/LoginButtonColor"
+            android:text="Back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-    <TextView
-        android:id="@+id/tv_date_time"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:text="Date and Time"
-        app:layout_constraintBottom_toTopOf="@+id/button_signup"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/event_image"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
+        <TextView
+            android:id="@+id/tv_date_time"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="4dp"
+            android:text="Date and Time"
+            app:layout_constraintBottom_toTopOf="@+id/button_signup"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/event_image"
+            app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
 
-    <Button
-        android:id="@+id/button_signup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="Sign Up"
-        android:backgroundTint="@color/LoginButtonColor"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/event_image"
-        app:layout_constraintStart_toEndOf="@+id/event_image" />
+        <Button
+            android:id="@+id/button_signup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="@color/LoginButtonColor"
+            android:text="Sign Up"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/event_image"
+            app:layout_constraintStart_toEndOf="@+id/event_image" />
 
-    <Button
-        android:id="@+id/button_accept"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:outlineAmbientShadowColor="@color/acceptButton"
-        android:outlineSpotShadowColor="@color/acceptButton"
-        android:shadowColor="@color/acceptButton"
-        android:text="Accept"
-        android:textColorHighlight="@color/acceptButton"
-        android:textColorHint="@color/acceptButton"
-        android:textColorLink="@color/acceptButton"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/event_image"
-        app:layout_constraintStart_toEndOf="@+id/event_image" />
+        <Button
+            android:id="@+id/button_accept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:outlineAmbientShadowColor="@color/acceptButton"
+            android:outlineSpotShadowColor="@color/acceptButton"
+            android:shadowColor="@color/acceptButton"
+            android:text="Accept"
+            android:textColorHighlight="@color/acceptButton"
+            android:textColorHint="@color/acceptButton"
+            android:textColorLink="@color/acceptButton"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/event_image"
+            app:layout_constraintStart_toEndOf="@+id/event_image" />
 
-    <Button
-        android:id="@+id/button_decline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:outlineAmbientShadowColor="@color/declineButton"
-        android:outlineSpotShadowColor="@color/declineButton"
-        android:shadowColor="@color/declineButton"
-        android:text="Decline"
-        android:textColorHighlight="@color/declineButton"
-        android:textColorHint="@color/declineButton"
-        android:textColorLink="@color/declineButton"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/button_accept"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button_accept" />
+        <Button
+            android:id="@+id/button_decline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:outlineAmbientShadowColor="@color/declineButton"
+            android:outlineSpotShadowColor="@color/declineButton"
+            android:shadowColor="@color/declineButton"
+            android:text="Decline"
+            android:textColorHighlight="@color/declineButton"
+            android:textColorHint="@color/declineButton"
+            android:textColorLink="@color/declineButton"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/button_accept"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/button_accept" />
 
-    <TextView
-        android:id="@+id/tv_registration_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginEnd="28dp"
-        android:text="Time until registration closes"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_signup" />
+        <TextView
+            android:id="@+id/tv_registration_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="28dp"
+            android:text="Time until registration closes"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/button_signup" />
 
-    <TextView
-        android:id="@+id/tv_event_description"
-        android:layout_width="182dp"
-        android:layout_height="169dp"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="28dp"
-        android:text="Event Description"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
+        <TextView
+            android:id="@+id/tv_event_description"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:text="Event Description"
+            app:layout_constraintBottom_toBottomOf="@+id/qr_imageview"
+            app:layout_constraintEnd_toStartOf="@+id/qr_imageview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
 
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:text="Organized by: "
-        android:textSize="20sp"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="@+id/tv_event_description"
-        app:layout_constraintTop_toBottomOf="@+id/tv_waitlist" />
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Organized by: "
+            android:textSize="20sp"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="@+id/tv_event_description"
+            app:layout_constraintTop_toBottomOf="@+id/categories_event_textview" />
 
-    <Button
-        android:id="@+id/button_event_organizer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:backgroundTint="@color/LoginButtonColor"
-        android:text="Event Organizer"
-        app:layout_constraintStart_toEndOf="@+id/textView5"
-        app:layout_constraintTop_toTopOf="@+id/textView5" />
+        <Button
+            android:id="@+id/button_event_organizer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:backgroundTint="@color/LoginButtonColor"
+            android:text="Event Organizer"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintTop_toTopOf="@+id/textView5" />
 
-    <Button
-        android:id="@+id/EventDeleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:text="Delete Event"
-        android:visibility="gone"
-        android:backgroundTint="@color/LoginButtonColor"
-        app:layout_constraintBottom_toTopOf="@+id/button_event_organizer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/tv_waitlist_entry"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_description"
-        app:layout_constraintVertical_bias="0.49" />
+        <Button
+            android:id="@+id/EventDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/LoginButtonColor"
+            android:text="Delete Event"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/button_event_organizer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/tv_waitlist_entry"
+            app:layout_constraintTop_toBottomOf="@+id/tv_event_description"
+            app:layout_constraintVertical_bias="0.49" />
 
-    <TextView
-        android:id="@+id/tv_waitlist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Waitlist:"
-        app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
-        app:layout_constraintTop_toBottomOf="@+id/tv_location" />
+        <TextView
+            android:id="@+id/tv_waitlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Waitlist:"
+            app:layout_constraintStart_toStartOf="@+id/tv_registration_info"
+            app:layout_constraintTop_toBottomOf="@+id/tv_location" />
 
-    <TextView
-        android:id="@+id/tv_waitlist_entry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:text="on waitlist / waitlist limit"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_waitlist"
-        app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
-        app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
+        <TextView
+            android:id="@+id/tv_waitlist_entry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="on waitlist / waitlist limit"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_waitlist"
+            app:layout_constraintStart_toEndOf="@+id/tv_waitlist"
+            app:layout_constraintTop_toTopOf="@+id/tv_waitlist" />
 
-    <ImageView
-        android:id="@+id/qr_imageview"
-        android:layout_width="169dp"
-        android:layout_height="170dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="28dp"
-        android:src="@drawable/outline_beach_access_100"
-        app:layout_constraintStart_toEndOf="@+id/tv_event_description"
-        app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
+        <ImageView
+            android:id="@+id/qr_imageview"
+            android:layout_width="125dp"
+            android:layout_height="125dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/outline_beach_access_100"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_registration_info" />
 
-    <Button
-        android:id="@+id/delete_event_Photo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete Event Photo"
-        android:visibility="gone"
-        android:backgroundTint="@color/LoginButtonColor"
-        app:layout_constraintEnd_toEndOf="@+id/event_image"
-        app:layout_constraintStart_toStartOf="@+id/event_image"
-        app:layout_constraintTop_toBottomOf="@+id/event_image" />
+        <Button
+            android:id="@+id/delete_event_Photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/LoginButtonColor"
+            android:text="Delete Event Photo"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/event_image"
+            app:layout_constraintStart_toStartOf="@+id/event_image"
+            app:layout_constraintTop_toBottomOf="@+id/event_image" />
 
-    <TextView
-        android:id="@+id/categories_event_textview"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="28dp"
-        android:text="Categories: None"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_waitlist" />
+        <TextView
+            android:id="@+id/categories_event_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="28dp"
+            android:text="Categories: None"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_waitlist" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

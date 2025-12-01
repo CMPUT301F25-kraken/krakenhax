@@ -68,7 +68,9 @@
         android:layout_height="47dp"
         android:background="@drawable/rounded_edittext_background"
         android:text="@string/usernameProfile"
+        android:textAlignment="textStart"
         android:textColor="@color/loginTextColor"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userView" />
@@ -80,6 +82,7 @@
         android:background="@drawable/rounded_edittext_background"
         android:text="TextView"
         android:textColor="@color/loginTextColor"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_email" />
@@ -91,7 +94,9 @@
         android:background="@drawable/rounded_edittext_background"
         android:text="TextView"
         android:textColor="@color/loginTextColor"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_phone_num" />
 

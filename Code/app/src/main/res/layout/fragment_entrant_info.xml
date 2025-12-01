@@ -15,11 +15,11 @@
             android:id="@+id/constraintLayout"
             android:layout_width="138dp"
             android:layout_height="39dp"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="5dp"
             android:background="@color/LoginButtonColor"
+            app:layout_constraintBottom_toBottomOf="@+id/entrant_type"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="@+id/entrant_type">
 
             <Spinner
                 android:id="@+id/spinner_list"
@@ -29,15 +29,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/backBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
             android:backgroundTint="@color/LoginButtonColor"
             android:text="Back"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,15 +44,19 @@
 
         <TextView
             android:id="@+id/event_title"
-            android:layout_width="144dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
             android:autoSizeMaxTextSize="24sp"
             android:autoSizeMinTextSize="10sp"
             android:autoSizeStepGranularity="2sp"
             android:autoSizeTextType="uniform"
             android:text="Event Name"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/backBtn"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,7 +65,7 @@
             android:layout_width="210dp"
             android:layout_height="46dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="5dp"
             android:autoSizeMaxTextSize="22sp"
             android:autoSizeMinTextSize="12sp"
             android:autoSizeStepGranularity="2sp"
@@ -79,37 +82,41 @@
             android:id="@+id/btn_notify"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
             android:backgroundTint="@color/LoginButtonColor"
             android:text="Notify"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/entrant_type" />
 
         <Button
             android:id="@+id/btn_map"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
             android:backgroundTint="@color/LoginButtonColor"
             android:text="Map"
             app:layout_constraintEnd_toStartOf="@+id/btn_notify"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/entrant_type" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/profile_recycler"
-            android:layout_width="407dp"
-            android:layout_height="537dp"
-            android:layout_marginTop="12dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/entrant_type" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_notify"
+            app:layout_constraintVertical_bias="1.0" />
 
         <Button
             android:id="@+id/button_export"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="5dp"
             android:text="Export Final List"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

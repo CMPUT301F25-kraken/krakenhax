@@ -7,8 +7,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 /**
  * Unit tests for the Event class.
  * Focus on pure Java behaviour: title, categories, and waitlist capacity.
