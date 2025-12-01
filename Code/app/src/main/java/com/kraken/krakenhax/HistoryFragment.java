@@ -29,21 +29,44 @@ public class HistoryFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<Action> history;
 
+    /**
+     * Default constructor required for fragment instantiation.
+     */
     public HistoryFragment() {
         // Required empty public constructor
     }
 
+    /**
+     * Called to do initial creation of the fragment.
+     *
+     * @param savedInstanceState previously saved instance state, or {@code null}.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+    /**
+     * Inflates and returns the fragment's view hierarchy.
+     *
+     * @param inflater           layout inflater used to inflate the view.
+     * @param container          optional parent view that the fragment's UI should attach to.
+     * @param savedInstanceState previously saved instance state, or {@code null}.
+     * @return the root view for the fragment's layout.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
+    /**
+     * Called immediately after {@link #onCreateView} when the fragment's view has been created.
+     * Sets up navigation, recycler view, and Firestore listener.
+     *
+     * @param view               the root view returned by {@link #onCreateView}.
+     * @param savedInstanceState previously saved instance state, or {@code null}.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -83,6 +106,11 @@ public class HistoryFragment extends Fragment {
         startFirestoreListener(db);
     }
 
+    /**
+     * Starts a Firestore listener to observe changes to the current user's profile document.
+     *
+     * @param db the {@link FirebaseFirestore} instance used to attach the listener.
+     */
     private void startFirestoreListener(FirebaseFirestore db) {
         if (currentUser == null || currentUser.getID() == null) {
             return;
@@ -119,6 +147,10 @@ public class HistoryFragment extends Fragment {
 
     }
 
+    /**
+     * Updates the RecyclerView with the latest history data from the current user.
+     * The list is sorted by timestamp in descending order before being displayed.
+     */
     private void updateRecyclerView() {
         if (currentUser == null) return;
 

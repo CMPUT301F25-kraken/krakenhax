@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+
 /**
  * ArrayAdapter to display a list of all notifications to the admin.
  */
@@ -85,4 +86,5 @@ public class NotifAdapterAdmin extends ArrayAdapter<NotificationJ> {
 
         return view;
     }
+
 }

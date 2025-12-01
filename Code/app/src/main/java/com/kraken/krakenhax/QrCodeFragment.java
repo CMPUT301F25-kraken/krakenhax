@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,22 +20,40 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.zxing.WriterException;
 
-public class QrCodeFragment extends Fragment {
 
+/**
+ * Fragment that generates and displays a QR code for a selected {@link Event}.
+ * It also allows the user to save the generated QR code image and navigate back
+ * to the My Events screen.
+ */
+public class QrCodeFragment extends Fragment {
     private Event event;
     private EventViewModel eventViewModel;
     private Button saveQrButton;
-    private Button comeBackButton;
     private ImageView displayQrImageView;
     private NavController navController;
 
 
+    /**
+     * Inflates the layout used to display the QR code and its related controls.
+     *
+     * @param inflater           the LayoutInflater used to inflate the layout
+     * @param container          the parent view that the fragment's UI should be attached to
+     * @param savedInstanceState the previously saved state, if any
+     * @return the root view for this fragment's layout
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_generate_qr, container, false);
     }
 
+    /**
+     * Initializes the fragment and retrieves the {@link Event} argument used to
+     * generate the QR code.
+     *
+     * @param savedInstanceState the previously saved state, if any
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +64,19 @@ public class QrCodeFragment extends Fragment {
         event = getArguments().getParcelable("event");
     }
 
+    /**
+     * Called after the fragment's view has been created. Sets up the UI, generates
+     * and displays the QR code, requests storage permissions, and configures
+     * navigation and saving behavior.
+     *
+     * @param view the root view of the fragment's layout
+     * @param savedInstanceState the previously saved state, if any
+     */
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         saveQrButton = view.findViewById(R.id.save_qr_button);
-        comeBackButton = view.findViewById(R.id.come_back_button);
+        Button comeBackButton = view.findViewById(R.id.come_back_button);
         displayQrImageView = view.findViewById(R.id.qr_display_imageview);
         eventViewModel = new ViewModelProvider(requireActivity()).get(EventViewModel.class);
         navController = NavHostFragment.findNavController(this);
@@ -92,4 +119,6 @@ public class QrCodeFragment extends Fragment {
                 Toast.makeText(getContext(), "Sorry, cannot save your QR code. Try again.", Toast.LENGTH_SHORT).show();
             }
         });
-}}
+    }
+
+}

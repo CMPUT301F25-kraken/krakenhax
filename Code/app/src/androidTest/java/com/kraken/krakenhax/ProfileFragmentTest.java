@@ -1,16 +1,5 @@
 package com.kraken.krakenhax;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
-import android.os.Bundle;
-
-import androidx.fragment.app.testing.FragmentScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Test;
@@ -23,6 +12,10 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4.class)
 public class ProfileFragmentTest {
 
+    /**
+     * Launches {@link ProfileFragment} and verifies that the notification
+     * switch is visible and responds to a click.
+     */
     @Test
     public void testNotificationSwitchToggle() {
         // Launch ProfileFragment in isolation

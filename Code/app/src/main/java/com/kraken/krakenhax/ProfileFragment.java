@@ -104,10 +104,7 @@ public class ProfileFragment extends Fragment {
         } else {
             phoneNumberView.setText(profile.getPhoneNumber());
         }
-
-        // Set default profile picture
-//        profilePic.setImageResource(R.drawable.obama);
-
+        
         // Load profile picture
         loadProfilePic();
 
@@ -308,6 +305,10 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * Deletes the current user's account and cleans up related data.
+     * This removes the profile document, profile picture, and the user from all event lists.
+     */
     public void deleteAccount() {
         String profileID = profile.getID();
 
@@ -367,6 +368,11 @@ public class ProfileFragment extends Fragment {
         );
     }
 
+    /**
+     * Deletes events organized by the specified user and logs the deletions.
+     *
+     * @param profileID the ID of the profile whose organized events should be removed
+     */
     public void deleteEvents(String profileID) {
         // Delete events that the user has created
         List<String> deletedEventIDs = new ArrayList<String>();
@@ -382,45 +388,20 @@ public class ProfileFragment extends Fragment {
                     eventsRef.document(event.getId()).delete()
                             .addOnSuccessListener(aVoid -> Log.d("deleteAccount", "Event: " + event.getTitle() + " successfully deleted."))
                             .addOnFailureListener(e -> Log.e("deleteAccount", "Failed to delete event: " + event.getTitle() + ".", e));
-
-                    // If an event was deleted we need to check each profiles myWaitlist list and remove it if necessary
                 }
             }
 
-//            // Delete event from profiles
-//            if (!deletedEventIDs.isEmpty()) {
-//                removeEventFromProfileMyWaitlists(deletedEventIDs);
-//            }
-        }).addOnFailureListener(e -> Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e));
+        }).addOnFailureListener(
+                e -> Log.e("DeleteAccount", "Error: Cannot retrieve events in deleteAccount function.", e)
+        );
     }
 
-//    public void removeEventFromProfileMyWaitlists(List<String> deletedEventIDs) {
-//        // Remove the deleted events from each profiles myWaitlist
-//        profileRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
-//            // For each profile
-//            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-//                Profile profile = document.toObject(Profile.class);
-//                boolean isUpdated = false;
-//
-
-    /// /                // Check if the myWaitlist contains a deleted event
-    /// /                List<String> myWaitlist = profile.getMyWaitlist();
-    /// /                if (myWaitlist != null) {
-    /// /                    // Remove all deleted events from the waitlist
-    /// /                    if (myWaitlist.removeAll(deletedEventIDs)) {
-    /// /                        isUpdated = true;
-    /// /                    }
-    /// /                }
-//
-//                // Update the profile in the firestore database if it was modified
-//                if (isUpdated) {
-//                    profileRef.document(profile.getID()).update("myWaitList", myWaitlist)
-//                            .addOnSuccessListener(aVoid -> Log.d("deleteAccount", "Profile: " + profile.getUsername() + " updated."))
-//                            .addOnFailureListener(e -> Log.e("deleteAccount", "Failed to update profile: " + profile.getUsername() + ".", e));
-//                }
-//            }
-//        }).addOnFailureListener(e -> Log.e("DeleteAccount", "Error: Cannot retrieve profiles in deleteAccount function.", e));
-//    }
+    /**
+     * Signs out the current user, clears local session state, unlinks the device,
+     * and navigates away from the profile screen.
+     *
+     * @param mainActivity the hosting MainActivity whose session state is cleared
+     */
     public void signOut(MainActivity mainActivity) {
         // Clear local session immediately
         if (mainActivity != null) {

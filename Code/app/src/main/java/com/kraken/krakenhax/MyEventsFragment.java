@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -30,6 +31,7 @@ import java.util.Objects;
 public class MyEventsFragment extends Fragment {
     private FirebaseFirestore db;
     private ArrayList<Event> events;
+    private ArrayList<Event> filteredEvents;
     private MyRecyclerViewAdapter adapter;
     private Profile currentUser;
 
@@ -75,12 +77,28 @@ public class MyEventsFragment extends Fragment {
         RecyclerView recycler_view_event_list2 = view.findViewById(R.id.recycler_view_events_list2);
         recycler_view_event_list2.setLayoutManager(new LinearLayoutManager(requireContext()));
         events = new ArrayList<>();
+        filteredEvents = new ArrayList<>();
 
-        adapter = new MyRecyclerViewAdapter(events);
+        adapter = new MyRecyclerViewAdapter(filteredEvents);
         recycler_view_event_list2.setAdapter(adapter);
 
+        // Set up listener for the search bar
+        SearchView searchView = view.findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterList(newText);
+                return false;
+            }
+        });
+
         // Start the firestore listener
-        startFirestoreListener();
+        startFirestoreListener(searchView);
 
         // Set on click listener for clicking on an event
         adapter.setClickListener((v, position) -> {
@@ -108,7 +126,7 @@ public class MyEventsFragment extends Fragment {
      * It filters events to show only those created by the current user (organizer) and
      * events that the user is on any event list for.
      */
-    private void startFirestoreListener() {
+    private void startFirestoreListener(SearchView searchView) {
         CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.orderBy("dateCreated", Query.Direction.DESCENDING)
                 .addSnapshotListener((snap, e) -> {
@@ -145,9 +163,43 @@ public class MyEventsFragment extends Fragment {
                         // Sort the events from newest to oldest
                         events.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
 
+                        // Update the recycler view based on the search
+                        if (searchView != null && searchView.getQuery().length() > 0) {
+                            filterList(searchView.getQuery().toString());
+                        } else {
+                            filteredEvents.clear();
+                            filteredEvents.addAll(events);
+                        }
+
                         adapter.notifyDataSetChanged();
                     }
                 });
+    }
+
+
+    /**
+     * Filters the full list of events based on the provided text query and
+     * updates the adapter to display only matching events.
+     *
+     * @param text The search query used to filter events by title.
+     */
+    private void filterList(String text) {
+        filteredEvents.clear();
+        // If the query is blank show all events
+        if (text.isEmpty()) {
+            filteredEvents.addAll(events);
+        } else {
+            String query = text.toLowerCase();
+            // Show all events that contain the query in their title
+            for (Event event : events) {
+                // Filter events by title
+                if (event.getTitle().toLowerCase().contains(query)) {
+                    filteredEvents.add(event);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
 }

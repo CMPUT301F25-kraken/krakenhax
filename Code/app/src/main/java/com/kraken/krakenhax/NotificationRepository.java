@@ -1,17 +1,21 @@
 package com.kraken.krakenhax;
 
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 
 /**
  * Repository for saving NotificationJ objects into Firestore.
  */
 public class NotificationRepository {
-
     private final FirebaseFirestore db;
 
+    /**
+     * Creates a new repository instance using the provided Firestore database.
+     *
+     * @param db the {@link FirebaseFirestore} instance used to store notifications
+     */
     public NotificationRepository(FirebaseFirestore db) {
         this.db = db;
     }
@@ -33,4 +37,5 @@ public class NotificationRepository {
                         docRef.update("timestamp", FieldValue.serverTimestamp())
                 );
     }
+
 }

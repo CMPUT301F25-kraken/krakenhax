@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -38,6 +39,7 @@ public class EventsFragment extends Fragment {
     private FirebaseFirestore db;
     private ArrayList<Event> events;
     private ArrayList<Event> allEvents;
+    private ArrayList<Event> searchFilterEvents;
     private Profile currentUser;
 
     /**
@@ -90,12 +92,28 @@ public class EventsFragment extends Fragment {
         recycler_view_event_list.setLayoutManager(new LinearLayoutManager(requireContext()));
         events = new ArrayList<>();
         allEvents = new ArrayList<>();
+        searchFilterEvents = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
-        adapter = new MyRecyclerViewAdapter(events);
+        adapter = new MyRecyclerViewAdapter(searchFilterEvents);
         recycler_view_event_list.setAdapter(adapter);
 
+        // Set up listener for search bar
+        SearchView searchView = view.findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterList(newText);
+                return false;
+            }
+        });
+
         // Set up a firebase listener to get the events
-        startFirestoreListener();
+        startFirestoreListener(searchView);
 
         // Set an on item click listener for the recycler view
         // When an event is clicked on
@@ -153,8 +171,10 @@ public class EventsFragment extends Fragment {
      * Sets up a Firestore snapshot listener to get real-time updates for the events collection.
      * The events should be sorted from newest to oldest based on date created with events with
      * no date created at the very end.
+     *
+     * @param searchView The search view used to filter events by text query.
      */
-    private void startFirestoreListener() {
+    private void startFirestoreListener(SearchView searchView) {
         CollectionReference eventsRef = db.collection("Events"); // Corrected to capital 'E'
         eventsRef.orderBy("dateCreated", Query.Direction.DESCENDING)
                 .addSnapshotListener((snap, e) -> {
@@ -174,11 +194,23 @@ public class EventsFragment extends Fragment {
                         events.clear();
                         events.addAll(allEvents);
 
+                        // Update the recycler view based on the search
+                        if (searchView != null && searchView.getQuery().length() > 0) {
+                            filterList(searchView.getQuery().toString());
+                        } else {
+                            searchFilterEvents.clear();
+                            searchFilterEvents.addAll(events);
+                        }
+
                         adapter.notifyDataSetChanged();
                     }
                 });
     }
 
+    /**
+     * Starts a Firestore listener for unread notifications of the current user
+     * and shows them as local notifications while marking them as read.
+     */
     private void startNotificationListener() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -212,9 +244,39 @@ public class EventsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Displays a local notification for the current user with the given message.
+     *
+     * @param message The message text to display in the notification.
+     */
     private void showLocalNotification(String message) {
         NotifyUser notifier = new NotifyUser(requireContext());
         notifier.sendNotification(currentUser, message);
+    }
+
+    /**
+     * Filters the full list of events based on the provided text query and
+     * updates the adapter to display only matching events.
+     *
+     * @param text The search query used to filter events by title.
+     */
+    private void filterList(String text) {
+        searchFilterEvents.clear();
+        // If the query is blank show all events
+        if (text.isEmpty()) {
+            searchFilterEvents.addAll(events);
+        } else {
+            String query = text.toLowerCase();
+            // Show all events that contain the query in their title
+            for (Event event : events) {
+                // Filter events by title
+                if (event.getTitle().toLowerCase().contains(query)) {
+                    searchFilterEvents.add(event);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
     }
 
 }

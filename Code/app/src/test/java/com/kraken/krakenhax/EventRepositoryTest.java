@@ -9,12 +9,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.junit.runner.RunWith;
+
 
 /**
- * Database-layer unit tests for EventRepository using Mockito.
+ * Database-layer unit tests for {@link EventRepository} using Mockito.
  * Verifies Firestore is called with the correct collection and document IDs.
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -32,6 +33,10 @@ public class EventRepositoryTest {
     private EventRepository eventRepository;
     private Event testEvent;
 
+    /**
+     * Initializes the repository under test and configures Firestore mocks
+     * before each test is executed.
+     */
     @Before
     public void setUp() {
         eventRepository = new EventRepository(mockDb);
@@ -44,6 +49,10 @@ public class EventRepositoryTest {
         when(mockEventsCollection.document("event123")).thenReturn(mockDocRef);
     }
 
+    /**
+     * Ensures that saving an event writes it to the "Events" collection
+     * using the event ID as the document ID.
+     */
     @Test
     public void testSaveEventWritesToEventsCollection() {
         eventRepository.saveEvent(testEvent);
@@ -53,6 +62,10 @@ public class EventRepositoryTest {
         verify(mockDocRef).set(testEvent);
     }
 
+    /**
+     * Ensures that deleting an event removes it from the "Events" collection
+     * using the event ID as the document ID.
+     */
     @Test
     public void testDeleteEventDeletesFromEventsCollection() {
         eventRepository.deleteEvent(testEvent);
@@ -61,4 +74,5 @@ public class EventRepositoryTest {
         verify(mockEventsCollection).document("event123");
         verify(mockDocRef).delete();
     }
+
 }

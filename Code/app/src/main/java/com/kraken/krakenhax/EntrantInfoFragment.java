@@ -49,9 +49,11 @@ public class EntrantInfoFragment extends Fragment {
     private Runnable entrantListRunnable;
     private View notifyOverlay;
     private Profile currentUser;
-    
     private NotificationJ notif;
 
+    /**
+     * Default empty public constructor required for fragment instantiation.
+     */
     public EntrantInfoFragment() {
         // Required empty public constructor
     }
@@ -164,6 +166,10 @@ public class EntrantInfoFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Called when the view hierarchy associated with this fragment is being
+     * destroyed. Stops the timer to avoid leaks.
+     */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -174,7 +180,10 @@ public class EntrantInfoFragment extends Fragment {
     }
 
     /**
-     * Sets the recycler view to display the selected event list.
+     * Updates the recycler view to show entrants that match the given status.
+     * Periodically refreshes the list using a timer.
+     *
+     * @param status the entrant status list to display (e.g., Waitlisted, Won)
      */
     private void updateRecyclerList(String status) {
         // STOP ANY PREVIOUS TIMER BEFORE STARTING A NEW ONE
@@ -328,6 +337,12 @@ public class EntrantInfoFragment extends Fragment {
                 });
     }
 
+    /**
+     * Configures and sends a notification to a selected group of entrants
+     * based on the chosen status in the notification popup.
+     *
+     * @param view the root view containing the notification UI elements
+     */
     public void sendNotification(View view) {
         Spinner spinnerGroup = view.findViewById(R.id.spinnerGroup);
 
@@ -398,6 +413,10 @@ public class EntrantInfoFragment extends Fragment {
 
     }
 
+    /**
+     * Exports the list of winning entrants to a CSV file in the device's
+     * Downloads directory.
+     */
     private void exportCsv() {
 
         if (event == null || event.getWonList() == null || event.getWonList().isEmpty()) {
