@@ -437,7 +437,7 @@ public class EventFragment extends Fragment {
                                 }
                             });
                             Profile organizer = profileList.get(0);
-                            NotificationJ notification = new NotificationJ(
+                            Notification notification = new Notification(
                                     "You cancelled your spot",
                                     "You have cancelled your participation in " + event.getTitle() + ".",
                                     organizer.getUsername(),          // sender = organizer / event owner

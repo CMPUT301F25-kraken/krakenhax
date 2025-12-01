@@ -22,7 +22,7 @@ import java.util.Locale;
  * Allows the admin to view a notification.
  */
 public class ViewNotification extends DialogFragment {
-    public NotificationJ notif;
+    public Notification notif;
 
 
     /**
@@ -39,7 +39,7 @@ public class ViewNotification extends DialogFragment {
      *
      * @return Returns the new instance of the dialog fragment.
      */
-    public static ViewNotification newInstance(NotificationJ notification){
+    public static ViewNotification newInstance(Notification notification) {
         Bundle args = new Bundle();
         args.putSerializable("Notification", notification);
         ViewNotification fragment = new ViewNotification();
@@ -69,7 +69,7 @@ public class ViewNotification extends DialogFragment {
         TextView Body = view.findViewById(R.id.NotBody);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         if (getArguments() != null) {
-            notif = (NotificationJ) getArguments().getSerializable("Notification");
+            notif = (Notification) getArguments().getSerializable("Notification");
         }
         if (notif != null) {
             Title.setText(notif.getTitle());
@@ -99,8 +99,6 @@ public class ViewNotification extends DialogFragment {
                     dialog.dismiss();
                 })
                 .create();
-
-
     }
 
 }

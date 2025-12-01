@@ -17,34 +17,34 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * RecyclerView adapter that displays a list of {@link NotificationJ} items.
+ * RecyclerView adapter that displays a list of {@link Notification} items.
  * <p>
  * Binds title, body and a formatted timestamp to each item view and forwards
  * item clicks to an {@link OnNotifClickListener}.
  * <p>
  * Fields:
  * - {@code listener}: listener for item clicks.
- * - {@code notifications}: current list of {@link NotificationJ} displayed by the adapter.
+ * - {@code notifications}: current list of {@link Notification} displayed by the adapter.
  */
-public class NotifAdapterS extends RecyclerView.Adapter<NotifAdapterS.NotifViewHolder> {
+public class NotifAdapter extends RecyclerView.Adapter<NotifAdapter.NotifViewHolder> {
     private final OnNotifClickListener listener;
-    private List<NotificationJ> notifications = new ArrayList<>();
+    private List<Notification> notifications = new ArrayList<>();
 
     /**
      * Create the adapter with a click listener.
      *
      * @param listener listener for item click events; may be null
      */
-    public NotifAdapterS(OnNotifClickListener listener) {
+    public NotifAdapter(OnNotifClickListener listener) {
         this.listener = listener;
     }
 
     /**
      * Replace the adapter's notification list and refresh the view.
      *
-     * @param list new list of {@link NotificationJ} to display; may be null
+     * @param list new list of {@link Notification} to display; may be null
      */
-    public void setNotifications(List<NotificationJ> list) {
+    public void setNotifications(List<Notification> list) {
         this.notifications = list;
         notifyDataSetChanged();
     }
@@ -72,7 +72,7 @@ public class NotifAdapterS extends RecyclerView.Adapter<NotifAdapterS.NotifViewH
      */
     @Override
     public void onBindViewHolder(NotifViewHolder holder, int position) {
-        NotificationJ notif = notifications.get(position);
+        Notification notif = notifications.get(position);
         holder.bind(notif, listener);
     }
 
@@ -93,9 +93,9 @@ public class NotifAdapterS extends RecyclerView.Adapter<NotifAdapterS.NotifViewH
         /**
          * Called when a notification item is clicked.
          *
-         * @param notif the clicked {@link NotificationJ}
+         * @param notif the clicked {@link Notification}
          */
-        void onNotifClick(NotificationJ notif);
+        void onNotifClick(Notification notif);
     }
 
     /**
@@ -117,12 +117,12 @@ public class NotifAdapterS extends RecyclerView.Adapter<NotifAdapterS.NotifViewH
         }
 
         /**
-         * Bind a {@link NotificationJ} to the view and set up click handling.
+         * Bind a {@link Notification} to the view and set up click handling.
          *
          * @param notif    notification data to display
          * @param listener click listener to notify when the item is clicked; may be null
          */
-        void bind(NotificationJ notif, OnNotifClickListener listener) {
+        void bind(Notification notif, OnNotifClickListener listener) {
             tvTitle.setText(notif.getTitle());
             tvBody.setText(notif.getBody());
             Timestamp ts = notif.getTimestamp();

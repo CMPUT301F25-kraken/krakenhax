@@ -49,7 +49,7 @@ public class EntrantInfoFragment extends Fragment {
     private Runnable entrantListRunnable;
     private View notifyOverlay;
     private Profile currentUser;
-    private NotificationJ notif;
+    private Notification notif;
 
     /**
      * Default empty public constructor required for fragment instantiation.
@@ -270,7 +270,7 @@ public class EntrantInfoFragment extends Fragment {
 
 
                     Profile organizer = profileList.get(0);
-                    NotificationJ notification = new NotificationJ("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", organizer.getID(), Timestamp.now(), event.getId(), user.getID(), false);
+                    Notification notification = new Notification("Removed From Event", "Dear " + user.getUsername() + ", you have been removed from " + event.getTitle() + ".", organizer.getID(), Timestamp.now(), event.getId(), user.getID(), false);
                     notifRef.add(notification);
 
                     //NotifyUser notifier = new NotifyUser(requireContext());
@@ -392,7 +392,7 @@ public class EntrantInfoFragment extends Fragment {
 
             for (Profile p : recipients) {
                 if (!p.isNotificationsEnabled()) continue;
-                notif = new NotificationJ(event.getTitle(), message, currentUser.getUsername(), null, event.getId(), p.getUsername(), false);
+                notif = new Notification(event.getTitle(), message, currentUser.getUsername(), null, event.getId(), p.getUsername(), false);
 
                 db.collection("Profiles")
                         .document(p.getID())               // profile’s firestore id
