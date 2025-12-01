@@ -171,7 +171,7 @@ public class EventsFragment extends Fragment {
                         }
                         // Sort the events from newest to oldest
                         allEvents.sort(Comparator.comparing(Event::getDateCreated, Comparator.nullsLast(Comparator.reverseOrder())));
-                        events.clear();
+                        //events.clear();
                         events.addAll(allEvents);
 
                         adapter.notifyDataSetChanged();
