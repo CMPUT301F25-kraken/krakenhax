@@ -99,25 +99,44 @@ public class Filter {
     public void setFilter() {
         HashMap<Event, Integer> matchScore = new HashMap<Event, Integer>();
         for (Event event : events) {
-            int score = 0;
-            for (String userCategory : this.categories) {
-                if (event.getCategories().contains(userCategory)) {
-                    score++;
+            boolean isAvailable = false;
+            if (availability == null || availability.isEmpty()) {
+                isAvailable = true;
+            }
+            // If a date filter is applied, check if the event is within the range.
+            else if (event.getDateTime() != null) {
+                // Ensure we have a valid range with two dates.
+                if (availability.size() >= 2) {
+                    Timestamp eventDate = event.getDateTime();
+                    Timestamp startDate = availability.get(0);
+                    Timestamp endDate = availability.get(1);
+
+                    // Check if the event's date is within the selected range (inclusive).
+                    // The logic is: eventDate must NOT be before startDate AND must NOT be after endDate.
+                    if (!eventDate.toDate().before(startDate.toDate()) && !eventDate.toDate().after(endDate.toDate())) {
+                        isAvailable = true;
+                    }
                 }
             }
-            /**
-             boolean dateMatchFound = false;
-             for (Timestamp userAvailability : this.availability) {
-             for (Timestamp eventDay : event.getTimeframe()) {
-             if (isSameDay(userAvailability, eventDay)) {
-             score++;
-             dateMatchFound = true;
-             }
-             }
-             }
-             **/
-            if (score > 0) {
-                matchScore.put(event, score);
+
+            if (!isAvailable) {
+                continue;
+            }
+
+            int score = 0;
+            if (this.categories != null && !this.categories.isEmpty()) {
+                for (String userCategory : this.categories) {
+                    if (event.getCategories().contains(userCategory)) {
+                        score++;
+                    }
+                }
+                if (score > 0) {
+                    matchScore.put(event, score);
+                }
+            } else {
+                if (isAvailable) {
+                    matchScore.put(event, 0);
+                }
             }
         }
         // Create a list from the elements of the HashMap

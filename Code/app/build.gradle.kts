@@ -82,9 +82,7 @@ dependencies {
 
     // For QR Codes
     implementation(libs.zxing.android.embedded)
-    implementation("com.google.android.material:material:1.12.0")
-    implementation(libs.androidx.legacy.support.v4)
-
+    implementation("com.google.android.material:material:1.13.0")
     // Test implementation
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
@@ -99,32 +97,5 @@ dependencies {
 
     // FragmentScenario needs debugImplementation
     debugImplementation(libs.androidx.fragment.testing)
-}
 
-//// For generating javadocs
-//tasks.register<Javadoc>("javadoc") {
-//    // 1. Source files
-//    source = android.sourceSets["main"].java.srcDirs
-//        .fold(project.files().asFileTree) { tree, dir ->
-//            tree.plus(fileTree(dir))
-//        }
-//
-//    // 2. Classpath fix: Use the 'release' variant's compile classpath
-//    // We need to wrap this in doFirst or use a provider to ensure variants are initialized
-//    doFirst {
-//        val releaseVariant = android.applicationVariants.first { it.name == "release" }
-//        classpath = files(android.bootClasspath) + releaseVariant.javaCompileProvider.get().classpath
-//    }
-//
-//    // 3. Destination
-//    destinationDir = file("$buildDir/Javadocs")
-//
-//    // 4. Options
-//    options.encoding = "UTF-8"
-//    (options as StandardJavadocDocletOptions).memberLevel = JavadocMemberLevel.PUBLIC
-//
-//    // 5. Link to Android SDK documentation (Optional but helpful)
-//    //(options as StandardJavadocDocletOptions).links("https://d.android.com/reference")
-//
-//    isFailOnError = false
-//}
+}
