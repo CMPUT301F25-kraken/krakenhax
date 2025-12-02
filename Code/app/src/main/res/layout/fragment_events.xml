@@ -38,6 +38,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/filter_events_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:src="@android:drawable/ic_menu_sort_by_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filter_events_text"
+        app:tint="@color/gray" />
+
+    <TextView
+        android:id="@+id/filter_events_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filter events"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/search_card"
         android:layout_width="0dp"
@@ -49,6 +67,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_events">
 
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search_view"
+            android:layout_width="263dp"
+            android:layout_height="46dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Search events by title"
+            app:iconifiedByDefault="false"
+            app:queryBackground="@android:color/transparent"
+            app:queryHint="Search events..." />
     </androidx.cardview.widget.CardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -60,48 +87,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_events">
+        app:layout_constraintTop_toBottomOf="@+id/search_card">
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_events_list"
-            android:layout_width="410dp"
-            android:layout_height="581dp"
-            android:layout_marginTop="72dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/filter_events_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="28dp"
-            android:backgroundTint="@color/white"
-            android:src="@android:drawable/ic_menu_sort_by_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/gray" />
-
-        <TextView
-            android:id="@+id/filter_events_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="Filter events"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/filter_events_button" />
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/search_view"
-            android:layout_width="263dp"
-            android:layout_height="46dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="Search events by title"
-            app:iconifiedByDefault="false"
-            app:queryBackground="@android:color/transparent"
-            app:queryHint="Search events..."
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="5dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
