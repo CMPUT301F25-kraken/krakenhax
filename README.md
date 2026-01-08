@@ -1,6 +1,11 @@
 # KrakenHax
 
-**CMPUT 301 – Project Part 4**
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
+![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
+
+**CMPUT 301 Group Project**
 
 ---
 
@@ -14,16 +19,19 @@
 
 ---
 
-## Team Members
+## Screenshots
 
-- Amaan Sayyad  
-- Logan Pope  
-- Markus Henze  
-- Jacob McCormick  
-- William Grant  
-- Shahbaz Qureshi  
+| Events Page | Filter | Search |
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/80d2f0c5-25e6-46f6-a0f5-f76654fbdd60" width="250"> | <img src="https://github.com/user-attachments/assets/20f31b7f-44e0-438b-a96c-d71e7c0ac7d4" width="250"> | <img src="https://github.com/user-attachments/assets/e1fd1acc-77e6-429b-a149-912926330e17" width="250"> |
 
----
+| Event Page | Organizer Event Page | Waitlist Map |
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/e938ece5-bbb1-4992-a343-4689a7ea8b20" width="250"> | <img src="https://github.com/user-attachments/assets/2aec1711-8818-447c-98c5-9966ded4eee9" width="250"> | <img src="https://github.com/user-attachments/assets/36b91eb5-5366-454e-8aa0-6e0506a8322f" width="250"> |
+
+| Profile | Login | Signup |
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/7f90eecb-c277-4421-886d-3b47e456e655" width="250"> | <img src="https://github.com/user-attachments/assets/6f8a4cdd-7bea-4a04-a6e3-fe3fb68ab492" width="250"/> | <img src="https://github.com/user-attachments/assets/9a3d475d-f086-401c-b3f4-b354ebb683b0" width="250"/> |
 
 ## Summary of System Flow
 
@@ -72,7 +80,7 @@
 
 - View global notification list for auditing (who sent what to whom).
 - Monitor events and user activity.
-- Maintain higher-level oversight of system behavior.
+- Maintain higher-level oversight of system behaviour.
 
 ---
 
@@ -95,7 +103,7 @@
 
 ---
 
-## Notification & Lottery Flow (Part 4)
+## Notification & Lottery Flow
 
 - When an organizer runs the lottery from **`MyEventDetailsFragment`**:
   - `Event.drawLottery(...)` updates `wonList` and `lostList`.
@@ -129,7 +137,7 @@ Located under: `app/src/test/java/com/kraken/krakenhax/`
 - `ProfileTest`
   - Verifies construction, setters, validation, equality, hashCode, and `toString()`.
 - `EventTest`
-  - Verifies title changes, category add/remove behavior, and waitlist initialization.
+  - Verifies title changes, category add/remove behaviour, and waitlist initialization.
 - (Optional) `ExampleUnitTest`
   - Simple sanity test (`2 + 2 = 4`).
 
@@ -154,7 +162,7 @@ To satisfy the TA requirement for database testing, Firestore operations are wra
     - Verifies `add(notification)` is called on the correct collection.
     - Mocks the returned `Task` object to avoid NPE on `addOnSuccessListener`.
 
-This demonstrates **database-layer behavior** without needing a real Firestore instance.
+This demonstrates **database-layer behaviour** without needing a real Firestore instance.
 
 ### 3. UI Tests (Espresso / Instrumentation)
 
@@ -172,5 +180,16 @@ Located under: `app/src/androidTest/java/com/kraken/krakenhax/`
     - The `Sign Up` button is visible.
 
 These tests validate that key **UI elements** for notifications and events behave as expected.
+
+---
+
+## Team Members
+
+- Amaan Sayyad  
+- Logan Pope  
+- Markus Henze  
+- Jacob McCormick  
+- William Grant  
+- Shahbaz Qureshi  
 
 ---
